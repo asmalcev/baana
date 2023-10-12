@@ -1,31 +1,41 @@
-import { Point, compareArrays, getSVGProps } from './utils';
+import { Marker } from '.';
+import { PointObj, comparePointObjects, getSVGProps } from './utils';
 
 interface Label {
-    setPos(x: number, y: number);
+    setPos(x: number, y: number): void;
 }
 
 export class Line {
-    fillColor: string;
     strokeColor: string;
 
     svg: SVGElement;
     path: SVGPathElement;
     container: HTMLElement;
 
-    lastStart: Point | null;
-    lastEnd: Point | null;
+    lastStart: PointObj | null;
+    lastEnd: PointObj | null;
 
-    label: Label;
+    label?: Label;
 
-    constructor({ container, marker, label, strokeColor = 'black' }) {
+    constructor({
+        container,
+        marker,
+        label,
+        strokeColor = 'black',
+    }: {
+        container: HTMLElement;
+        marker?: Marker;
+        label?: Label;
+        strokeColor: string;
+    }) {
         this.strokeColor = strokeColor;
 
         this.svg = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'svg'
         );
-        this.svg.style['position'] = 'absolute';
-        this.svg.style['z-index'] = '-1';
+        this.svg.style.position = 'absolute';
+        this.svg.style.zIndex = '-1';
 
         this.path = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -51,12 +61,12 @@ export class Line {
         this.path.setAttributeNS(null, 'fill', 'transparent');
     }
 
-    render(start, end) {
+    render(start: PointObj, end: PointObj) {
         if (
             this.lastStart &&
             this.lastEnd &&
-            compareArrays(start, this.lastStart) &&
-            compareArrays(end, this.lastEnd)
+            comparePointObjects(start, this.lastStart) &&
+            comparePointObjects(end, this.lastEnd)
         ) {
             return;
         }

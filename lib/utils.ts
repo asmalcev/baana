@@ -25,7 +25,7 @@ export const getRect = (minXY: Point, maxXY: Point, svgOffset: number) => ({
     height: maxXY[1] + svgOffset * 2 - minXY[1],
 });
 
-export const compareArrays = (a: Point, b: Point) =>
+export const comparePointObjects = (a: PointObj, b: PointObj) =>
     JSON.stringify(a) === JSON.stringify(b);
 
 export type SVGProps = {
