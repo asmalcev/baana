@@ -9,15 +9,6 @@ const marker = new Marker({
     container: svgContainer,
 });
 
-const props = {
-    sizeLabel: 1,
-    sizeArrow: 1,
-};
-
-// const gui = new dat.GUI({ name: 'Curves' });
-// gui.add(props, 'sizeLabel');
-// gui.add(props, 'sizeArrow');
-
 const { line } = LineFactory({
     container: svgContainer,
 
