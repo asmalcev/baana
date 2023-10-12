@@ -17,7 +17,7 @@ export const LineFactory = ({
     container: HTMLElement,
 
     labelText: string,
-    customLabel: HTMLElement,
+    customLabel: Label,
 
     strokeColor: string,
 
