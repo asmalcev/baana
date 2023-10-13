@@ -1,49 +1,52 @@
 import { Label } from './Label';
-import { Line } from './Line';
+import { Line, WithSetPos } from './Line';
 import { Marker } from './Marker';
 
 export const LineFactory = ({
     container,
 
     labelText,
+    labelClassName,
     customLabel,
 
-    strokeColor,
+    strokeColor = 'black',
 
     marker,
-    markerColor,
-    markerSize,
-}:{
-    container: HTMLElement,
+}: {
+    container: HTMLElement;
 
-    labelText: string,
-    customLabel: Label,
+    labelText?: string;
+    labelClassName?: string;
+    customLabel?: WithSetPos;
 
-    strokeColor: string,
+    strokeColor?: string;
 
-    marker: Marker;
-    markerColor: string,
-    markerSize: number,
+    marker?: Marker;
+    markerColor?: string;
+    markerSize?: number;
 }) => {
     let label;
     if (!customLabel) {
-        label = new Label({
-            container,
-            text: labelText,
-        });
+        if (labelText) {
+            label = new Label({
+                container,
+                text: labelText,
+                className: labelClassName,
+            });
+        }
     } else {
         label = customLabel;
     }
 
-    if (markerColor) {
-        marker?.setFillColor(markerColor);
-    } else {
-        marker?.setFillColor(strokeColor);
-    }
+    // if (markerColor) {
+    //     marker?.setFillColor(markerColor);
+    // } else {
+    //     marker?.setFillColor(strokeColor);
+    // }
 
-    if (markerSize) {
-        marker?.setSize(markerSize);
-    }
+    // if (markerSize) {
+    //     marker?.setSize(markerSize);
+    // }
 
     const line = new Line({
         container,

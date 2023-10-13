@@ -1,10 +1,15 @@
+export type LabelPropsType = { container: HTMLElement; text: string, className?: string };
+
 export class Label {
     label: HTMLElement;
     container: HTMLElement;
 
-    constructor({ container, text }: { container: HTMLElement; text: string }) {
+    constructor({ container, text, className }: LabelPropsType) {
         this.label = document.createElement('div');
         this.label.classList.add('line-label');
+        if (className) {
+            this.label.classList.add(className);
+        }
         this.label.innerHTML = text;
 
         this.container = container;

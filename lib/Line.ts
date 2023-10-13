@@ -1,7 +1,14 @@
 import { Marker } from '.';
 import { PointObj, comparePointObjects, getSVGProps } from './utils';
 
-interface Label {
+export type LinePropsType = {
+    container: HTMLElement;
+    marker?: Marker;
+    label?: WithSetPos;
+    strokeColor?: string;
+};
+
+export type WithSetPos = {
     setPos(x: number, y: number): void;
 }
 
@@ -15,19 +22,14 @@ export class Line {
     lastStart: PointObj | null;
     lastEnd: PointObj | null;
 
-    label?: Label;
+    label?: WithSetPos;
 
     constructor({
         container,
         marker,
         label,
         strokeColor = 'black',
-    }: {
-        container: HTMLElement;
-        marker?: Marker;
-        label?: Label;
-        strokeColor: string;
-    }) {
+    }: LinePropsType) {
         this.strokeColor = strokeColor;
 
         this.svg = document.createElementNS(

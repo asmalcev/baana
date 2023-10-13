@@ -1,5 +1,12 @@
 const _defaultSize: number = 12;
 
+export type MarkerPropsType = {
+    container: HTMLElement;
+    id?: string;
+    size?: number;
+    fillColor?: string;
+};
+
 export class Marker {
     size: number;
     fillColor: string;
@@ -17,12 +24,7 @@ export class Marker {
         id = 'arrow-head',
         size = _defaultSize,
         fillColor = 'black',
-    }: {
-        container: HTMLElement;
-        id: string;
-        size: number;
-        fillColor: string;
-    }) {
+    }: MarkerPropsType) {
         this.size = size;
         this.fillColor = fillColor;
 
