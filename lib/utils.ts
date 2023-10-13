@@ -77,12 +77,12 @@ export const getSVGProps = (start: PointObj, end: PointObj) => {
             C ${dots[1][0] - svgProps.rect.x} ${dots[1][1] - svgProps.rect.y},
             ${dots[2][0] - svgProps.rect.x} ${dots[2][1] - svgProps.rect.y},
             ${dots[3][0] - svgProps.rect.x} ${dots[3][1] - svgProps.rect.y}`;
-    } else if (Math.abs(diffX / diffY) > 4) {
+    } else if (diffY === 0 || Math.abs(diffX / diffY) > 4) {
         /**
          * start.y ~= end.y && diffX < 0
          */
         const offsetX = Math.log(Math.abs(diffX)) * 50;
-        const offsetY = (Math.abs(diffY) + 110) * Math.sign(diffY);
+        const offsetY = (Math.abs(diffY) + 110) * (diffY === 0 ? -1: Math.sign(diffY));
 
         const dots: Point[] = [
             [start.x, start.y],
