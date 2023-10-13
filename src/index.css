@@ -1,0 +1,59 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#app {
+    height: 100vh;
+}
+
+.block {
+    cursor: pointer;
+    position: absolute;
+    width: 100px;
+    height: 50px;
+}
+
+#block1 {
+    background-color: green;
+}
+
+#block2 {
+    background-color: greenyellow;
+}
+
+#block3 {
+    background-color: red;
+}
+
+#block4 {
+    background-color: black;
+}
+
+#block5 {
+    background-color: crimson;
+}
+
+#block6 {
+    background-color: darkmagenta;
+}
+
+.label {
+    padding: 6px;
+    background-color: #333;
+    border-radius: 12px;
+
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color: white;
+}
+
+.custom-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+
+    padding: 12px;
+}
