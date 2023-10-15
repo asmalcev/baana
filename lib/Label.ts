@@ -20,8 +20,4 @@ export class Label {
         this.label.style['top'] = `${y}px`;
         this.label.style['left'] = `${x}px`;
     }
-
-    setText(text: string) {
-        this.label.innerHTML = text;
-    }
 }
