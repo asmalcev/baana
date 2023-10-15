@@ -51,7 +51,7 @@ export const LineFactory = ({
     onHover?: () => {};
 }) => {
     const container = svg.container;
-    const svgContainer = svg.getSVG();
+    const svgContainer = svg.svg;
 
     let label;
     if (!customLabel) {

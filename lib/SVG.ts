@@ -21,8 +21,4 @@ export class SVGContainer {
         this.container = container;
         this.container.appendChild(this.svg);
     }
-
-    getSVG() {
-        return this.svg;
-    }
 }
