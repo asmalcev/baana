@@ -6,7 +6,7 @@ export class Label {
 
     constructor({ container, text, className }: LabelPropsType) {
         this.label = document.createElement('div');
-        this.label.classList.add('line-label');
+        this.label.classList.add('svg-curve-arrow__line-label');
         if (className) {
             this.label.classList.add(className);
         }
