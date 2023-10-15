@@ -6,47 +6,45 @@ export type WithSetPos = {
 };
 
 export type LinePropsType = {
-    svg: SVGElement;
+    svg: Line['svg'];
 
-    marker?: Marker;
-    label?: WithSetPos;
+    marker?: Line['marker'];
+    label?: Line['label'];
 
-    strokeColor?: string;
+    scale?: Line['scale'];
+    offset?: Line['offset'];
+    curviness?: Line['curviness'];
+    hoverArea?: Line['hoverArea'];
+    className?: Line['className'];
+    strokeColor?: Line['strokeColor'];
 
-    curviness?: number;
-    scale?: number;
-
-    className?: string;
-    offset?: {
-        start: Point;
-        end: Point;
-    };
-
-    onClick?: () => {};
-    onHover?: () => {};
+    onClick?: Line['onClick'];
+    onHover?: Line['onHover'];
 };
 
 export class Line {
-    strokeColor: string;
-
     svg: SVGElement;
     path: SVGPathElement;
     hoverPath: SVGPathElement;
-
+    
     lastStart: PointObj | null;
     lastEnd: PointObj | null;
-
+    
     label?: WithSetPos;
     marker?: Marker;
-
-    curviness?: number;
+    
     scale?: number;
-
+    curviness?: number;
     className?: string;
+    hoverArea?: number;
+    strokeColor: string;
     offset?: {
         start: Point;
         end: Point;
     };
+
+    onClick?: (e?: MouseEvent) => void;
+    onHover?: (e?: MouseEvent) => void;
 
     constructor({
         svg,
@@ -62,17 +60,22 @@ export class Line {
         onHover,
         onClick,
     }: LinePropsType) {
+        Object.assign(this, {
+            scale,
+            marker,
+            curviness,
+            className,
+            strokeColor,
+            offset: {
+                start: [0, 0],
+                end: [0, 0],
+                ...offset,
+            },
+            onHover,
+            onClick,
+        });
         this.svg = svg;
-        this.scale = scale;
-        this.curviness = curviness;
-        this.className = className;
         this.strokeColor = strokeColor;
-        this.marker = marker;
-        this.offset = {
-            start: [0, 0],
-            end: [0, 0],
-            ...offset,
-        };
 
         this.path = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -86,17 +89,12 @@ export class Line {
         this.hoverPath.setAttributeNS(null, 'stroke', 'transparent');
         this.hoverPath.setAttributeNS(null, 'fill', 'none');
 
-        if (onHover || onClick) {
-            this.hoverPath.classList.add('svg-curve-arrow__interactive-path');
-        }
-        if (onHover) {
-            this.hoverPath.addEventListener('mouseover', onHover);
-        }
-        if (onClick) {
-            this.hoverPath.addEventListener('click', onClick);
-        }
-
-        this.config();
+        this.config({
+            className: true,
+            marker: true,
+            path: true,
+            hoverPath: true,
+        });
 
         this.svg.appendChild(this.path);
         this.svg.appendChild(this.hoverPath);
@@ -107,17 +105,64 @@ export class Line {
         this.label = label;
     }
 
-    config() {
-        this.path.setAttributeNS(null, 'stroke', this.strokeColor);
-        this.path.setAttributeNS(null, 'fill', 'none');
+    config({
+        className,
+        marker,
+        path,
+        hoverPath,
+    }: {
+        className?: boolean;
+        marker?: boolean;
+        path?: boolean;
+        hoverPath?: boolean;
+    }) {
+        if (path) {
+            this.path.setAttributeNS(null, 'stroke', this.strokeColor);
+            this.path.setAttributeNS(null, 'fill', 'none');
+        }
 
-        if (this.className) {
+        if (className && this.className) {
             this.path.classList.remove(...this.path.classList);
             this.path.classList.add(this.className);
         }
 
-        if (this.marker) {
-            this.path.setAttributeNS(null, 'marker-end', `url(#${this.marker.id})`);
+        if (marker && this.marker) {
+            this.path.setAttributeNS(
+                null,
+                'marker-end',
+                `url(#${this.marker.id})`
+            );
+        }
+
+        if (hoverPath) {
+            if (this.onHover || this.onClick) {
+                this.hoverPath.classList.add(
+                    'svg-curve-arrow__interactive-path'
+                );
+            }
+
+            this.configOnHover(this.onHover);
+            this.configOnClick(this.onClick);
+        }
+    }
+
+    configOnHover(onHover: Line['onHover']) {
+        if (onHover) {
+            if (this.onHover) {
+                this.hoverPath.removeEventListener('mouseover', this.onHover);
+            }
+            this.hoverPath.addEventListener('mouseover', onHover);
+            this.onHover = onHover;
+        }
+    }
+
+    configOnClick(onClick: Line['onHover']) {
+        if (onClick) {
+            if (this.onClick) {
+                this.hoverPath.removeEventListener('click', this.onClick);
+            }
+            this.hoverPath.addEventListener('click', onClick);
+            this.onClick = onClick;
         }
     }
 
