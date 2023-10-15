@@ -1,7 +1,7 @@
 const _defaultSize: number = 12;
 
 export type MarkerPropsType = {
-    container: HTMLElement;
+    svg: SVGElement;
     id?: string;
     size?: number;
     fillColor?: string;
@@ -15,23 +15,18 @@ export class Marker {
     defs: SVGDefsElement;
     marker: SVGMarkerElement;
     path: SVGPathElement;
-    container: HTMLElement;
 
     id: string;
 
     constructor({
-        container,
+        svg,
         id = 'arrow-head',
         size = _defaultSize,
-        fillColor = 'black',
+        fillColor = 'context-stroke',
     }: MarkerPropsType) {
         this.size = size;
         this.fillColor = fillColor;
-
-        this.svg = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'svg'
-        );
+        this.svg = svg;
 
         this.defs = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -58,9 +53,6 @@ export class Marker {
         this.marker.appendChild(this.path);
         this.defs.appendChild(this.marker);
         this.svg.appendChild(this.defs);
-
-        this.container = container;
-        this.container.appendChild(this.svg);
 
         this.id = id;
     }

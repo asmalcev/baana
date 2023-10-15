@@ -1,9 +1,11 @@
 import { Label } from './Label';
 import { Line, WithSetPos } from './Line';
 import { Marker } from './Marker';
+import { SVGContainer } from './SVG';
+import { Point, uniqueMarkerId } from './utils';
 
 export const LineFactory = ({
-    container,
+    svg,
 
     labelText,
     labelClassName,
@@ -11,9 +13,20 @@ export const LineFactory = ({
 
     strokeColor = 'black',
 
-    marker,
+    withMarker,
+    markerColor,
+    markerSize,
+
+    curviness,
+    scale,
+    className,
+
+    offset,
+
+    onClick,
+    onHover,
 }: {
-    container: HTMLElement;
+    svg: SVGContainer;
 
     labelText?: string;
     labelClassName?: string;
@@ -21,10 +34,25 @@ export const LineFactory = ({
 
     strokeColor?: string;
 
-    marker?: Marker;
+    withMarker?: boolean;
     markerColor?: string;
     markerSize?: number;
+
+    curviness?: number;
+    scale?: number;
+    className?: string;
+
+    offset?: {
+        start: Point;
+        end: Point;
+    };
+
+    onClick?: () => {};
+    onHover?: () => {};
 }) => {
+    const container = svg.container;
+    const svgContainer = svg.getSVG();
+
     let label;
     if (!customLabel) {
         if (labelText) {
@@ -38,21 +66,27 @@ export const LineFactory = ({
         label = customLabel;
     }
 
-    // if (markerColor) {
-    //     marker?.setFillColor(markerColor);
-    // } else {
-    //     marker?.setFillColor(strokeColor);
-    // }
-
-    // if (markerSize) {
-    //     marker?.setSize(markerSize);
-    // }
+    let marker;
+    if (withMarker) {
+        marker = new Marker({
+            svg: svgContainer,
+            id: uniqueMarkerId(),
+            size: markerSize,
+            fillColor: markerColor ?? strokeColor,
+        });
+    }
 
     const line = new Line({
-        container,
+        svg: svgContainer,
         marker,
         label,
         strokeColor,
+        curviness,
+        scale,
+        className,
+        offset,
+        onClick,
+        onHover,
     });
 
     return { line, label };

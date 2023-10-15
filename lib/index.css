@@ -2,3 +2,8 @@
     position: absolute;
     transform: translate(-50%, -50%);
 }
+
+.svg-curve-arrow__interactive-path {
+    cursor: pointer;
+    stroke-width: 10px;
+}
