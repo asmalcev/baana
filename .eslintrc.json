@@ -1,0 +1,20 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["react-hooks", "@typescript-eslint"],
+    "parserOptions": { "project": ["./tsconfig.json"] },
+    "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+    },
+
+    "import/resolver": {
+        "node": {
+            "paths": ["lib"]
+        }
+    },
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "env": {
+        "browser": true
+    }
+}
