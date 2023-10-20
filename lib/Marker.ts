@@ -82,13 +82,18 @@ export class Marker {
         }
     }
 
-    setFillColor(fillColor: string) {
+    setFillColor(fillColor?: string) {
+        if (!fillColor) return;
         this.fillColor = fillColor;
         this.config({ color: true });
     }
 
-    setSize(size: number) {
+    setSize(size: number = 12) {
         this.size = size;
         this.config({ size: true });
+    }
+
+    remove() {
+        this.svg.removeChild(this.defs);
     }
 }

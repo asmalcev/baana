@@ -1,9 +1,6 @@
 import { Marker } from '.';
+import { LabelInterface } from './Label';
 import { Point, PointObj, comparePointObjects, getSVGProps } from './utils';
-
-export type WithSetPos = {
-    setPos(x: number, y: number): void;
-};
 
 export type LinePropsType = {
     svg: Line['svg'];
@@ -26,13 +23,13 @@ export class Line {
     svg: SVGElement;
     path: SVGPathElement;
     hoverPath: SVGPathElement;
-    
+
     lastStart: PointObj | null;
     lastEnd: PointObj | null;
-    
-    label?: WithSetPos;
+
+    label?: LabelInterface;
     marker?: Marker;
-    
+
     scale?: number;
     curviness?: number;
     className?: string;
@@ -121,16 +118,18 @@ export class Line {
             this.path.setAttributeNS(null, 'fill', 'none');
         }
 
-        if (className && this.className) {
+        if (className) {
             this.path.classList.remove(...this.path.classList);
-            this.path.classList.add(this.className);
+            if (this.className) {
+                this.path.classList.add(this.className);
+            }
         }
 
-        if (marker && this.marker) {
+        if (marker) {
             this.path.setAttributeNS(
                 null,
                 'marker-end',
-                `url(#${this.marker.id})`
+                this.marker ? `url(#${this.marker.id})` : ''
             );
         }
 
@@ -204,5 +203,58 @@ export class Line {
         };
 
         this.render(start, end);
+    }
+
+    remove() {
+        this.svg.removeChild(this.path);
+        this.svg.removeChild(this.hoverPath);
+    }
+
+    reconfig({
+        offset,
+        scale,
+        curviness,
+        className,
+        strokeColor,
+        marker,
+        onHover,
+        onClick,
+    }: Partial<Omit<LinePropsType, 'svg' | 'label'>>) {
+        // Object.assign(this, {
+        //     ...this,
+        //     ...Object.fromEntries(
+        //         Object.entries({
+        //             scale,
+        //             curviness,
+        //             className,
+        //             strokeColor,
+        //         }).filter((entry) => entry[1])
+        //     )
+        // });
+        Object.assign(this, {
+            ...this,
+            scale,
+            curviness,
+            className,
+            strokeColor,
+            marker,
+        });
+
+        if (offset) {
+            this.offset = {
+                ...this.offset,
+                ...offset,
+            };
+        }
+
+        this.configOnHover(onHover);
+        this.configOnClick(onClick);
+
+        this.config({
+            className: true,
+            marker: true,
+            path: true,
+            hoverPath: true,
+        });
     }
 }

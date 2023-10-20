@@ -13,6 +13,10 @@ export class SVGContainer {
             'svg'
         );
         this.svg.style.overflow = 'visible';
+        this.svg.style.position = 'absolute';
+        this.svg.style.zIndex = '-1';
+        this.svg.style.top = '0';
+        this.svg.style.left = '0';
 
         if (className) {
             this.svg.classList.add(className);

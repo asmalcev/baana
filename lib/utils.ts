@@ -130,3 +130,4 @@ const uniqueIdGeneratorFactory = (prefix: string) => {
 };
 
 export const uniqueMarkerId = uniqueIdGeneratorFactory('marker');
+export const uniqueLineId = uniqueIdGeneratorFactory('line');

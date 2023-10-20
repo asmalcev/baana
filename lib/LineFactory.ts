@@ -1,55 +1,80 @@
-import { Label } from './Label';
-import { Line, WithSetPos } from './Line';
+import { SVGContainer } from '.';
+import { Label, LabelInterface } from './Label';
+import { Line, LinePropsType } from './Line';
 import { Marker } from './Marker';
-import { SVGContainer } from './SVG';
-import { Point, uniqueMarkerId } from './utils';
+import { uniqueMarkerId } from './utils';
+
+export type LineFactoryProps = {
+    svg: SVGContainer;
+
+    scale?: LinePropsType['scale'];
+    offset?: LinePropsType['offset'];
+    curviness?: LinePropsType['curviness'];
+    className?: LinePropsType['className'];
+    strokeColor?: LinePropsType['strokeColor'];
+
+    /**
+     * EVENTS HANDLERS
+     */
+    onClick?: LinePropsType['onClick'];
+    onHover?: LinePropsType['onHover'];
+
+    /**
+     * MARKER PROPS
+     */
+    withMarker?: boolean;
+    markerColor?: string;
+    markerSize?: number;
+} & (
+    | {
+          /**
+           * DEFAULT LABEL PROPS
+           */
+          labelText?: string;
+          labelClassName?: string;
+
+          customLabel?: never;
+      }
+    | {
+          /**
+           * CUSTOM LABEL PROPS
+           */
+          customLabel?: LabelInterface;
+
+          labelText?: never;
+          labelClassName?: never;
+      }
+);
 
 export const LineFactory = ({
     svg,
 
+    scale,
+    offset,
+    curviness,
+    className,
+    strokeColor = 'black',
+
+    /**
+     * EVENTS HANDLERS
+     */
+    onClick,
+    onHover,
+
+    /**
+     * LABEL PROPS
+     */
     labelText,
     labelClassName,
     customLabel,
 
-    strokeColor = 'black',
-
+    /**
+     * MARKER PROPS
+     */
     withMarker,
     markerColor,
     markerSize,
-
-    curviness,
-    scale,
-    className,
-
-    offset,
-
-    onClick,
-    onHover,
-}: {
-    svg: SVGContainer;
-
-    labelText?: string;
-    labelClassName?: string;
-    customLabel?: WithSetPos;
-
-    strokeColor?: string;
-
-    withMarker?: boolean;
-    markerColor?: string;
-    markerSize?: number;
-
-    curviness?: number;
-    scale?: number;
-    className?: string;
-
-    offset?: {
-        start: Point;
-        end: Point;
-    };
-
-    onClick?: () => {};
-    onHover?: () => {};
-}) => {
+}: LineFactoryProps) => {
     const container = svg.container;
     const svgContainer = svg.svg;
 
@@ -78,16 +103,16 @@ export const LineFactory = ({
 
     const line = new Line({
         svg: svgContainer,
-        marker,
         label,
-        strokeColor,
-        curviness,
         scale,
-        className,
+        marker,
         offset,
+        curviness,
+        className,
+        strokeColor,
         onClick,
         onHover,
     });
 
-    return { line, label };
+    return { line, label, marker };
 };
