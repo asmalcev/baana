@@ -1,101 +1,158 @@
 import React, {
     ReactNode,
     createContext,
+    useCallback,
     useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
 } from 'react';
 import { PointObj } from '../utils';
-import { Marker } from '..';
+import { SVGContainer } from '../SVG';
 import { LinePropsType } from '../Line';
 import { MarkerPropsType } from '../Marker';
 import { LabelPropsType } from '../Label';
+import { LineFactoryProps } from '../LineFactory';
+
+export type ConfigType = {
+    /**
+     * LINE PROPS
+     */
+    scale?: LinePropsType['scale'];
+    offset?: LinePropsType['offset'];
+    color?: LinePropsType['strokeColor'];
+    curviness?: LinePropsType['curviness'];
+    arrowClassName?: LinePropsType['className'];
+
+    /**
+     * MARKER PROPS
+     */
+    withHead?: LineFactoryProps['withMarker'];
+    headColor?: MarkerPropsType['fillColor'];
+    headSize?: MarkerPropsType['size'];
+
+    /**
+     * LABEL PROPS
+     */
+    labelClassName?: LabelPropsType['className'];
+};
 
 export type LineContextType = {
-    register(callback: () => void): void;
     update(start: PointObj, end: PointObj): void;
 
-    getContainer(): HTMLDivElement | null;
-    getMarker(): Marker | null;
-    getConfig(): {
-        color?: string;
-        labelClassName?: string;
-    }
+    getContainerRef(): React.RefObject<HTMLElement> | null;
+    getSVG(): SVGContainer | null;
+    getConfig(): ConfigType;
 };
 
 const defaultValue = {
-    register: () => {},
     update: () => {},
-    getContainer: () => null,
-    getMarker: () => null,
-    getConfig: () => ({})
+    getContainerRef: () => null,
+    getSVG: () => null,
+    getConfig: () => ({}),
 };
 
 export const LineContext = createContext<LineContextType>(defaultValue);
 
 type LineContextProviderType = {
     children: ReactNode;
+    className?: string;
+
+    offsetStartX?: number;
+    offsetStartY?: number;
+    offsetEndX?: number;
+    offsetEndY?: number;
 };
 
 export const LineContextProvider: React.FC<
-    LineContextProviderType & {
-        color: LinePropsType['strokeColor'];
+    LineContextProviderType & Omit<ConfigType, 'offset'>
+> = ({
+    children,
+    className,
 
-        headColor: MarkerPropsType['fillColor'];
-        headSize: MarkerPropsType['size'];
+    color,
+    scale,
+    curviness,
+    arrowClassName,
 
-        labelClassName: LabelPropsType['className'];
-    } 
-> = ({ children, color, headColor, headSize, labelClassName }) => {
+    offsetStartX,
+    offsetStartY,
+    offsetEndX,
+    offsetEndY,
+
+    withHead,
+    headColor,
+    headSize,
+
+    labelClassName,
+}) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const subscribers = useRef<(() => void)[]>([]);
 
-    const [marker, setMarker] = useState<Marker | null>(null);
+    const [svg, setSVG] = useState<SVGContainer | null>(null);
 
-    const register: LineContextType['register'] = (callback) => {
-        subscribers.current.push(callback);
-        callback();
-    };
+    const offset = useMemo<LinePropsType['offset']>(
+        () => ({
+            start: [offsetStartX ?? 0, offsetStartY ?? 0],
+            end: [offsetEndX ?? 0, offsetEndY ?? 0],
+        }),
+        [offsetStartX, offsetStartY, offsetEndX, offsetEndY]
+    );
+
+    const [, updateState] = useState<{}>();
+    const forceUpdate = useCallback(() => updateState({}), []);
 
     const update: LineContextType['update'] = () => {
-        subscribers.current.forEach((callback) => callback());
+        forceUpdate();
     };
 
     useEffect(() => {
-        if (
-            containerRef.current &&
-            marker?.container !== containerRef.current
-        ) {
-            marker?.container.removeChild(marker?.svg);
-            setMarker(
-                new Marker({
-                    container: containerRef.current,
-                    fillColor: headColor || color,
-                    size: headSize,
-                })
-            );
+        if (containerRef.current && svg?.container !== containerRef.current) {
+            svg?.container.removeChild(svg?.svg);
+            setSVG(new SVGContainer({ container: containerRef.current }));
         }
     }, [containerRef.current]);
 
-    const getContainer = () => containerRef.current;
-    const getMarker = () => marker;
-    const getConfig = () => ({
-        color,
-        labelClassName,
-    });
+    const getContainerRef = () => containerRef;
+    const getSVG = () => svg;
+    const getConfig = () =>
+        useMemo(
+            () => ({
+                color,
+                scale,
+                offset,
+                withHead,
+                headSize,
+                headColor,
+                curviness,
+                arrowClassName,
+                labelClassName,
+            }),
+            [
+                color,
+                scale,
+                offset,
+                withHead,
+                headSize,
+                headColor,
+                curviness,
+                arrowClassName,
+                labelClassName,
+            ]
+        );
 
     return (
         <LineContext.Provider
             value={{
-                register,
                 update,
-                getContainer,
-                getMarker,
+                getContainerRef,
                 getConfig,
+                getSVG,
             }}
         >
-            <div ref={containerRef}>{children}</div>
+            <div ref={containerRef} className={className}>
+                {children}
+            </div>
         </LineContext.Provider>
     );
 };

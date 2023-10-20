@@ -1,11 +1,11 @@
 import React, { ReactNode, useRef } from 'react';
-import { WithSetPos } from '../Line';
+import { LabelInterface } from '../Label';
 
 export const ReactLabel = (
     children: ReactNode
 ): {
     render: () => JSX.Element | null;
-    controller: WithSetPos;
+    controller: LabelInterface;
 } => {
     if (!children) {
         return {
@@ -25,7 +25,7 @@ export const ReactLabel = (
 
     return {
         render: () => (
-            <div ref={labelRef} className="line-label">
+            <div ref={labelRef} className="svg-curve-arrow__line-label">
                 {children}
             </div>
         ),

@@ -57,3 +57,15 @@
 
     padding: 12px;
 }
+
+.custom-line {
+    stroke-dasharray: 10px;
+}
+
+.red-label {
+    background-color: red;
+}
+
+.custom-line-2 {
+    opacity: 0.5;
+}

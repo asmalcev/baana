@@ -1,69 +1,250 @@
-import { useEffect, useState } from 'react';
-import { Line, LineFactory, useLineContext, ReactLabel } from '..';
-import { PointObj } from '../utils';
-import { LabelPropsType } from '../Label';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Line, LineFactory, useLineContext, ReactLabel, Marker } from '..';
+import { PointObj, uniqueMarkerId } from '../utils';
+import { LabelInterface, LabelPropsType } from '../Label';
 import { LinePropsType } from '../Line';
+import { createPortal } from 'react-dom';
+import { MarkerPropsType } from '../Marker';
+import { LineFactoryProps } from '../LineFactory';
 
 export type Render = (start: PointObj, end: PointObj) => void;
 
 type ArrowProps = {
     startRef: React.RefObject<HTMLElement>;
     endRef: React.RefObject<HTMLElement>;
-};
 
-export const Arrow: React.FC<
-    ArrowProps & {
-        text: LabelPropsType['text'];
-        color: LinePropsType['strokeColor'];
-        label?: ReturnType<typeof ReactLabel>;
-    }
-> = ({ startRef, endRef, color, text, label }) => {
-    const { getContainer, getMarker, register, getConfig } = useLineContext();
+    scale?: LinePropsType['scale'];
+    color?: LinePropsType['strokeColor'];
+    className?: LinePropsType['className'];
+    curviness?: LinePropsType['curviness'];
 
-    const [arrow, setArrow] = useState<Line | null>(null);
+    offsetStartX?: number;
+    offsetStartY?: number;
+    offsetEndX?: number;
+    offsetEndY?: number;
 
-    const container = getContainer();
+    onHover?: LinePropsType['onHover'];
+    onClick?: LinePropsType['onClick'];
 
+    /**
+     * MARKER PROPS
+     */
+    withHead?: LineFactoryProps['withMarker'];
+    headSize?: MarkerPropsType['size'];
+    headColor?: MarkerPropsType['fillColor'];
+} & (
+    | {
+          /**
+           * CUSTON LABEL
+           */
+          label?: JSX.Element;
+
+          text?: never;
+          labelClassName?: never;
+      }
+    | {
+          /**
+           * DEFAULT LABEL
+           */
+          text?: LabelPropsType['text'];
+          labelClassName?: LabelPropsType['className'];
+
+          label?: never;
+      }
+);
+
+export const Arrow: React.FC<ArrowProps> = ({
+    startRef,
+    endRef,
+
+    color,
+    scale,
+    curviness,
+    className,
+
+    offsetStartX,
+    offsetStartY,
+    offsetEndX,
+    offsetEndY,
+
+    text,
+    labelClassName,
+    label: customLabel,
+
+    withHead,
+    headColor,
+    headSize,
+}) => {
+    const { getContainerRef, getSVG, getConfig } = useLineContext();
+
+    const chached = useRef<{
+        line?: Line;
+        marker?: Marker;
+        label?: LabelInterface;
+    }>({});
+
+    const container = getContainerRef();
+    const svg = getSVG();
+    const config = getConfig();
+
+    const offset = useMemo<LinePropsType['offset']>(
+        () => ({
+            start: [
+                offsetStartX ?? config.offset?.start?.[0] ?? 0,
+                offsetStartY ?? config.offset?.start?.[1] ?? 0,
+            ],
+            end: [
+                offsetEndX ?? config.offset?.end?.[0] ?? 0,
+                offsetEndY ?? config.offset?.end?.[1] ?? 0,
+            ],
+        }),
+        [offsetStartX, offsetStartY, offsetEndX, offsetEndY, config.offset]
+    );
+
+    const customLabelController = customLabel && ReactLabel(customLabel);
+
+    const withMarker =
+        withHead ??
+        config.withHead ??
+        Boolean(headColor || headSize || config.headColor || config.headSize);
+
+    const updateLine = useCallback(() => {
+        if (chached.current.line && startRef.current && endRef.current) {
+            chached.current.line.update(startRef.current, endRef.current);
+        }
+    }, [chached.current.line, startRef.current, endRef.current]);
+
+    const clearHTMLNodes = () => {
+        chached.current.line?.remove();
+        chached.current.label?.remove?.();
+        chached.current.marker?.remove();
+    };
+
+    /**
+     * RECREATE IF CONTAINER CHANGES
+     */
     useEffect(() => {
-        if (container && arrow?.container !== container) {
-            arrow?.container.removeChild(arrow?.svg);
+        const arrow = chached.current.line;
 
-            const marker = getMarker();
-            const config = getConfig();
+        if (container && svg && arrow?.svg !== svg.svg) {
+            arrow?.svg.removeChild(arrow?.path);
+            arrow?.svg.removeChild(arrow?.hoverPath);
 
-            const { line } = LineFactory({
-                container,
-                marker: marker ?? undefined,
+            const {
+                line,
+                label: simpleLabel,
+                marker,
+            } = LineFactory({
+                svg,
+
+                scale: scale ?? config.scale,
+                offset,
                 strokeColor: color ?? config.color,
-                labelText: text,
-                labelClassName: config.labelClassName,
-                customLabel: label?.controller,
+                curviness: curviness ?? config.curviness,
+                className: className ?? config.arrowClassName,
+
+                withMarker,
+                markerColor: headColor ?? config.headColor,
+                markerSize: headSize ?? config.headSize,
+
+                ...(customLabelController?.controller
+                    ? {
+                          customLabel: customLabelController?.controller,
+                      }
+                    : {
+                          labelText: text,
+                          labelClassName:
+                              labelClassName ?? config.labelClassName,
+                      }),
             });
 
-            setArrow(line);
-
-            const updateLine = () => {
-                if (line && startRef.current && endRef.current) {
-                    const rect1 = startRef.current.getBoundingClientRect();
-                    const rect2 = endRef.current.getBoundingClientRect();
-
-                    const start = {
-                        x: rect1.x + rect1.width,
-                        y: rect1.y + rect1.height / 2,
-                    };
-
-                    const end = {
-                        x: rect2.x,
-                        y: rect2.y + rect2.height / 2,
-                    };
-
-                    line.render(start, end);
-                }
+            chached.current = {
+                line,
+                marker,
+                label: simpleLabel,
             };
-
-            register(updateLine);
         }
-    }, [container]);
+    }, [container?.current]);
 
-    return label?.render();
+    /**
+     * REMOVE HTML NODES ON UNMOUNT
+     */
+    useEffect(() => {
+        return clearHTMLNodes;
+    }, []);
+
+    /**
+     * RECONFIG HTML NODES ON PROPS CHANGES
+     */
+    useEffect(() => {
+        if (!withMarker) {
+            chached.current.marker?.remove();
+            chached.current.marker = undefined;
+        } else if (!chached.current.marker && svg?.svg) {
+            chached.current.marker = new Marker({
+                svg: svg?.svg,
+                id: uniqueMarkerId(),
+                size: headSize ?? config.headSize,
+                fillColor: headColor ?? config.headColor ?? color ?? config.color,
+            });
+        }
+
+        if (chached.current.line) {
+            chached.current.line.reconfig({
+                offset,
+                scale: scale ?? config.scale,
+                strokeColor: color ?? config.color,
+                curviness: curviness ?? config.curviness,
+                className: className ?? config.arrowClassName,
+                marker: chached.current.marker,
+            });
+        }
+        if (chached.current.label) {
+            chached.current.label?.configClassName?.(
+                labelClassName ?? config.labelClassName
+            );
+        }
+        if (chached.current.marker) {
+            chached.current.marker.setSize(headSize ?? config.headSize);
+            chached.current.marker.setFillColor(
+                headColor ?? config.headColor ?? color ?? config.color
+            );
+        }
+
+        updateLine();
+    }, [
+        config,
+
+        offset,
+
+        color,
+        scale,
+        curviness,
+        className,
+
+        withHead,
+        headColor,
+        headSize,
+
+        labelClassName,
+    ]);
+
+    useEffect(() => {
+        if (chached.current.label && text) {
+            chached.current.label.setText?.(text);
+        }
+    }, [text]);
+
+    /**
+     * RERENDER IF START/END CHANGES
+     */
+    useEffect(() => {
+        updateLine();
+    }, [startRef.current, endRef.current]);
+
+    updateLine();
+
+    return container?.current && customLabelController?.render
+        ? createPortal(customLabelController?.render(), container?.current)
+        : null;
 };

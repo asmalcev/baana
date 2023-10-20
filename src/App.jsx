@@ -1,10 +1,25 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow, ReactLabel } from '../lib';
+import { LineContextProvider, useLineContext, Arrow } from '../lib';
 
 const Diagram = () => {
     const { update } = useLineContext();
+
+    const [showArrows, setShowArrows] = useState(true);
+
+    const [toggle, setToggle] = useState(true);
+
+    const [color, setColor] = useState('green');
+    const [text, setText] = useState('label1');
+    const [labelClassName, setLabelClassName] = useState('');
+    const [cLabel, setCLabel] = useState(<p>clabel1</p>);
+    const [curviness, setCurviness] = useState(1);
+    const [offset, setOffset] = useState(0);
+    const [className, setClassName] = useState('');
+    const [withHead, setWithHead] = useState(true);
+    const [headSize, setHeadSize] = useState(10);
+    const [headColor, setHeadColor] = useState('pink');
 
     const block1 = useRef(null);
     const block2 = useRef(null);
@@ -13,9 +28,29 @@ const Diagram = () => {
     const block5 = useRef(null);
     const block6 = useRef(null);
 
+    const [eRef, setERef] = useState(block2);
+
     const clickHandler = () => {
-        console.log('CLICK!');
-    }
+        setToggle(!toggle);
+
+        // setColor(toggle ? 'black' : 'green'); // ✅
+        // setERef(toggle ? block1 : block2); // ✅
+        // setText(toggle ? 'label2' : 'label1'); // ✅
+        // setCLabel(toggle ? <b>clabel1 :/</b> : <p>clabel1</p>); // ✅
+        // setHeadSize(toggle ? 20 : 10); // ✅
+        // setHeadColor(toggle ? 'purple' : 'pink'); // ✅
+        // setCurviness(toggle ? 2 : 1); // ✅
+        // setOffset(toggle ? 20 : 0); // ✅
+        // setClassName(toggle ? 'custom-line' : ''); // ✅
+        // setLabelClassName(toggle ? 'red-label' : ''); // ✅
+        // setWithHead(!withHead); // ✅
+    };
+
+    const toggleArrows = () => {
+        setShowArrows(!showArrows);
+    };
+
+    // const onHover
 
     return (
         <>
@@ -63,37 +98,101 @@ const Diagram = () => {
                 <div id="block6" className="block" ref={block6} />
             </Draggable>
 
-            <Arrow startRef={block1} endRef={block2} color="pink" />
-            <Arrow startRef={block3} endRef={block4} text="LaBeL" />
-            <Arrow
-                startRef={block1}
-                endRef={block3}
-                color="#333"
-                text="label text"
-            />
-            <Arrow startRef={block3} endRef={block5} />
-            <Arrow
-                startRef={block5}
-                endRef={block6}
-                label={ReactLabel(
-                    <div className="label custom-label">
-                        <p>hello world</p>
-                        <button onClick={clickHandler}>Click!</button>
-                    </div>
-                )}
-            />
-            <Arrow startRef={block6} endRef={block2} color="green" />
+            {showArrows && (
+                <>
+                    <Arrow startRef={block1} endRef={block2} color="pink" />
+                    <Arrow startRef={block3} endRef={block4} label={cLabel} />
+                    <Arrow
+                        startRef={block1}
+                        endRef={block3}
+                        color="#333"
+                        text={text}
+                        labelClassName={labelClassName}
+                        headColor="pink"
+                    />
+                    <Arrow
+                        startRef={block3}
+                        endRef={block5}
+                        headSize={headSize}
+                        withHead={withHead}
+                        headColor={headColor}
+                        curviness={curviness}
+                        offsetStartY={offset}
+                        offsetEndY={-offset}
+                        className={className}
+                    />
+                    <Arrow
+                        startRef={block5}
+                        endRef={block6}
+                        label={
+                            <div className="label custom-label">
+                                <p>hello world</p>
+                                <button onClick={clickHandler}>Action!</button>
+                            </div>
+                        }
+                    />
+                    <Arrow
+                        startRef={block6}
+                        endRef={eRef}
+                        color={color}
+                        text={text}
+                    />
+                </>
+            )}
+
+            <button onClick={toggleArrows}>toggleArrows</button>
         </>
     );
 };
 
-export const App = () => (
-    <LineContextProvider
-        color="red"
-        headColor="blue"
-        headSize={16}
-        labelClassName="label"
-    >
-        <Diagram />
-    </LineContextProvider>
-);
+export const App = () => {
+    const [show, setShow] = useState(true);
+
+    const [toggle, setToggle] = useState(true);
+
+    const [color, setColor] = useState('green');
+    const [labelClassName, setLabelClassName] = useState('');
+    const [curviness, setCurviness] = useState(1);
+    const [offset, setOffset] = useState(0);
+    const [className, setClassName] = useState('');
+    const [withHead, setWithHead] = useState(true);
+    const [headSize, setHeadSize] = useState(30);
+    const [headColor, setHeadColor] = useState('dodgerblue');
+
+    const clickHandler = () => {
+        setToggle(!toggle);
+
+        // setShow(!show);
+
+        // setColor(toggle ? 'red' : 'green'); // ✅
+        // setLabelClassName(toggle ? 'label' : ''); // ✅
+        // setClassName(toggle ? 'custom-line-2' : ''); // ✅
+        // setOffset(toggle ? 10 : 0); // ✅
+        setHeadSize(toggle ? 16 : 30); // ✅
+        // setHeadColor(toggle ? 'deeppink' : 'dodgerblue'); // ✅
+        // setWithHead(!withHead); // ✅
+
+        // setCurviness(toggle ? 2 : 1); // ❌
+    };
+
+    return (
+        <>
+            <button onClick={clickHandler}>toggle</button>
+            {show && (
+                <LineContextProvider
+                    color={color}
+                    labelClassName={labelClassName}
+                    offsetStartX={offset}
+                    offsetEndX={-offset}
+                    curviness={curviness}
+                    arrowClassName={className}
+                    withHead={withHead}
+                    headColor={headColor}
+                    headSize={headSize}
+                >
+                    <Diagram />
+                </LineContextProvider>
+            )}
+        </>
+    );
+};
