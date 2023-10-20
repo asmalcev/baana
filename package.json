@@ -31,7 +31,12 @@
     },
     "devDependencies": {
         "@types/node": "^20.8.4",
+        "@typescript-eslint/eslint-plugin": "^6.8.0",
+        "@typescript-eslint/parser": "^6.8.0",
         "@vitejs/plugin-react": "^4.1.0",
+        "eslint": "^8.51.0",
+        "eslint-plugin-react-hooks": "^5.0.0-canary-9617d39ec-20231018",
+        "typescript": "^5.2.2",
         "vite": "^4.4.11"
     },
     "dependencies": {
