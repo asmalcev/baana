@@ -1,5 +1,5 @@
 {
-    "name": "svg-curve-arrow",
+    "name": "baana",
     "version": "0.0.1",
     "description": "",
     "author": {
@@ -11,18 +11,18 @@
     "type": "module",
     "repository": {
         "type": "git",
-        "url": "https://github.com/qzerrty/curves.git"
+        "url": "https://github.com/qzerrty/baana.git"
     },
-    "bugs": "https://github.com/qzerrty/curves/issues",
+    "bugs": "https://github.com/qzerrty/baana/issues",
     "files": [
         "dist"
     ],
-    "main": "./dist/svg-curve-arrow.umd.cjs",
-    "module": "./dist/svg-curve-arrow.js",
+    "main": "./dist/baana.umd.cjs",
+    "module": "./dist/baana.js",
     "exports": {
         ".": {
-            "import": "./dist/svg-curve-arrow.js",
-            "require": "./dist/svg-curve-arrow.umd.cjs"
+            "import": "./dist/baana.js",
+            "require": "./dist/baana.umd.cjs"
         }
     },
     "scripts": {
