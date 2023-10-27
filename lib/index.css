@@ -1,9 +1,9 @@
-.svg-curve-arrow__line-label {
+.baana__line-label {
     position: absolute;
     transform: translate(-50%, -50%);
 }
 
-.svg-curve-arrow__interactive-path {
+.baana__interactive-path {
     cursor: pointer;
     stroke-width: 10px;
 }
