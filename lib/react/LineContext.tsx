@@ -113,33 +113,35 @@ export const LineContextProvider: React.FC<
         }
     }, [containerRef.current]);
 
+    const config = useMemo(
+        () => ({
+            color,
+            scale,
+            offset,
+            withHead,
+            headSize,
+            headColor,
+            curviness,
+            arrowClassName,
+            labelClassName,
+        }),
+        [
+            color,
+            scale,
+            offset,
+            withHead,
+            headSize,
+            headColor,
+            curviness,
+            arrowClassName,
+            labelClassName,
+        ]
+    );
+
     const getContainerRef = () => containerRef;
     const getSVG = () => svg;
-    const getConfig = () =>
-        useMemo(
-            () => ({
-                color,
-                scale,
-                offset,
-                withHead,
-                headSize,
-                headColor,
-                curviness,
-                arrowClassName,
-                labelClassName,
-            }),
-            [
-                color,
-                scale,
-                offset,
-                withHead,
-                headSize,
-                headColor,
-                curviness,
-                arrowClassName,
-                labelClassName,
-            ]
-        );
+    const getConfig = () => config;
+        
 
     return (
         <LineContext.Provider
