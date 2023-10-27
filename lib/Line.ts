@@ -136,7 +136,7 @@ export class Line {
         if (hoverPath) {
             if (this.onHover || this.onClick) {
                 this.hoverPath.classList.add(
-                    'svg-curve-arrow__interactive-path'
+                    'baana__interactive-path'
                 );
             }
 

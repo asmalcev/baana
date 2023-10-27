@@ -25,7 +25,7 @@ export const ReactLabel = (
 
     return {
         render: () => (
-            <div ref={labelRef} className="svg-curve-arrow__line-label">
+            <div ref={labelRef} className="baana__line-label">
                 {children}
             </div>
         ),

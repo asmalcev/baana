@@ -17,7 +17,7 @@ export class Label {
 
     constructor({ container, text, className }: LabelPropsType) {
         this.label = document.createElement('div');
-        this.label.classList.add('svg-curve-arrow__line-label');
+        this.label.classList.add('baana__line-label');
         if (className) {
             this.label.classList.add(className);
         }
@@ -42,7 +42,7 @@ export class Label {
 
     configClassName(className?: string) {
         this.label.classList.remove(...this.label.classList);
-        this.label.classList.add('svg-curve-arrow__line-label');
+        this.label.classList.add('baana__line-label');
         if (className) {
             this.label.classList.add(className);
         }

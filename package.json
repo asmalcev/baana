@@ -1,5 +1,5 @@
 {
-    "name": "baana",
+    "name": "baana-react",
     "version": "0.0.1",
     "description": "",
     "author": {
@@ -17,12 +17,12 @@
     "files": [
         "dist"
     ],
-    "main": "./dist/baana.umd.cjs",
-    "module": "./dist/baana.js",
+    "main": "./dist/baana-react.umd.cjs",
+    "module": "./dist/baana-react.js",
     "exports": {
         ".": {
-            "import": "./dist/baana.js",
-            "require": "./dist/baana.umd.cjs"
+            "import": "./dist/baana-react.js",
+            "require": "./dist/baana-react.umd.cjs"
         }
     },
     "scripts": {

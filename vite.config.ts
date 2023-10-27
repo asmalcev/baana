@@ -7,9 +7,9 @@ export default defineConfig({
         lib: {
             // Could also be a dictionary or array of multiple entry points
             entry: resolve(__dirname, 'lib/index.ts'),
-            name: 'baana',
+            name: 'baana-react',
             // the proper extensions will be added
-            fileName: 'baana',
+            fileName: 'baana-react',
         },
     },
     esbuild: {
