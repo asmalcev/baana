@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow } from '../lib';
+import { LineContextProvider, useLineContext, Arrow } from '../dist/baana-react';
 
 const Diagram = () => {
     const { update } = useLineContext();
