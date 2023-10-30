@@ -74,6 +74,9 @@ export const Arrow: React.FC<ArrowProps> = ({
     withHead,
     headColor,
     headSize,
+
+    onHover,
+    onClick,
 }) => {
     const { getContainerRef, getSVG, getConfig } = useLineContext();
 
@@ -147,6 +150,9 @@ export const Arrow: React.FC<ArrowProps> = ({
                 markerColor: headColor ?? config.headColor,
                 markerSize: headSize ?? config.headSize,
 
+                onHover,
+                onClick,
+
                 ...(customLabelController?.controller
                     ? {
                           customLabel: customLabelController?.controller,
@@ -185,7 +191,8 @@ export const Arrow: React.FC<ArrowProps> = ({
                 svg: svg?.svg,
                 id: uniqueMarkerId(),
                 size: headSize ?? config.headSize,
-                fillColor: headColor ?? config.headColor ?? color ?? config.color,
+                fillColor:
+                    headColor ?? config.headColor ?? color ?? config.color,
             });
         }
 
@@ -197,6 +204,8 @@ export const Arrow: React.FC<ArrowProps> = ({
                 curviness: curviness ?? config.curviness,
                 className: className ?? config.arrowClassName,
                 marker: chached.current.marker,
+                onHover,
+                onClick,
             });
         }
         if (chached.current.label) {
@@ -227,6 +236,9 @@ export const Arrow: React.FC<ArrowProps> = ({
         headSize,
 
         labelClassName,
+
+        onHover,
+        onClick,
     ]);
 
     useEffect(() => {

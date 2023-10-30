@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow } from '../dist/baana-react';
+import { LineContextProvider, useLineContext, Arrow } from '../lib';
 
 const Diagram = () => {
     const { update } = useLineContext();
@@ -20,6 +20,15 @@ const Diagram = () => {
     const [withHead, setWithHead] = useState(true);
     const [headSize, setHeadSize] = useState(10);
     const [headColor, setHeadColor] = useState('pink');
+
+    const hoverHandlers = {
+        1: (e) => {
+            console.log('hover event', e);
+        },
+        2: (e) => {
+            console.log('another hover event', e);
+        },
+    };
 
     const block1 = useRef(null);
     const block2 = useRef(null);
@@ -50,7 +59,9 @@ const Diagram = () => {
         setShowArrows(!showArrows);
     };
 
-    // const onHover
+    const onClick = (e) => {
+        console.log('click event', e);
+    };
 
     return (
         <>
@@ -120,6 +131,8 @@ const Diagram = () => {
                         offsetStartY={offset}
                         offsetEndY={-offset}
                         className={className}
+                        onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
+                        onClick={onClick}
                     />
                     <Arrow
                         startRef={block5}
@@ -140,7 +153,9 @@ const Diagram = () => {
                 </>
             )}
 
-            <button onClick={toggleArrows}>toggleArrows</button>
+            <button onClick={toggleArrows}>
+                toggleArrows
+            </button>
         </>
     );
 };
@@ -177,7 +192,9 @@ export const App = () => {
 
     return (
         <>
-            <button onClick={clickHandler}>toggle</button>
+            <button onClick={clickHandler}>
+                toggle
+            </button>
             {show && (
                 <LineContextProvider
                     color={color}
