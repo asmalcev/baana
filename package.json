@@ -26,7 +26,8 @@
     },
     "scripts": {
         "dev": "vite",
-        "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.ts"
+        "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.ts",
+        "publish-patch": "npm version patch -m 'chore: new patch' && npm publish"
     },
     "devDependencies": {
         "@types/node": "^20.8.4",
