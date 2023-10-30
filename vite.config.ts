@@ -15,7 +15,13 @@ export default defineConfig({
             formats: ['es'],
         },
         rollupOptions: {
-            external: ['react', 'react/jsx-runtime'],
+            external: ['react', 'react-dom', 'react/jsx-runtime'],
+            output: {
+                globals: {
+                    react: 'React',
+                    'react-dom': 'ReactDOM',
+                },
+            },
         },
     },
     esbuild: {
