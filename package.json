@@ -1,11 +1,16 @@
 {
     "name": "baana-react",
     "version": "0.0.5",
-    "description": "",
+    "description": "React lib for rendering arrows and lines",
     "author": {
         "name": "Malcev Alexander",
         "email": "aleksmalcevrmg@gmail.com",
         "url": "https://alexmalcev.space/"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.ts",
+        "publish-patch": "npm version patch -m 'chore: new patch' && npm run build && npm publish"
     },
     "license": "MIT",
     "type": "module",
@@ -23,11 +28,6 @@
         ".": {
             "import": "./dist/baana-react.js"
         }
-    },
-    "scripts": {
-        "dev": "vite",
-        "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.ts",
-        "publish-patch": "npm version patch -m 'chore: new patch' && npm run build && npm publish"
     },
     "devDependencies": {
         "@types/node": "^20.8.4",
