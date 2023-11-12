@@ -10,7 +10,9 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.ts",
-        "publish-patch": "npm version patch -m 'chore: new patch' && npm run build && npm publish"
+        "build-and-publish": "npm run build && npm publish",
+        "publish-patch": "npm version patch -m 'chore: new patch' && npm run build-and-publish",
+        "publish-prepatch": "npm version prepatch -m 'chore: new patch' && npm run build-and-publish"
     },
     "license": "MIT",
     "type": "module",
@@ -23,12 +25,7 @@
         "dist"
     ],
     "main": "./dist/baana-react.js",
-    "types": "dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/baana-react.js"
-        }
-    },
+    "types": "./dist/index.d.ts",
     "devDependencies": {
         "@types/node": "^20.8.4",
         "@typescript-eslint/eslint-plugin": "^6.8.0",
