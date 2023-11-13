@@ -8,11 +8,6 @@
         "react-hooks/exhaustive-deps": "warn"
     },
 
-    "import/resolver": {
-        "node": {
-            "paths": ["lib"]
-        }
-    },
     "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
     "env": {
         "browser": true

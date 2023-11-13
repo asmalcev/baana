@@ -8,7 +8,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { PointObj } from '../utils';
 import { SVGContainer } from '../SVG';
 import { LinePropsType } from '../Line';
 import { MarkerPropsType } from '../Marker';
@@ -39,7 +38,7 @@ export type ConfigType = {
 };
 
 export type LineContextType = {
-    update(start: PointObj, end: PointObj): void;
+    update(): void;
 
     getContainerRef(): React.RefObject<HTMLElement> | null;
     getSVG(): SVGContainer | null;
@@ -99,7 +98,7 @@ export const LineContextProvider: React.FC<
         [offsetStartX, offsetStartY, offsetEndX, offsetEndY]
     );
 
-    const [, updateState] = useState<{}>();
+    const [, updateState] = useState<unknown>();
     const forceUpdate = useCallback(() => updateState({}), []);
 
     const update: LineContextType['update'] = () => {

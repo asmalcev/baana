@@ -7,14 +7,14 @@ export const ReactLabel = (
     render: () => JSX.Element | null;
     controller: LabelInterface;
 } => {
+    const labelRef = useRef<HTMLDivElement>(null);
+
     if (!children) {
         return {
             render: () => null,
             controller: { setPos: () => {} },
         };
     }
-
-    const labelRef = useRef<HTMLDivElement>(null);
 
     const setPos = (x: number, y: number) => {
         if (labelRef.current) {
