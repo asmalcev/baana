@@ -16,6 +16,7 @@ export class SVGContainer {
         this.svg.style.position = 'absolute';
         this.svg.style.top = '0';
         this.svg.style.left = '0';
+        this.svg.classList.add('baana__svg');
 
         if (className) {
             this.svg.classList.add(className);

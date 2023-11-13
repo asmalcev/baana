@@ -7,3 +7,11 @@
     cursor: pointer;
     stroke-width: 10px;
 }
+
+.baana__svg {
+    pointer-events: none;
+}
+
+.baana__svg * {
+    pointer-events: all;
+}
