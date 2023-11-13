@@ -10,9 +10,6 @@ import { LineFactoryProps } from '../LineFactory';
 export type Render = (start: PointObj, end: PointObj) => void;
 
 type ArrowProps = {
-    startRef: React.RefObject<HTMLElement>;
-    endRef: React.RefObject<HTMLElement>;
-
     scale?: LinePropsType['scale'];
     color?: LinePropsType['strokeColor'];
     className?: LinePropsType['className'];
@@ -51,11 +48,34 @@ type ArrowProps = {
 
           label?: never;
       }
-);
+) &
+    (
+        | {
+              startRef: React.RefObject<HTMLElement>;
+              startId: never;
+          }
+        | {
+              startRef: never;
+              startId: string;
+          }
+    ) &
+    (
+        | {
+              endRef: React.RefObject<HTMLElement>;
+              endId: never;
+          }
+        | {
+              endRef: never;
+              endId: string;
+          }
+    );
 
 export const Arrow: React.FC<ArrowProps> = ({
     startRef,
     endRef,
+
+    startId,
+    endId,
 
     color,
     scale,
@@ -112,10 +132,20 @@ export const Arrow: React.FC<ArrowProps> = ({
         Boolean(headColor || headSize || config.headColor || config.headSize);
 
     const updateLine = useCallback(() => {
-        if (chached.current.line && startRef.current && endRef.current) {
-            chached.current.line.update(startRef.current, endRef.current);
+        const startElement =
+            startRef?.current ?? document.getElementById(startId);
+        const endElement = endRef?.current ?? document.getElementById(endId);
+
+        if (chached.current.line && startElement && endElement) {
+            chached.current.line.update(startElement, endElement);
         }
-    }, [chached.current.line, startRef.current, endRef.current]);
+    }, [
+        chached.current.line,
+        startRef?.current,
+        endRef?.current,
+        startId,
+        endId,
+    ]);
 
     const clearHTMLNodes = () => {
         chached.current.line?.remove();
@@ -169,6 +199,8 @@ export const Arrow: React.FC<ArrowProps> = ({
                 marker,
                 label: simpleLabel,
             };
+
+            updateLine();
         }
     }, [container?.current]);
 
@@ -252,7 +284,7 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         updateLine();
-    }, [startRef.current, endRef.current]);
+    }, [startRef?.current, endRef?.current, startId, endId]);
 
     updateLine();
 

@@ -20,6 +20,7 @@ const Diagram = () => {
     const [withHead, setWithHead] = useState(true);
     const [headSize, setHeadSize] = useState(10);
     const [headColor, setHeadColor] = useState('pink');
+    const [blockId, setBlockId] = useState('block7');
 
     const hoverHandlers = {
         1: (e) => {
@@ -53,6 +54,7 @@ const Diagram = () => {
         // setClassName(toggle ? 'custom-line' : ''); // ✅
         // setLabelClassName(toggle ? 'red-label' : ''); // ✅
         // setWithHead(!withHead); // ✅
+        // setBlockId(toggle ? 'block2' : 'block7'); // ✅
     };
 
     const toggleArrows = () => {
@@ -109,6 +111,21 @@ const Diagram = () => {
                 <div id="block6" className="block" ref={block6} />
             </Draggable>
 
+            <Draggable
+                onDrag={update}
+                onStop={update}
+                defaultPosition={{ x: 250, y: 800 }}
+            >
+                <div id="block7" className="block" />
+            </Draggable>
+            <Draggable
+                onDrag={update}
+                onStop={update}
+                defaultPosition={{ x: 450, y: 650 }}
+            >
+                <div id="block8" className="block" />
+            </Draggable>
+
             {showArrows && (
                 <>
                     <Arrow startRef={block1} endRef={block2} color="pink" />
@@ -149,6 +166,10 @@ const Diagram = () => {
                         endRef={eRef}
                         color={color}
                         text={text}
+                    />
+                    <Arrow
+                        startId={blockId}
+                        endId="block8"
                     />
                 </>
             )}
