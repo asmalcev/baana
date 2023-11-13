@@ -52,20 +52,20 @@ type ArrowProps = {
     (
         | {
               startRef: React.RefObject<HTMLElement>;
-              startId: never;
+              startId?: never;
           }
         | {
-              startRef: never;
+              startRef?: never;
               startId: string;
           }
     ) &
     (
         | {
               endRef: React.RefObject<HTMLElement>;
-              endId: never;
+              endId?: never;
           }
         | {
-              endRef: never;
+              endRef?: never;
               endId: string;
           }
     );
@@ -133,8 +133,8 @@ export const Arrow: React.FC<ArrowProps> = ({
 
     const updateLine = useCallback(() => {
         const startElement =
-            startRef?.current ?? document.getElementById(startId);
-        const endElement = endRef?.current ?? document.getElementById(endId);
+            startRef?.current ?? (startId && document.getElementById(startId));
+        const endElement = endRef?.current ?? (endId && document.getElementById(endId));
 
         if (chached.current.line && startElement && endElement) {
             chached.current.line.update(startElement, endElement);
