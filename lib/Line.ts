@@ -195,8 +195,6 @@ export class Line {
 
         const containerRect = (this.svg.parentNode as HTMLElement).getBoundingClientRect();
 
-        // console.info('%c YANDEX', 'color: red', rect1, containerRect);
-
         const start = {
             x: rect1.x + rect1.width + (this.offset?.start?.[0] ?? 0) - containerRect.x,
             y: rect1.y + rect1.height / 2 + (this.offset?.start?.[1] ?? 0) - containerRect.y,
