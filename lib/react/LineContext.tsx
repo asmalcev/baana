@@ -56,21 +56,17 @@ export const LineContext = createContext<LineContextType>(defaultValue);
 
 type LineContextProviderType = {
     children: ReactNode;
-    className?: string;
-    style?: React.CSSProperties;
 
     offsetStartX?: number;
     offsetStartY?: number;
     offsetEndX?: number;
     offsetEndY?: number;
-};
+} & Record<string, unknown>;
 
 export const LineContextProvider: React.FC<
     LineContextProviderType & Omit<ConfigType, 'offset'>
 > = ({
     children,
-    className,
-    style,
 
     color,
     scale,
@@ -87,6 +83,8 @@ export const LineContextProvider: React.FC<
     headSize,
 
     labelClassName,
+
+    ...others
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -153,7 +151,7 @@ export const LineContextProvider: React.FC<
                 getSVG,
             }}
         >
-            <div ref={containerRef} className={className} style={style}>
+            <div ref={containerRef} {...others}>
                 {children}
             </div>
         </LineContext.Provider>

@@ -7,7 +7,6 @@ const Diagram = () => {
     const { update } = useLineContext();
 
     const handleUpdate = (mouseEvent, dragEvent) => {
-        // console.info('%c YANDEX', 'color: red', props);
         mouseEvent.stopPropagation();
         update();
     }
@@ -75,6 +74,7 @@ const Diagram = () => {
         <>
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 50, y: 300 }}
             >
@@ -82,6 +82,7 @@ const Diagram = () => {
             </Draggable>
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 500 }}
             >
@@ -90,6 +91,7 @@ const Diagram = () => {
 
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 150 }}
             >
@@ -97,6 +99,7 @@ const Diagram = () => {
             </Draggable>
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 50 }}
             >
@@ -104,6 +107,7 @@ const Diagram = () => {
             </Draggable>
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 250 }}
             >
@@ -111,6 +115,7 @@ const Diagram = () => {
             </Draggable>
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 400 }}
             >
@@ -119,6 +124,7 @@ const Diagram = () => {
 
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 800 }}
             >
@@ -126,6 +132,7 @@ const Diagram = () => {
             </Draggable>
             <Draggable
                 onDrag={handleUpdate}
+                onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 650 }}
             >
