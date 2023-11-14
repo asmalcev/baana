@@ -3,13 +3,13 @@ import Draggable from 'react-draggable';
 
 import { LineContextProvider, useLineContext, Arrow } from '../lib';
 
-const Diagram = () => {
+const Diagram = ({ scale }) => {
     const { update } = useLineContext();
 
     const handleUpdate = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
         update();
-    }
+    };
 
     const [showArrows, setShowArrows] = useState(true);
 
@@ -77,6 +77,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 50, y: 300 }}
+                scale={scale}
             >
                 <div id="block1" className="block" ref={block1} />
             </Draggable>
@@ -85,6 +86,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 500 }}
+                scale={scale}
             >
                 <div id="block2" className="block" ref={block2} />
             </Draggable>
@@ -94,6 +96,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 150 }}
+                scale={scale}
             >
                 <div id="block3" className="block" ref={block3} />
             </Draggable>
@@ -102,6 +105,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 50 }}
+                scale={scale}
             >
                 <div id="block4" className="block" ref={block4} />
             </Draggable>
@@ -110,6 +114,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 250 }}
+                scale={scale}
             >
                 <div id="block5" className="block" ref={block5} />
             </Draggable>
@@ -118,6 +123,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 400 }}
+                scale={scale}
             >
                 <div id="block6" className="block" ref={block6} />
             </Draggable>
@@ -127,6 +133,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 800 }}
+                scale={scale}
             >
                 <div id="block7" className="block" />
             </Draggable>
@@ -135,6 +142,7 @@ const Diagram = () => {
                 onStart={handleUpdate}
                 onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 650 }}
+                scale={scale}
             >
                 <div id="block8" className="block" />
             </Draggable>
@@ -203,6 +211,8 @@ export const App = () => {
     const [headSize, setHeadSize] = useState(30);
     const [headColor, setHeadColor] = useState('dodgerblue');
 
+    const [scale, setScale] = useState(0.5);
+
     const clickHandler = () => {
         setToggle(!toggle);
 
@@ -221,22 +231,26 @@ export const App = () => {
 
     return (
         <>
-            <Draggable>
-                    <LineContextProvider
-                        className="dragContainer"
-                        color={color}
-                        labelClassName={labelClassName}
-                        offsetStartX={offset}
-                        offsetEndX={-offset}
-                        curviness={curviness}
-                        arrowClassName={className}
-                        withHead={withHead}
-                        headColor={headColor}
-                        headSize={headSize}
-                    >
-                        <Diagram />
-                    </LineContextProvider>
-            </Draggable>
+            {/* <Draggable scale={scale}> */}
+            <LineContextProvider
+                className="dragContainer"
+                color={color}
+                labelClassName={labelClassName}
+                offsetStartX={offset}
+                offsetEndX={-offset}
+                curviness={curviness}
+                arrowClassName={className}
+                withHead={withHead}
+                headColor={headColor}
+                headSize={headSize}
+                scale={scale}
+                style={{
+                    transform: `scale(${scale})`,
+                }}
+            >
+                <Diagram scale={scale} />
+            </LineContextProvider>
+            {/* </Draggable> */}
         </>
     );
 };

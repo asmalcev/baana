@@ -196,13 +196,13 @@ export class Line {
         const containerRect = (this.svg.parentNode as HTMLElement).getBoundingClientRect();
 
         const start = {
-            x: rect1.x + rect1.width + (this.offset?.start?.[0] ?? 0) - containerRect.x,
-            y: rect1.y + rect1.height / 2 + (this.offset?.start?.[1] ?? 0) - containerRect.y,
+            x: (rect1.x + rect1.width + (this.offset?.start?.[0] ?? 0) - containerRect.x) / (this.scale ?? 1),
+            y: (rect1.y + rect1.height / 2 + (this.offset?.start?.[1] ?? 0) - containerRect.y) / (this.scale ?? 1),
         };
 
         const end = {
-            x: rect2.x + (this.offset?.end?.[0] ?? 0) - containerRect.x,
-            y: rect2.y + rect2.height / 2 + (this.offset?.end?.[1] ?? 0) - containerRect.y,
+            x: (rect2.x + (this.offset?.end?.[0] ?? 0) - containerRect.x) / (this.scale ?? 1),
+            y: (rect2.y + rect2.height / 2 + (this.offset?.end?.[1] ?? 0) - containerRect.y) / (this.scale ?? 1),
         };
 
         this.render(start, end);
