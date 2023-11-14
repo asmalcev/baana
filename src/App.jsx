@@ -222,8 +222,8 @@ export const App = () => {
     return (
         <>
             <Draggable>
-                <div className='dragContainer'>
                     <LineContextProvider
+                        className="dragContainer"
                         color={color}
                         labelClassName={labelClassName}
                         offsetStartX={offset}
@@ -236,7 +236,6 @@ export const App = () => {
                     >
                         <Diagram />
                     </LineContextProvider>
-                </div>
             </Draggable>
         </>
     );

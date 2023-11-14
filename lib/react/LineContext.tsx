@@ -140,7 +140,6 @@ export const LineContextProvider: React.FC<
     const getContainerRef = () => containerRef;
     const getSVG = () => svg;
     const getConfig = () => config;
-        
 
     return (
         <LineContext.Provider
