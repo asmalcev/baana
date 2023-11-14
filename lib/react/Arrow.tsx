@@ -10,6 +10,9 @@ import { LineFactoryProps } from '../LineFactory';
 export type Render = (start: PointObj, end: PointObj) => void;
 
 type ArrowProps = {
+    start: React.RefObject<HTMLElement> | string;
+    end: React.RefObject<HTMLElement> | string;
+
     scale?: LinePropsType['scale'];
     color?: LinePropsType['strokeColor'];
     className?: LinePropsType['className'];
@@ -48,34 +51,11 @@ type ArrowProps = {
 
           label?: never;
       }
-) &
-    (
-        | {
-              startRef: React.RefObject<HTMLElement>;
-              startId?: never;
-          }
-        | {
-              startRef?: never;
-              startId: string;
-          }
-    ) &
-    (
-        | {
-              endRef: React.RefObject<HTMLElement>;
-              endId?: never;
-          }
-        | {
-              endRef?: never;
-              endId: string;
-          }
-    );
+);
 
 export const Arrow: React.FC<ArrowProps> = ({
-    startRef,
-    endRef,
-
-    startId,
-    endId,
+    start,
+    end,
 
     color,
     scale,
@@ -133,19 +113,18 @@ export const Arrow: React.FC<ArrowProps> = ({
 
     const updateLine = useCallback(() => {
         const startElement =
-            startRef?.current ?? (startId && document.getElementById(startId));
-        const endElement = endRef?.current ?? (endId && document.getElementById(endId));
+            typeof start === 'string'
+                ? document.getElementById(start)
+                : start.current;
+        const endElement =
+            typeof end === 'string'
+                ? document.getElementById(end)
+                : end.current;
 
         if (chached.current.line && startElement && endElement) {
             chached.current.line.update(startElement, endElement);
         }
-    }, [
-        chached.current.line,
-        startRef?.current,
-        endRef?.current,
-        startId,
-        endId,
-    ]);
+    }, [start, end]);
 
     const clearHTMLNodes = () => {
         chached.current.line?.remove();
@@ -202,6 +181,7 @@ export const Arrow: React.FC<ArrowProps> = ({
 
             updateLine();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [container?.current]);
 
     /**
@@ -255,22 +235,20 @@ export const Arrow: React.FC<ArrowProps> = ({
         updateLine();
     }, [
         config,
-
         offset,
-
         color,
         scale,
         curviness,
         className,
-
         withHead,
         headColor,
         headSize,
-
         labelClassName,
-
         onHover,
         onClick,
+        withMarker,
+        svg?.svg,
+        updateLine,
     ]);
 
     useEffect(() => {
@@ -284,7 +262,7 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         updateLine();
-    }, [startRef?.current, endRef?.current, startId, endId]);
+    }, [updateLine, start, end]);
 
     updateLine();
 

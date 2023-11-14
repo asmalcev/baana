@@ -44,7 +44,7 @@ const Diagram = () => {
         setToggle(!toggle);
 
         // setColor(toggle ? 'black' : 'green'); // ✅
-        // setERef(toggle ? block1 : block2); // ✅
+        setERef(toggle ? block1 : block2); // ✅
         // setText(toggle ? 'label2' : 'label1'); // ✅
         // setCLabel(toggle ? <b>clabel1 :/</b> : <p>clabel1</p>); // ✅
         // setHeadSize(toggle ? 20 : 10); // ✅
@@ -54,7 +54,7 @@ const Diagram = () => {
         // setClassName(toggle ? 'custom-line' : ''); // ✅
         // setLabelClassName(toggle ? 'red-label' : ''); // ✅
         // setWithHead(!withHead); // ✅
-        // setBlockId(toggle ? 'block2' : 'block7'); // ✅
+        setBlockId(toggle ? 'block2' : 'block7'); // ✅
     };
 
     const toggleArrows = () => {
@@ -128,19 +128,19 @@ const Diagram = () => {
 
             {showArrows && (
                 <>
-                    <Arrow startRef={block1} endRef={block2} color="pink" />
-                    <Arrow startRef={block3} endRef={block4} label={cLabel} />
+                    <Arrow start={block1} end={block2} color="pink" />
+                    <Arrow start={block3} end={block4} label={cLabel} />
                     <Arrow
-                        startRef={block1}
-                        endRef={block3}
+                        start={block1}
+                        end={block3}
                         color="#333"
                         text={text}
                         labelClassName={labelClassName}
                         headColor="pink"
                     />
                     <Arrow
-                        startRef={block3}
-                        endRef={block5}
+                        start={block3}
+                        end={block5}
                         headSize={headSize}
                         withHead={withHead}
                         headColor={headColor}
@@ -152,8 +152,8 @@ const Diagram = () => {
                         onClick={onClick}
                     />
                     <Arrow
-                        startRef={block5}
-                        endRef={block6}
+                        start={block5}
+                        end={block6}
                         label={
                             <div className="label custom-label">
                                 <p>hello world</p>
@@ -162,14 +162,14 @@ const Diagram = () => {
                         }
                     />
                     <Arrow
-                        startRef={block6}
-                        endRef={eRef}
+                        start={block6}
+                        end={eRef}
                         color={color}
                         text={text}
                     />
                     <Arrow
-                        startId={blockId}
-                        endId="block8"
+                        start={blockId}
+                        end="block8"
                     />
                 </>
             )}
@@ -213,9 +213,9 @@ export const App = () => {
 
     return (
         <>
-            <button onClick={clickHandler}>
+            {/* <button onClick={clickHandler}>
                 toggle
-            </button>
+            </button> */}
             {show && (
                 <LineContextProvider
                     color={color}
