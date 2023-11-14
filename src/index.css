@@ -4,8 +4,15 @@
     box-sizing: border-box;
 }
 
+body {
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+
 #app {
+    width: 100%;
     height: 100vh;
+    overflow: hidden;
 }
 
 .block {
@@ -52,7 +59,7 @@
     background-color: #333;
     border-radius: 12px;
 
-    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
     color: white;
 }
 
@@ -76,4 +83,11 @@
 
 .custom-line-2 {
     opacity: 0.5;
+}
+
+.dragContainer {
+    width: 200%;
+    height: 200vh;
+
+    background-color: #0001;
 }

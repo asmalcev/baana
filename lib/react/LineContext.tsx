@@ -57,6 +57,7 @@ export const LineContext = createContext<LineContextType>(defaultValue);
 type LineContextProviderType = {
     children: ReactNode;
     className?: string;
+    style?: React.CSSProperties;
 
     offsetStartX?: number;
     offsetStartY?: number;
@@ -69,6 +70,7 @@ export const LineContextProvider: React.FC<
 > = ({
     children,
     className,
+    style,
 
     color,
     scale,
@@ -151,7 +153,7 @@ export const LineContextProvider: React.FC<
                 getSVG,
             }}
         >
-            <div ref={containerRef} className={className}>
+            <div ref={containerRef} className={className} style={style}>
                 {children}
             </div>
         </LineContext.Provider>

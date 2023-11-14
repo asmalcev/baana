@@ -6,6 +6,12 @@ import { LineContextProvider, useLineContext, Arrow } from '../lib';
 const Diagram = () => {
     const { update } = useLineContext();
 
+    const handleUpdate = (mouseEvent, dragEvent) => {
+        // console.info('%c YANDEX', 'color: red', props);
+        mouseEvent.stopPropagation();
+        update();
+    }
+
     const [showArrows, setShowArrows] = useState(true);
 
     const [toggle, setToggle] = useState(true);
@@ -68,59 +74,59 @@ const Diagram = () => {
     return (
         <>
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 50, y: 300 }}
             >
                 <div id="block1" className="block" ref={block1} />
             </Draggable>
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 500 }}
             >
                 <div id="block2" className="block" ref={block2} />
             </Draggable>
 
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 150 }}
             >
                 <div id="block3" className="block" ref={block3} />
             </Draggable>
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 50 }}
             >
                 <div id="block4" className="block" ref={block4} />
             </Draggable>
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 250 }}
             >
                 <div id="block5" className="block" ref={block5} />
             </Draggable>
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 400 }}
             >
                 <div id="block6" className="block" ref={block6} />
             </Draggable>
 
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 250, y: 800 }}
             >
                 <div id="block7" className="block" />
             </Draggable>
             <Draggable
-                onDrag={update}
-                onStop={update}
+                onDrag={handleUpdate}
+                onStop={handleUpdate}
                 defaultPosition={{ x: 450, y: 650 }}
             >
                 <div id="block8" className="block" />
@@ -167,16 +173,11 @@ const Diagram = () => {
                         color={color}
                         text={text}
                     />
-                    <Arrow
-                        start={blockId}
-                        end="block8"
-                    />
+                    <Arrow start={blockId} end="block8" />
                 </>
             )}
 
-            <button onClick={toggleArrows}>
-                toggleArrows
-            </button>
+            <button onClick={toggleArrows}>toggleArrows</button>
         </>
     );
 };
@@ -213,24 +214,23 @@ export const App = () => {
 
     return (
         <>
-            {/* <button onClick={clickHandler}>
-                toggle
-            </button> */}
-            {show && (
-                <LineContextProvider
-                    color={color}
-                    labelClassName={labelClassName}
-                    offsetStartX={offset}
-                    offsetEndX={-offset}
-                    curviness={curviness}
-                    arrowClassName={className}
-                    withHead={withHead}
-                    headColor={headColor}
-                    headSize={headSize}
-                >
-                    <Diagram />
-                </LineContextProvider>
-            )}
+            <Draggable>
+                <div className='dragContainer'>
+                    <LineContextProvider
+                        color={color}
+                        labelClassName={labelClassName}
+                        offsetStartX={offset}
+                        offsetEndX={-offset}
+                        curviness={curviness}
+                        arrowClassName={className}
+                        withHead={withHead}
+                        headColor={headColor}
+                        headSize={headSize}
+                    >
+                        <Diagram />
+                    </LineContextProvider>
+                </div>
+            </Draggable>
         </>
     );
 };

@@ -189,17 +189,22 @@ export class Line {
     }
 
     update(startRef: HTMLElement, endRef: HTMLElement) {
+        if (!this.svg || !this.svg.parentNode) return;
         const rect1 = startRef.getBoundingClientRect();
         const rect2 = endRef.getBoundingClientRect();
 
+        const containerRect = (this.svg.parentNode as HTMLElement).getBoundingClientRect();
+
+        // console.info('%c YANDEX', 'color: red', rect1, containerRect);
+
         const start = {
-            x: rect1.x + rect1.width + (this.offset?.start?.[0] ?? 0),
-            y: rect1.y + rect1.height / 2 + (this.offset?.start?.[1] ?? 0),
+            x: rect1.x + rect1.width + (this.offset?.start?.[0] ?? 0) - containerRect.x,
+            y: rect1.y + rect1.height / 2 + (this.offset?.start?.[1] ?? 0) - containerRect.y,
         };
 
         const end = {
-            x: rect2.x + (this.offset?.end?.[0] ?? 0),
-            y: rect2.y + rect2.height / 2 + (this.offset?.end?.[1] ?? 0),
+            x: rect2.x + (this.offset?.end?.[0] ?? 0) - containerRect.x,
+            y: rect2.y + rect2.height / 2 + (this.offset?.end?.[1] ?? 0) - containerRect.y,
         };
 
         this.render(start, end);
