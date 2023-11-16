@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 
 import { LineContextProvider, useLineContext, Arrow } from '../lib';
@@ -188,7 +188,8 @@ const Diagram = ({ scale }) => {
                         color={color}
                         text={text}
                     />
-                    <Arrow start={blockId} end="block8" />
+                    <Arrow start={blockId} end="block8" className='redStroke greenFill'/>
+                    <Arrow start="block8" end="block8"/>
                 </>
             )}
 
@@ -211,7 +212,7 @@ export const App = () => {
     const [headSize, setHeadSize] = useState(30);
     const [headColor, setHeadColor] = useState('dodgerblue');
 
-    const [scale, setScale] = useState(0.5);
+    const [scale, setScale] = useState(1);
 
     const clickHandler = () => {
         setToggle(!toggle);
@@ -229,28 +230,34 @@ export const App = () => {
         // setCurviness(toggle ? 2 : 1); // ❌
     };
 
+    const onMouseWheel = (e) => {
+        let scrollDelta = -e.deltaY;
+        setScale(scale + scrollDelta / 500);
+    };
+
     return (
         <>
-            {/* <Draggable scale={scale}> */}
-            <LineContextProvider
-                className="dragContainer"
-                color={color}
-                labelClassName={labelClassName}
-                offsetStartX={offset}
-                offsetEndX={-offset}
-                curviness={curviness}
-                arrowClassName={className}
-                withHead={withHead}
-                headColor={headColor}
-                headSize={headSize}
-                scale={scale}
-                style={{
-                    transform: `scale(${scale})`,
-                }}
-            >
-                <Diagram scale={scale} />
-            </LineContextProvider>
-            {/* </Draggable> */}
+            <Draggable scale={scale}>
+                <LineContextProvider
+                    className="dragContainer"
+                    color={color}
+                    labelClassName={labelClassName}
+                    offsetStartX={offset}
+                    offsetEndX={-offset}
+                    curviness={curviness}
+                    arrowClassName={className}
+                    withHead={withHead}
+                    headColor={headColor}
+                    headSize={headSize}
+                    scale={scale}
+                    style={{
+                        scale: String(scale),
+                    }}
+                    onWheel={onMouseWheel}
+                >
+                    <Diagram scale={scale} />
+                </LineContextProvider>
+            </Draggable>
         </>
     );
 };

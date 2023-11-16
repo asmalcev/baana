@@ -20,6 +20,8 @@ body {
     position: absolute;
     width: 100px;
     height: 50px;
+
+    background-color: blue;
 }
 
 #block1 {
@@ -90,4 +92,17 @@ body {
     height: 200vh;
 
     background-color: #0001;
+}
+
+.reducedSVG {
+    stroke: red;
+    shape-rendering: optimizeSpeed;
+}
+
+.redStroke {
+    stroke: red;
+}
+
+.greenFill {
+    fill: green;
 }
