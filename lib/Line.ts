@@ -121,7 +121,7 @@ export class Line {
         if (className) {
             this.path.classList.remove(...this.path.classList);
             if (this.className) {
-                this.path.classList.add(this.className);
+                this.path.classList.add(...this.className.split(' '));
             }
         }
 
