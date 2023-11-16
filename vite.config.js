@@ -28,6 +28,14 @@ export default defineConfig({
         loader: 'tsx',
     },
     plugins: [
+        react({
+            babel: {
+                plugins: [
+                    '@babel/plugin-transform-optional-chaining',
+                    '@babel/plugin-transform-nullish-coalescing-operator',
+                ],
+            },
+        }),
         react(),
         dts({ include: ['lib'], exclude: ['src'] }),
         libInjectCss(),

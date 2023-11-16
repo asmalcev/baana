@@ -9,7 +9,7 @@
     },
     "scripts": {
         "dev": "vite",
-        "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.ts",
+        "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.js",
         "build-and-publish": "npm run build && npm publish",
         "publish-patch": "npm version patch -m 'chore: new patch' && npm run build-and-publish",
         "publish-prepatch": "npm version prepatch -m 'chore: new patch' && npm run build-and-publish",
@@ -28,6 +28,8 @@
     "main": "./dist/baana-react.js",
     "types": "./dist/index.d.ts",
     "devDependencies": {
+        "@babel/plugin-transform-nullish-coalescing-operator": "^7.23.3",
+        "@babel/plugin-transform-optional-chaining": "^7.23.3",
         "@types/node": "^20.8.4",
         "@types/react": "^18.2.28",
         "@types/react-dom": "^18.2.13",
