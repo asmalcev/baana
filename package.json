@@ -13,7 +13,9 @@
         "build-and-publish": "npm run build && npm publish",
         "publish-patch": "npm version patch -m 'chore: new patch' && npm run build-and-publish",
         "publish-prepatch": "npm version prepatch -m 'chore: new patch' && npm run build-and-publish",
-        "lint": "eslint lib/**/**"
+        "lint": "eslint lib/**/**",
+        "test": "vitest run",
+        "test-dev": "vitest"
     },
     "license": "MIT",
     "type": "module",
@@ -44,6 +46,7 @@
         "typescript": "^5.2.2",
         "vite": "^4.4.11",
         "vite-plugin-dts": "^3.6.2",
-        "vite-plugin-lib-inject-css": "^1.3.0"
+        "vite-plugin-lib-inject-css": "^1.3.0",
+        "vitest": "^0.34.6"
     }
 }
