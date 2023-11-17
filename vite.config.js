@@ -36,7 +36,6 @@ export default defineConfig({
                 ],
             },
         }),
-        react(),
         dts({ include: ['lib'], exclude: ['src'] }),
         libInjectCss(),
     ],
