@@ -29,10 +29,10 @@ export type SVGProps = {
 export const getSVGProps = (
     start: PointObj,
     end: PointObj,
-    curviness: number = 1,
+    curviness: number = 1
 ) => {
     let diffX = end.x - start.x;
-    let diffY = end.y - start.y;
+    const diffY = end.y - start.y;
 
     const svgProps: SVGProps = {
         center: [0, 0],
@@ -43,7 +43,7 @@ export const getSVGProps = (
         /**
          * diffX > 0
          */
-        const offsetX = Math.abs(diffY) / 2 * curviness;
+        const offsetX = (Math.abs(diffY) / 2) * curviness;
 
         svgProps.center = [start.x + Math.abs(diffX) / 2, start.y + diffY / 2];
 
@@ -66,7 +66,9 @@ export const getSVGProps = (
          */
         const offsetX = Math.log(Math.abs(diffX)) * 50 * curviness;
         const offsetY =
-            (Math.abs(diffY) + 110) * (diffY === 0 ? -1 : Math.sign(diffY)) * curviness;
+            (Math.abs(diffY) + 110) *
+            (diffY === 0 ? -1 : Math.sign(diffY)) *
+            curviness;
 
         const dots: Point[] = [
             [start.x, start.y],
@@ -102,7 +104,7 @@ export const getSVGProps = (
 
         svgProps.center = [
             start.x - Math.abs(diffX) / 2,
-            start.y + Math.abs(diffY) / 2 * Math.sign(diffY),
+            start.y + (Math.abs(diffY) / 2) * Math.sign(diffY),
         ];
 
         const dots: Point[] = [
@@ -131,3 +133,14 @@ const uniqueIdGeneratorFactory = (prefix: string) => {
 
 export const uniqueMarkerId = uniqueIdGeneratorFactory('marker');
 export const uniqueLineId = uniqueIdGeneratorFactory('line');
+
+const MAX_HOVER_SIZE = 20;
+
+export const computeHoverStrokeWidth = (
+    strokeWidth: number,
+    scale: number = 1,
+    maxHoverSize: number = MAX_HOVER_SIZE
+) => {
+    const scaledHoverStrokeWidth = strokeWidth * scale;
+    return scaledHoverStrokeWidth > maxHoverSize ? 0 : scaledHoverStrokeWidth;
+};
