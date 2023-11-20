@@ -134,13 +134,13 @@ const uniqueIdGeneratorFactory = (prefix: string) => {
 export const uniqueMarkerId = uniqueIdGeneratorFactory('marker');
 export const uniqueLineId = uniqueIdGeneratorFactory('line');
 
-const MAX_HOVER_SIZE = 20;
+const DEFAULT_HOVER_SIZE = 20;
 
 export const computeHoverStrokeWidth = (
     strokeWidth: number,
     scale: number = 1,
-    maxHoverSize: number = MAX_HOVER_SIZE
+    hoverSize: number = DEFAULT_HOVER_SIZE
 ) => {
-    const scaledHoverStrokeWidth = strokeWidth * scale;
-    return scaledHoverStrokeWidth > maxHoverSize ? 0 : scaledHoverStrokeWidth;
+    if (scale <= 1) return hoverSize;
+    return strokeWidth * scale > hoverSize ? strokeWidth : hoverSize / scale;
 };

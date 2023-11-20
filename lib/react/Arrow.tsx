@@ -17,6 +17,7 @@ type ArrowProps = {
     color?: LinePropsType['strokeColor'];
     className?: LinePropsType['className'];
     curviness?: LinePropsType['curviness'];
+    strokeWidth?: LinePropsType['strokeWidth'];
 
     offsetStartX?: number;
     offsetStartY?: number;
@@ -61,6 +62,7 @@ export const Arrow: React.FC<ArrowProps> = ({
     scale,
     curviness,
     className,
+    strokeWidth,
 
     offsetStartX,
     offsetStartY,
@@ -139,8 +141,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         const arrow = chached.current.line;
 
         if (container && svg && arrow?.svg !== svg.svg) {
-            arrow?.svg.removeChild(arrow?.path);
-            arrow?.svg.removeChild(arrow?.hoverPath);
+            arrow?.remove();
 
             const {
                 line,
@@ -154,6 +155,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                 strokeColor: color ?? config.color,
                 curviness: curviness ?? config.curviness,
                 className: className ?? config.arrowClassName,
+                strokeWidth: strokeWidth ?? config.strokeWidth,
 
                 withMarker,
                 markerColor: headColor ?? config.headColor,
@@ -213,6 +215,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                 offset,
                 scale: scale ?? config.scale,
                 strokeColor: color ?? config.color,
+                strokeWidth: strokeWidth ?? config.strokeWidth,
                 curviness: curviness ?? config.curviness,
                 className: className ?? config.arrowClassName,
                 marker: chached.current.marker,
@@ -249,6 +252,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         withMarker,
         svg?.svg,
         updateLine,
+        strokeWidth,
     ]);
 
     useEffect(() => {

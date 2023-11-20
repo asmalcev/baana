@@ -1,6 +1,12 @@
 import { Marker } from '.';
 import { LabelInterface } from './Label';
-import { Point, PointObj, comparePointObjects, getSVGProps } from './utils';
+import {
+    Point,
+    PointObj,
+    comparePointObjects,
+    computeHoverStrokeWidth,
+    getSVGProps,
+} from './utils';
 
 export type LinePropsType = {
     svg: Line['svg'];
@@ -11,7 +17,7 @@ export type LinePropsType = {
     scale?: Line['scale'];
     offset?: Line['offset'];
     curviness?: Line['curviness'];
-    hoverArea?: Line['hoverArea'];
+    strokeWidth?: Line['strokeWidth'];
     className?: Line['className'];
     strokeColor?: Line['strokeColor'];
 
@@ -22,7 +28,7 @@ export type LinePropsType = {
 export class Line {
     svg: SVGElement;
     path: SVGPathElement;
-    hoverPath: SVGPathElement;
+    hoverPath?: SVGPathElement;
 
     lastStart: PointObj | null;
     lastEnd: PointObj | null;
@@ -33,12 +39,14 @@ export class Line {
     scale?: number;
     curviness?: number;
     className?: string;
-    hoverArea?: number;
     strokeColor: string;
+    strokeWidth: number;
     offset?: {
         start: Point;
         end: Point;
     };
+
+    hoverStrokeWidth?: number;
 
     onClick?: (e?: MouseEvent) => void;
     onHover?: (e?: MouseEvent) => void;
@@ -53,6 +61,7 @@ export class Line {
         curviness = 1,
         className = '',
         strokeColor = 'black',
+        strokeWidth = 1,
 
         onHover,
         onClick,
@@ -62,7 +71,6 @@ export class Line {
             marker,
             curviness,
             className,
-            strokeColor,
             offset: {
                 start: [0, 0],
                 end: [0, 0],
@@ -73,28 +81,36 @@ export class Line {
         });
         this.svg = svg;
         this.strokeColor = strokeColor;
+        this.strokeWidth = strokeWidth;
 
         this.path = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'path'
         );
+        this.svg.appendChild(this.path);
 
-        this.hoverPath = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'path'
+        const computedHoverStrokeWidth = computeHoverStrokeWidth(
+            strokeWidth,
+            scale
         );
-        this.hoverPath.setAttributeNS(null, 'stroke', 'transparent');
-        this.hoverPath.setAttributeNS(null, 'fill', 'none');
+        const shouldCreateHoverPath =
+            computedHoverStrokeWidth > 0 &&
+            Boolean(this.onHover || this.onClick);
+
+        if (shouldCreateHoverPath) {
+            this.createHoverPath();
+
+            this.configOnHover(this.onHover);
+            this.configOnClick(this.onClick);
+            this.hoverStrokeWidth = computedHoverStrokeWidth;
+        }
 
         this.config({
             className: true,
             marker: true,
             path: true,
-            hoverPath: true,
+            hoverPath: shouldCreateHoverPath,
         });
-
-        this.svg.appendChild(this.path);
-        this.svg.appendChild(this.hoverPath);
 
         this.lastStart = null;
         this.lastEnd = null;
@@ -115,6 +131,11 @@ export class Line {
     }) {
         if (path) {
             this.path.setAttributeNS(null, 'stroke', this.strokeColor);
+            this.path.setAttributeNS(
+                null,
+                'stroke-width',
+                String(this.strokeWidth)
+            );
             this.path.setAttributeNS(null, 'fill', 'none');
         }
 
@@ -133,19 +154,18 @@ export class Line {
             );
         }
 
-        if (hoverPath) {
-            if (this.onHover || this.onClick) {
-                this.hoverPath.classList.add(
-                    'baana__interactive-path'
-                );
-            }
-
-            this.configOnHover(this.onHover);
-            this.configOnClick(this.onClick);
+        if (hoverPath && this.hoverPath) {
+            this.hoverPath.setAttributeNS(
+                null,
+                'stroke-width',
+                String(this.hoverStrokeWidth)
+            );
         }
     }
 
     configOnHover(onHover: Line['onHover']) {
+        if (!this.hoverPath) return;
+
         if (onHover) {
             if (this.onHover) {
                 this.hoverPath.removeEventListener('mouseover', this.onHover);
@@ -156,6 +176,8 @@ export class Line {
     }
 
     configOnClick(onClick: Line['onHover']) {
+        if (!this.hoverPath) return;
+
         if (onClick) {
             if (this.onClick) {
                 this.hoverPath.removeEventListener('click', this.onClick);
@@ -178,7 +200,7 @@ export class Line {
         const svgProps = getSVGProps(start, end, this.curviness);
 
         this.path.setAttributeNS(null, 'd', svgProps.d);
-        this.hoverPath.setAttributeNS(null, 'd', svgProps.d);
+        this.hoverPath?.setAttributeNS(null, 'd', svgProps.d);
 
         this.lastStart = start;
         this.lastEnd = end;
@@ -193,16 +215,35 @@ export class Line {
         const rect1 = startRef.getBoundingClientRect();
         const rect2 = endRef.getBoundingClientRect();
 
-        const containerRect = (this.svg.parentNode as HTMLElement).getBoundingClientRect();
+        const containerRect = (
+            this.svg.parentNode as HTMLElement
+        ).getBoundingClientRect();
 
         const start = {
-            x: (rect1.x + rect1.width + (this.offset?.start?.[0] ?? 0) - containerRect.x) / (this.scale ?? 1),
-            y: (rect1.y + rect1.height / 2 + (this.offset?.start?.[1] ?? 0) - containerRect.y) / (this.scale ?? 1),
+            x:
+                (rect1.x +
+                    rect1.width +
+                    (this.offset?.start?.[0] ?? 0) -
+                    containerRect.x) /
+                (this.scale ?? 1),
+            y:
+                (rect1.y +
+                    rect1.height / 2 +
+                    (this.offset?.start?.[1] ?? 0) -
+                    containerRect.y) /
+                (this.scale ?? 1),
         };
 
         const end = {
-            x: (rect2.x + (this.offset?.end?.[0] ?? 0) - containerRect.x) / (this.scale ?? 1),
-            y: (rect2.y + rect2.height / 2 + (this.offset?.end?.[1] ?? 0) - containerRect.y) / (this.scale ?? 1),
+            x:
+                (rect2.x + (this.offset?.end?.[0] ?? 0) - containerRect.x) /
+                (this.scale ?? 1),
+            y:
+                (rect2.y +
+                    rect2.height / 2 +
+                    (this.offset?.end?.[1] ?? 0) -
+                    containerRect.y) /
+                (this.scale ?? 1),
         };
 
         this.render(start, end);
@@ -210,36 +251,27 @@ export class Line {
 
     remove() {
         this.svg.removeChild(this.path);
-        this.svg.removeChild(this.hoverPath);
+        this.removeHoverPath();
     }
 
     reconfig({
         offset,
-        scale,
-        curviness,
-        className,
-        strokeColor,
-        marker,
+        scale = this.scale,
+        curviness = this.curviness,
+        className = this.className,
+        strokeColor = this.strokeColor,
+        strokeWidth = this.strokeWidth,
+        marker = this.marker,
         onHover,
         onClick,
     }: Partial<Omit<LinePropsType, 'svg' | 'label'>>) {
-        // Object.assign(this, {
-        //     ...this,
-        //     ...Object.fromEntries(
-        //         Object.entries({
-        //             scale,
-        //             curviness,
-        //             className,
-        //             strokeColor,
-        //         }).filter((entry) => entry[1])
-        //     )
-        // });
         Object.assign(this, {
             ...this,
             scale,
             curviness,
             className,
             strokeColor,
+            strokeWidth,
             marker,
         });
 
@@ -250,6 +282,26 @@ export class Line {
             };
         }
 
+        this.hoverStrokeWidth = strokeWidth
+            ? computeHoverStrokeWidth(strokeWidth, scale)
+            : undefined;
+
+        const shouldCreateHoverPath =
+            this.hoverStrokeWidth &&
+            this.hoverStrokeWidth > 0 &&
+            Boolean(onHover || onClick);
+        const hadHoverPath = Boolean(this.hoverPath);
+
+        if (!hadHoverPath && shouldCreateHoverPath) {
+            this.createHoverPath();
+            const d = this.path.getAttributeNS(null, 'd');
+            if (d) {
+                this.hoverPath?.setAttributeNS(null, 'd', d);
+            }
+        } else if (hadHoverPath && !shouldCreateHoverPath) {
+            this.removeHoverPath();
+        }
+
         this.configOnHover(onHover);
         this.configOnClick(onClick);
 
@@ -257,7 +309,27 @@ export class Line {
             className: true,
             marker: true,
             path: true,
-            hoverPath: true,
+            hoverPath: Boolean(this.hoverStrokeWidth),
         });
+    }
+
+    createHoverPath() {
+        if (!this.hoverStrokeWidth) return;
+
+        this.hoverPath = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'path'
+        );
+        this.hoverPath.setAttributeNS(null, 'stroke', '#0001');
+        this.hoverPath.setAttributeNS(null, 'fill', 'none');
+        this.hoverPath.classList.add('baana__interactive-path');
+        this.svg.appendChild(this.hoverPath);
+    }
+
+    removeHoverPath() {
+        if (!this.hoverPath) return;
+
+        this.svg.removeChild(this.hoverPath);
+        this.hoverPath = undefined;
     }
 }

@@ -106,3 +106,9 @@ body {
 .greenFill {
     fill: green;
 }
+
+.toggle {
+    position: absolute;
+    left: 50vw;
+    font-size: 16px;
+}

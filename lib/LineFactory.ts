@@ -12,6 +12,7 @@ export type LineFactoryProps = {
     curviness?: LinePropsType['curviness'];
     className?: LinePropsType['className'];
     strokeColor?: LinePropsType['strokeColor'];
+    strokeWidth?: LinePropsType['strokeWidth'];
 
     /**
      * EVENTS HANDLERS
@@ -54,6 +55,7 @@ export const LineFactory = ({
     curviness,
     className,
     strokeColor = 'black',
+    strokeWidth = 1,
 
     /**
      * EVENTS HANDLERS
@@ -110,6 +112,7 @@ export const LineFactory = ({
         curviness,
         className,
         strokeColor,
+        strokeWidth,
         onClick,
         onHover,
     });

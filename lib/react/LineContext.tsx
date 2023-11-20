@@ -23,6 +23,7 @@ export type ConfigType = {
     color?: LinePropsType['strokeColor'];
     curviness?: LinePropsType['curviness'];
     arrowClassName?: LinePropsType['className'];
+    strokeWidth?: LinePropsType['strokeWidth'];
 
     /**
      * MARKER PROPS
@@ -72,6 +73,7 @@ export const LineContextProvider: React.FC<
     scale,
     curviness,
     arrowClassName,
+    strokeWidth,
 
     offsetStartX,
     offsetStartY,
@@ -121,6 +123,7 @@ export const LineContextProvider: React.FC<
             headSize,
             headColor,
             curviness,
+            strokeWidth,
             arrowClassName,
             labelClassName,
         }),
@@ -132,6 +135,7 @@ export const LineContextProvider: React.FC<
             headSize,
             headColor,
             curviness,
+            strokeWidth,
             arrowClassName,
             labelClassName,
         ]
