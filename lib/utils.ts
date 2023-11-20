@@ -141,6 +141,7 @@ export const computeHoverStrokeWidth = (
     scale: number = 1,
     hoverSize: number = DEFAULT_HOVER_SIZE
 ) => {
-    if (scale <= 1) return hoverSize;
+    if (strokeWidth === 0) return 0;
+    if (scale < 1) return hoverSize;
     return strokeWidth * scale > hoverSize ? strokeWidth : hoverSize / scale;
 };
