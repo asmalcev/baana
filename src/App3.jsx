@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 
 import { LineContextProvider, useLineContext, Arrow } from '../lib';
@@ -26,9 +26,9 @@ const Diagram = ({ scale }) => {
     const [blockId, setBlockId] = useState('block1');
 
     const hoverHandlers = {
-        1: (e) => {
+        1: useCallback((e) => {
             console.log('hover event', e);
-        },
+        }, []),
         2: undefined,
     };
 
@@ -39,11 +39,13 @@ const Diagram = ({ scale }) => {
         // setHeadSize(toggle ? 20 : 10); // ✅
         // setHeadColor(toggle ? 'purple' : 'pink'); // ✅
         // setCurviness(toggle ? 2 : 1); // ✅
-        // setOffset(toggle ? 20 : 0); // ✅
+        // setOffset(toggle ? 20 : 0); // ❌
         // setClassName(toggle ? 'custom-line' : ''); // ✅
         // setWithHead(!withHead); // ✅
         // setBlockId(toggle ? 'block2' : 'block1'); // ✅
         // setStrokeWidth(toggle ? 5 : 1); // ✅
+
+        // need to check hover path
     };
 
     const onClick = (e) => {
@@ -84,7 +86,7 @@ const Diagram = ({ scale }) => {
                 offsetEndY={-offset}
                 className={className}
                 onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
-                onClick={onClick}
+                // onClick={onClick}
             />
 
             <button onClick={clickHandler} className="toggle">toggle</button>

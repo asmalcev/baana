@@ -41,7 +41,7 @@ export class Line {
     className?: string;
     strokeColor: string;
     strokeWidth: number;
-    offset?: {
+    offset: {
         start: Point;
         end: Point;
     };
@@ -66,22 +66,11 @@ export class Line {
         onHover,
         onClick,
     }: LinePropsType) {
-        Object.assign(this, {
-            scale,
-            marker,
-            curviness,
-            className,
-            offset: {
-                start: [0, 0],
-                end: [0, 0],
-                ...offset,
-            },
-            onHover,
-            onClick,
-        });
         this.svg = svg;
         this.strokeColor = strokeColor;
         this.strokeWidth = strokeWidth;
+        this.onHover = onHover;
+        this.onClick = onClick;
 
         this.path = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -89,28 +78,24 @@ export class Line {
         );
         this.svg.appendChild(this.path);
 
-        const computedHoverStrokeWidth = computeHoverStrokeWidth(
-            strokeWidth,
-            scale
-        );
-        const shouldCreateHoverPath =
-            computedHoverStrokeWidth > 0 &&
-            Boolean(this.onHover || this.onClick);
+        this.offset = {
+            start: [0, 0],
+            end: [0, 0],
+            ...offset,
+        };
 
-        if (shouldCreateHoverPath) {
-            this.createHoverPath();
+        this.configScale(scale);
+        this.configCurviness(curviness);
 
-            this.configOnHover(this.onHover);
-            this.configOnClick(this.onClick);
-            this.hoverStrokeWidth = computedHoverStrokeWidth;
-        }
+        this.configOnHover(onHover);
+        this.configOnClick(onClick);
 
         this.config({
-            className: true,
-            marker: true,
             path: true,
-            hoverPath: shouldCreateHoverPath,
+            hoverPath: Boolean(this.hoverPath),
         });
+        this.configMarker(marker);
+        this.configClassName(className);
 
         this.lastStart = null;
         this.lastEnd = null;
@@ -118,17 +103,7 @@ export class Line {
         this.label = label;
     }
 
-    config({
-        className,
-        marker,
-        path,
-        hoverPath,
-    }: {
-        className?: boolean;
-        marker?: boolean;
-        path?: boolean;
-        hoverPath?: boolean;
-    }) {
+    config({ path, hoverPath }: { path?: boolean; hoverPath?: boolean }) {
         if (path) {
             this.path.setAttributeNS(null, 'stroke', this.strokeColor);
             this.path.setAttributeNS(
@@ -137,21 +112,6 @@ export class Line {
                 String(this.strokeWidth)
             );
             this.path.setAttributeNS(null, 'fill', 'none');
-        }
-
-        if (className) {
-            this.path.classList.remove(...this.path.classList);
-            if (this.className) {
-                this.path.classList.add(...this.className.split(' '));
-            }
-        }
-
-        if (marker) {
-            this.path.setAttributeNS(
-                null,
-                'marker-end',
-                this.marker ? `url(#${this.marker.id})` : ''
-            );
         }
 
         if (hoverPath && this.hoverPath) {
@@ -163,40 +123,7 @@ export class Line {
         }
     }
 
-    configOnHover(onHover: Line['onHover']) {
-        if (!this.hoverPath) return;
-
-        if (onHover) {
-            if (this.onHover) {
-                this.hoverPath.removeEventListener('mouseover', this.onHover);
-            }
-            this.hoverPath.addEventListener('mouseover', onHover);
-            this.onHover = onHover;
-        }
-    }
-
-    configOnClick(onClick: Line['onHover']) {
-        if (!this.hoverPath) return;
-
-        if (onClick) {
-            if (this.onClick) {
-                this.hoverPath.removeEventListener('click', this.onClick);
-            }
-            this.hoverPath.addEventListener('click', onClick);
-            this.onClick = onClick;
-        }
-    }
-
     render(start: PointObj, end: PointObj) {
-        if (
-            this.lastStart &&
-            this.lastEnd &&
-            comparePointObjects(start, this.lastStart) &&
-            comparePointObjects(end, this.lastEnd)
-        ) {
-            return;
-        }
-
         const svgProps = getSVGProps(start, end, this.curviness);
 
         this.path.setAttributeNS(null, 'd', svgProps.d);
@@ -246,6 +173,15 @@ export class Line {
                 (this.scale ?? 1),
         };
 
+        if (
+            this.lastStart &&
+            this.lastEnd &&
+            comparePointObjects(start, this.lastStart) &&
+            comparePointObjects(end, this.lastEnd)
+        ) {
+            return;
+        }
+
         this.render(start, end);
     }
 
@@ -254,42 +190,15 @@ export class Line {
         this.removeHoverPath();
     }
 
-    reconfig({
-        offset,
-        scale = this.scale,
-        curviness = this.curviness,
-        className = this.className,
-        strokeColor = this.strokeColor,
-        strokeWidth = this.strokeWidth,
-        marker = this.marker,
-        onHover,
-        onClick,
-    }: Partial<Omit<LinePropsType, 'svg' | 'label'>>) {
-        Object.assign(this, {
-            ...this,
-            scale,
-            curviness,
-            className,
-            strokeColor,
-            strokeWidth,
-            marker,
-        });
-
-        if (offset) {
-            this.offset = {
-                ...this.offset,
-                ...offset,
-            };
-        }
-
-        this.hoverStrokeWidth = strokeWidth
-            ? computeHoverStrokeWidth(strokeWidth, scale)
+    configHoverPath() {
+        this.hoverStrokeWidth = this.strokeWidth
+            ? computeHoverStrokeWidth(this.strokeWidth, this.scale)
             : undefined;
 
         const shouldCreateHoverPath =
             this.hoverStrokeWidth &&
             this.hoverStrokeWidth > 0 &&
-            Boolean(onHover || onClick);
+            Boolean(this.onHover || this.onClick);
         const hadHoverPath = Boolean(this.hoverPath);
 
         if (!hadHoverPath && shouldCreateHoverPath) {
@@ -302,15 +211,9 @@ export class Line {
             this.removeHoverPath();
         }
 
-        this.configOnHover(onHover);
-        this.configOnClick(onClick);
-
-        this.config({
-            className: true,
-            marker: true,
-            path: true,
-            hoverPath: Boolean(this.hoverStrokeWidth),
-        });
+        if (this.hoverStrokeWidth) {
+            this.config({ hoverPath: true });
+        }
     }
 
     createHoverPath() {
@@ -331,5 +234,92 @@ export class Line {
 
         this.svg.removeChild(this.hoverPath);
         this.hoverPath = undefined;
+    }
+
+    /**
+     * RENDER OPTIONS
+     */
+    configOffset(offset: Line['offset']) {
+        this.offset = {
+            ...this.offset,
+            ...offset,
+        };
+    }
+
+    configScale(scale: Line['scale']) {
+        this.scale = scale;
+    }
+
+    configCurviness(curviness: Line['curviness']) {
+        this.curviness = curviness;
+        if (this.lastStart && this.lastEnd) {
+            this.render(this.lastStart, this.lastEnd);
+        }
+    }
+
+    /**
+     * CLASSNAME
+     */
+    configClassName(className: Line['className']) {
+        this.className = className;
+        this.path.classList.remove(...this.path.classList);
+        if (this.className) {
+            this.path.classList.add(...this.className.split(' '));
+        }
+    }
+
+    /**
+     * PATH
+     */
+    configStrokeColor(strokeColor: Line['strokeColor']) {
+        this.strokeColor = strokeColor;
+        this.config({ path: true });
+    }
+
+    configStrokeWidth(strokeWidth: Line['strokeWidth']) {
+        this.strokeWidth = strokeWidth;
+        this.config({ path: true });
+    }
+
+    configOnHover(onHover: Line['onHover']) {
+        if (this.onHover) {
+            this.hoverPath?.removeEventListener('mouseover', this.onHover);
+        }
+
+        this.onHover = onHover;
+        this.configHoverPath()
+
+        if (!this.hoverPath) return;
+
+        if (onHover) {
+            this.hoverPath.addEventListener('mouseover', onHover);
+        }
+    }
+
+    configOnClick(onClick: Line['onHover']) {
+        if (this.onClick) {
+            this.hoverPath?.removeEventListener('click', this.onClick);
+        }
+
+        this.onClick = onClick;
+        this.configHoverPath()
+
+        if (!this.hoverPath) return;
+
+        if (onClick) {
+            this.hoverPath.addEventListener('click', onClick);
+        }
+    }
+
+    /**
+     * MARKER
+     */
+    configMarker(marker: Line['marker']) {
+        this.marker = marker;
+        this.path.setAttributeNS(
+            null,
+            'marker-end',
+            this.marker ? `url(#${this.marker.id})` : ''
+        );
     }
 }

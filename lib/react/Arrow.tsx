@@ -194,7 +194,62 @@ export const Arrow: React.FC<ArrowProps> = ({
     }, []);
 
     /**
-     * RECONFIG HTML NODES ON PROPS CHANGES
+     * LINE EFFECTS
+     */
+    useEffect(() => {
+        if (chached.current.line && offset) {
+            chached.current.line.configOffset(offset);
+        }
+    }, [offset]);
+
+    useEffect(() => {
+        if (chached.current.line) {
+            chached.current.line.configScale(scale ?? config.scale);
+        }
+    }, [config.scale, scale]);
+
+    useEffect(() => {
+        const _color = color ?? config.color;
+        if (chached.current.line && _color) {
+            chached.current.line.configStrokeColor(_color);
+        }
+    }, [color, config.color]);
+
+    useEffect(() => {
+        const _strokeWidth = strokeWidth ?? config.strokeWidth;
+        if (chached.current.line && _strokeWidth) {
+            chached.current.line.configStrokeWidth(_strokeWidth);
+        }
+    }, [config.strokeWidth, strokeWidth]);
+
+    useEffect(() => {
+        if (chached.current.line) {
+            chached.current.line.configCurviness(curviness ?? config.curviness);
+        }
+    }, [config.curviness, curviness]);
+
+    useEffect(() => {
+        if (chached.current.line) {
+            chached.current.line.configClassName(
+                className ?? config.arrowClassName
+            );
+        }
+    }, [className, config.arrowClassName]);
+
+    useEffect(() => {
+        if (chached.current.line) {
+            chached.current.line.configOnClick(onClick);
+        }
+    }, [onClick]);
+
+    useEffect(() => {
+        if (chached.current.line) {
+            chached.current.line.configOnHover(onHover);
+        }
+    }, [onHover]);
+
+    /**
+     * RECREATE MARKER IF WITH_MARKER CHANGES
      */
     useEffect(() => {
         if (!withMarker) {
@@ -208,53 +263,45 @@ export const Arrow: React.FC<ArrowProps> = ({
                 fillColor:
                     headColor ?? config.headColor ?? color ?? config.color,
             });
-        }
 
-        if (chached.current.line) {
-            chached.current.line.reconfig({
-                offset,
-                scale: scale ?? config.scale,
-                strokeColor: color ?? config.color,
-                strokeWidth: strokeWidth ?? config.strokeWidth,
-                curviness: curviness ?? config.curviness,
-                className: className ?? config.arrowClassName,
-                marker: chached.current.marker,
-                onHover,
-                onClick,
-            });
+            chached.current.line?.configMarker(chached.current.marker);
         }
-        if (chached.current.label) {
-            chached.current.label?.configClassName?.(
-                labelClassName ?? config.labelClassName
-            );
-        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [withMarker]);
+
+    /**
+     * CHANGE MARKER SIZE AND COLOR ON CHANGING
+     */
+    useEffect(() => {
         if (chached.current.marker) {
             chached.current.marker.setSize(headSize ?? config.headSize);
             chached.current.marker.setFillColor(
                 headColor ?? config.headColor ?? color ?? config.color
             );
         }
-
-        updateLine();
     }, [
-        config,
-        offset,
         color,
-        scale,
-        curviness,
-        className,
-        withHead,
+        config.color,
+        config.headColor,
+        config.headSize,
         headColor,
         headSize,
-        labelClassName,
-        onHover,
-        onClick,
-        withMarker,
-        svg?.svg,
-        updateLine,
-        strokeWidth,
     ]);
 
+    /**
+     * CHANGE LABEL CLASSNAME ON LABEL_CLASSNAME CHANGING
+     */
+    useEffect(() => {
+        if (chached.current.label) {
+            chached.current.label?.configClassName?.(
+                labelClassName ?? config.labelClassName
+            );
+        }
+    }, [config.labelClassName, labelClassName]);
+
+    /**
+     * CHANGE LABEL TEXT ON LABEL_TEXT CHANGING
+     */
     useEffect(() => {
         if (chached.current.label && text) {
             chached.current.label.setText?.(text);
