@@ -135,6 +135,7 @@ export const App = () => {
                     style={{
                         scale: String(scale),
                     }}
+                    onlyIntegers={true}
                     onWheel={onMouseWheel}
                 >
                     <Diagram scale={scale} reduceSVG={reduceSVG} />

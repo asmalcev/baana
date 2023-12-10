@@ -14,6 +14,8 @@ export type LineFactoryProps = {
     strokeColor?: LinePropsType['strokeColor'];
     strokeWidth?: LinePropsType['strokeWidth'];
 
+    onlyIntegers?: LinePropsType['onlyIntegers'];
+
     /**
      * EVENTS HANDLERS
      */
@@ -56,6 +58,8 @@ export const LineFactory = ({
     className,
     strokeColor = 'black',
     strokeWidth = 1,
+
+    onlyIntegers = false,
 
     /**
      * EVENTS HANDLERS
@@ -115,6 +119,7 @@ export const LineFactory = ({
         strokeWidth,
         onClick,
         onHover,
+        onlyIntegers,
     });
 
     return { line, label, marker };

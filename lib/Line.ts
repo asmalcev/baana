@@ -23,6 +23,8 @@ export type LinePropsType = {
 
     onClick?: Line['onClick'];
     onHover?: Line['onHover'];
+
+    onlyIntegers?: Line['onlyIntegers'];
 };
 
 export class Line {
@@ -51,6 +53,8 @@ export class Line {
     onClick?: (e?: MouseEvent) => void;
     onHover?: (e?: MouseEvent) => void;
 
+    onlyIntegers?: boolean;
+
     constructor({
         svg,
         label,
@@ -63,6 +67,8 @@ export class Line {
         strokeColor = 'black',
         strokeWidth = 1,
 
+        onlyIntegers = false,
+
         onHover,
         onClick,
     }: LinePropsType) {
@@ -71,6 +77,8 @@ export class Line {
         this.strokeWidth = strokeWidth;
         this.onHover = onHover;
         this.onClick = onClick;
+
+        this.onlyIntegers = onlyIntegers;
 
         this.path = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -126,8 +134,17 @@ export class Line {
     render(start: PointObj, end: PointObj) {
         const svgProps = getSVGProps(start, end, this.curviness);
 
-        this.path.setAttributeNS(null, 'd', svgProps.d);
-        this.hoverPath?.setAttributeNS(null, 'd', svgProps.d);
+        let d = '';
+        if (this.onlyIntegers) {
+            d = svgProps.d
+                .map((e) => (typeof e === 'number' ? Math.floor(e) : e))
+                .join(' ');
+        } else {
+            d = svgProps.d.join(' ');
+        }
+
+        this.path.setAttributeNS(null, 'd', d);
+        this.hoverPath?.setAttributeNS(null, 'd', d);
 
         this.lastStart = start;
         this.lastEnd = end;
@@ -172,6 +189,13 @@ export class Line {
                     containerRect.y) /
                 (this.scale ?? 1),
         };
+
+        if (this.onlyIntegers) {
+            start.x = Math.floor(start.x);
+            start.y = Math.floor(start.y);
+            end.x = Math.floor(end.x);
+            end.y = Math.floor(end.y);
+        }
 
         if (
             this.lastStart &&
@@ -287,7 +311,7 @@ export class Line {
         }
 
         this.onHover = onHover;
-        this.configHoverPath()
+        this.configHoverPath();
 
         if (!this.hoverPath) return;
 
@@ -302,7 +326,7 @@ export class Line {
         }
 
         this.onClick = onClick;
-        this.configHoverPath()
+        this.configHoverPath();
 
         if (!this.hoverPath) return;
 
@@ -321,5 +345,12 @@ export class Line {
             'marker-end',
             this.marker ? `url(#${this.marker.id})` : ''
         );
+    }
+
+    /**
+     * OPTIMIZATIONS
+     */
+    configOnlyIntegers(onlyIntegers: Line['onlyIntegers']) {
+        this.onlyIntegers = onlyIntegers;
     }
 }

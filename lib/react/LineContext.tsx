@@ -25,6 +25,8 @@ export type ConfigType = {
     arrowClassName?: LinePropsType['className'];
     strokeWidth?: LinePropsType['strokeWidth'];
 
+    onlyIntegers?: LinePropsType['onlyIntegers'];
+
     /**
      * MARKER PROPS
      */
@@ -74,6 +76,8 @@ export const LineContextProvider: React.FC<
     curviness,
     arrowClassName,
     strokeWidth,
+
+    onlyIntegers,
 
     offsetStartX,
     offsetStartY,
@@ -126,6 +130,7 @@ export const LineContextProvider: React.FC<
             strokeWidth,
             arrowClassName,
             labelClassName,
+            onlyIntegers,
         }),
         [
             color,
@@ -138,6 +143,7 @@ export const LineContextProvider: React.FC<
             strokeWidth,
             arrowClassName,
             labelClassName,
+            onlyIntegers,
         ]
     );
 

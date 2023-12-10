@@ -19,6 +19,8 @@ type ArrowProps = {
     curviness?: LinePropsType['curviness'];
     strokeWidth?: LinePropsType['strokeWidth'];
 
+    onlyIntegers?: LinePropsType['onlyIntegers'];
+
     offsetStartX?: number;
     offsetStartY?: number;
     offsetEndX?: number;
@@ -63,6 +65,8 @@ export const Arrow: React.FC<ArrowProps> = ({
     curviness,
     className,
     strokeWidth,
+
+    onlyIntegers,
 
     offsetStartX,
     offsetStartY,
@@ -156,6 +160,8 @@ export const Arrow: React.FC<ArrowProps> = ({
                 curviness: curviness ?? config.curviness,
                 className: className ?? config.arrowClassName,
                 strokeWidth: strokeWidth ?? config.strokeWidth,
+
+                onlyIntegers: onlyIntegers ?? config.onlyIntegers,
 
                 withMarker,
                 markerColor: headColor ?? config.headColor,
@@ -307,6 +313,15 @@ export const Arrow: React.FC<ArrowProps> = ({
             chached.current.label.setText?.(text);
         }
     }, [text]);
+
+    /**
+     * OPTIMIZATION
+     */
+    useEffect(() => {
+        if (chached.current.line) {
+            chached.current.line.configOnlyIntegers(onlyIntegers ?? config.onlyIntegers);
+        }
+    }, [onlyIntegers, config.onlyIntegers]);
 
     /**
      * RERENDER IF START/END CHANGES
