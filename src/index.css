@@ -94,9 +94,8 @@ body {
     background-color: #0001;
 }
 
-.reducedSVG {
+.baana__reduced-svg {
     stroke: red;
-    shape-rendering: optimizeSpeed;
 }
 
 .redStroke {

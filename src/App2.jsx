@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Draggable from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow } from '../lib';
+import { LineContextProvider, useLineContext, Arrow, useReducedGraphics } from '../lib';
 
 const seed = 745627567231241;
 Math.seedrandom(seed);
@@ -82,18 +82,6 @@ const Diagram = ({ scale, reduceSVG }) => {
     );
 };
 
-const debounce = (mainFunction, delay) => {
-    let timer;
-
-    return function (...args) {
-        clearTimeout(timer);
-
-        timer = setTimeout(() => {
-            mainFunction(...args);
-        }, delay);
-    };
-};
-
 export const App = () => {
     const [scale, setScale] = useState(1);
 
@@ -103,15 +91,7 @@ export const App = () => {
         reduceSVG();
     };
 
-    const [isReduced, setIsReduced] = useState(false);
-
-    const increaseSVG = useCallback(debounce(() => setIsReduced(false), 400));
-
-    const reduceSVG = () => {
-        setIsReduced(true);
-
-        increaseSVG();
-    };
+    const { reducedClassName, reduceSVG } = useReducedGraphics();
 
     const handleDrag = () => {
         reduceSVG();
@@ -129,7 +109,7 @@ export const App = () => {
                     className="dragContainer"
                     color="black"
                     labelClassName="label"
-                    arrowClassName={isReduced ? 'reducedSVG' : ''}
+                    arrowClassName={reducedClassName}
                     headSize={12}
                     scale={scale}
                     style={{

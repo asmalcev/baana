@@ -14,3 +14,7 @@
 .baana__svg * {
     pointer-events: all;
 }
+
+.baana__reduced-svg {
+    shape-rendering: optimizeSpeed;
+}
