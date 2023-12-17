@@ -6,6 +6,7 @@ import {
     comparePointObjects,
     computeHoverStrokeWidth,
     getSVGProps,
+    reversePath,
 } from './utils';
 
 export type LinePropsType = {
@@ -144,7 +145,11 @@ export class Line {
         }
 
         this.path.setAttributeNS(null, 'd', d);
-        this.hoverPath?.setAttributeNS(null, 'd', d);
+        this.hoverPath?.setAttributeNS(
+            null,
+            'd',
+            d + reversePath(svgProps.d).join(' ')
+        );
 
         this.lastStart = start;
         this.lastEnd = end;
@@ -247,7 +252,7 @@ export class Line {
             'http://www.w3.org/2000/svg',
             'path'
         );
-        this.hoverPath.setAttributeNS(null, 'stroke', '#0001');
+        this.hoverPath.setAttributeNS(null, 'stroke', 'none');
         this.hoverPath.setAttributeNS(null, 'fill', 'none');
         this.hoverPath.classList.add('baana__interactive-path');
         this.svg.appendChild(this.hoverPath);

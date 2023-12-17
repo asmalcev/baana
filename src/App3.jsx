@@ -86,7 +86,7 @@ const Diagram = ({ scale }) => {
                 offsetEndY={-offset}
                 className={className}
                 onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
-                // onClick={onClick}
+                onClick={onClick}
             />
 
             <button onClick={clickHandler} className="toggle">toggle</button>
