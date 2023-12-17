@@ -13,6 +13,7 @@ import { LinePropsType } from '../Line';
 import { MarkerPropsType } from '../Marker';
 import { LabelPropsType } from '../Label';
 import { LineFactoryProps } from '../LineFactory';
+import { TargetPointer } from './Arrow';
 
 export type ConfigType = {
     /**
@@ -26,6 +27,7 @@ export type ConfigType = {
     strokeWidth?: LinePropsType['strokeWidth'];
 
     onlyIntegers?: LinePropsType['onlyIntegers'];
+    useRegister?: boolean;
 
     /**
      * MARKER PROPS
@@ -42,6 +44,10 @@ export type ConfigType = {
 
 export type LineContextType = {
     update(): void;
+    updateOnly(target: HTMLElement): void;
+
+    registerTarget(target: TargetPointer, handler: () => void): void;
+    removeTarget(target: TargetPointer, handler: () => void): void;
 
     getContainerRef(): React.RefObject<HTMLElement> | null;
     getSVG(): SVGContainer | null;
@@ -50,6 +56,9 @@ export type LineContextType = {
 
 const defaultValue = {
     update: () => {},
+    updateOnly: () => {},
+    registerTarget: () => {},
+    removeTarget: () => {},
     getContainerRef: () => null,
     getSVG: () => null,
     getConfig: () => ({}),
@@ -78,6 +87,7 @@ export const LineContextProvider: React.FC<
     strokeWidth,
 
     onlyIntegers,
+    useRegister,
 
     offsetStartX,
     offsetStartY,
@@ -111,11 +121,46 @@ export const LineContextProvider: React.FC<
         forceUpdate();
     };
 
+    const targetsWeakMap = useRef(new WeakMap<HTMLElement, Set<() => void>>());
+
+    const registerTarget: LineContextType['registerTarget'] = (
+        target,
+        handler
+    ) => {
+        const targetElement =
+            typeof target === 'string'
+                ? document.getElementById(target)
+                : target.current;
+
+        if (targetElement) {
+            if (!targetsWeakMap.current.has(targetElement)) {
+                targetsWeakMap.current.set(targetElement, new Set());
+            }
+            targetsWeakMap.current.get(targetElement)?.add(handler);
+        }
+    };
+
+    const removeTarget: LineContextType['removeTarget'] = (target, handler) => {
+        const targetElement =
+            typeof target === 'string'
+                ? document.getElementById(target)
+                : target.current;
+
+        if (targetElement) {
+            targetsWeakMap.current.get(targetElement)?.delete(handler);
+        }
+    };
+
+    const updateOnly: LineContextType['updateOnly'] = (target) => {
+        targetsWeakMap.current.get(target)?.forEach((handler) => handler());
+    };
+
     useEffect(() => {
         if (containerRef.current && svg?.container !== containerRef.current) {
             svg?.container.removeChild(svg?.svg);
             setSVG(new SVGContainer({ container: containerRef.current }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [containerRef.current]);
 
     const config = useMemo(
@@ -131,6 +176,7 @@ export const LineContextProvider: React.FC<
             arrowClassName,
             labelClassName,
             onlyIntegers,
+            useRegister,
         }),
         [
             color,
@@ -144,6 +190,7 @@ export const LineContextProvider: React.FC<
             arrowClassName,
             labelClassName,
             onlyIntegers,
+            useRegister,
         ]
     );
 
@@ -155,6 +202,9 @@ export const LineContextProvider: React.FC<
         <LineContext.Provider
             value={{
                 update,
+                updateOnly,
+                registerTarget,
+                removeTarget,
                 getContainerRef,
                 getConfig,
                 getSVG,

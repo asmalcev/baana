@@ -16,5 +16,10 @@ export const useReducedGraphics = (delay: number = 400) => {
         increaseSVG();
     };
 
-    return { isReduced, increaseSVG, reduceSVG, reducedClassName: isReduced ? 'baana__reduced-svg' : '' };
+    return {
+        isReduced,
+        increaseSVG,
+        reduceSVG,
+        reducedClassName: isReduced ? 'baana__reduced-svg' : '',
+    };
 };

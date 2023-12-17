@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import Draggable from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow, useReducedGraphics } from '../lib';
+import {
+    LineContextProvider,
+    useLineContext,
+    Arrow,
+    useReducedGraphics,
+} from '../lib';
 
 const seed = 745627567231241;
 Math.seedrandom(seed);
@@ -19,11 +24,11 @@ const xdiff = width * 1.5;
 const ydiff = height * 1.5;
 
 const Diagram = ({ scale, reduceSVG }) => {
-    const { update } = useLineContext();
+    const { updateOnly } = useLineContext();
     const handleUpdate = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
-        update();
-        reduceSVG();
+        updateOnly(dragEvent.node);
+        reduceSVG && reduceSVG();
     };
 
     const [blocks, setBlocks] = useState([]);
@@ -85,13 +90,13 @@ const Diagram = ({ scale, reduceSVG }) => {
 export const App = () => {
     const [scale, setScale] = useState(1);
 
+    const { reducedClassName, reduceSVG } = useReducedGraphics();
+
     const onMouseWheel = (e) => {
         let scrollDelta = -e.deltaY;
         setScale(scale + scrollDelta / 500);
         reduceSVG();
     };
-
-    const { reducedClassName, reduceSVG } = useReducedGraphics();
 
     const handleDrag = () => {
         reduceSVG();
@@ -116,6 +121,7 @@ export const App = () => {
                         scale: String(scale),
                     }}
                     onlyIntegers={true}
+                    useRegister={true}
                     onWheel={onMouseWheel}
                 >
                     <Diagram scale={scale} reduceSVG={reduceSVG} />

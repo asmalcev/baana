@@ -9,9 +9,11 @@ import { LineFactoryProps } from '../LineFactory';
 
 export type Render = (start: PointObj, end: PointObj) => void;
 
+export type TargetPointer = React.RefObject<HTMLElement> | string;
+
 type ArrowProps = {
-    start: React.RefObject<HTMLElement> | string;
-    end: React.RefObject<HTMLElement> | string;
+    start: TargetPointer;
+    end: TargetPointer;
 
     scale?: LinePropsType['scale'];
     color?: LinePropsType['strokeColor'];
@@ -20,6 +22,7 @@ type ArrowProps = {
     strokeWidth?: LinePropsType['strokeWidth'];
 
     onlyIntegers?: LinePropsType['onlyIntegers'];
+    useRegister?: boolean;
 
     offsetStartX?: number;
     offsetStartY?: number;
@@ -67,6 +70,7 @@ export const Arrow: React.FC<ArrowProps> = ({
     strokeWidth,
 
     onlyIntegers,
+    useRegister,
 
     offsetStartX,
     offsetStartY,
@@ -84,7 +88,8 @@ export const Arrow: React.FC<ArrowProps> = ({
     onHover,
     onClick,
 }) => {
-    const { getContainerRef, getSVG, getConfig } = useLineContext();
+    const { getContainerRef, getSVG, getConfig, registerTarget, removeTarget } =
+        useLineContext();
 
     const chached = useRef<{
         line?: Line;
@@ -319,16 +324,28 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         if (chached.current.line) {
-            chached.current.line.configOnlyIntegers(onlyIntegers ?? config.onlyIntegers);
+            chached.current.line.configOnlyIntegers(
+                onlyIntegers ?? config.onlyIntegers
+            );
         }
     }, [onlyIntegers, config.onlyIntegers]);
+
+    const shouldRegister = useRegister ?? config.useRegister;
 
     /**
      * RERENDER IF START/END CHANGES
      */
     useEffect(() => {
+        if (shouldRegister) {
+            removeTarget(start, updateLine);
+            removeTarget(end, updateLine);
+
+            registerTarget(start, updateLine);
+            registerTarget(end, updateLine);
+        }
+
         updateLine();
-    }, [updateLine, start, end]);
+    }, [updateLine, start, end, removeTarget, registerTarget, shouldRegister]);
 
     updateLine();
 
