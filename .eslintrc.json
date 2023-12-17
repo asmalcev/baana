@@ -1,0 +1,16 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["react-hooks", "@typescript-eslint"],
+    "parserOptions": { "project": ["./tsconfig.json"] },
+    "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+    },
+    "ignorePatterns": ["src", "vite.config.js"],
+
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "env": {
+        "browser": true
+    }
+}
