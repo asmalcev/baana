@@ -62,48 +62,47 @@ This feature is hidden behind the property `useRegister`, as it requires a littl
 After enabling, you can pass the HTML element corresponding to the `start` or `end` of the arrow to the update function.
 
 <details>
-    <summary>Example</summary>
+<summary>Example</summary>
 
-    Made with `react-draggable`.
+Made with `react-draggable`.
 
-    ```jsx
-    const Diagram = () => {
-        const { update } = useLineContext();
+```jsx
+const Diagram = () => {
+    const { update } = useLineContext();
 
-        const handleUpdate = (mouseEvent, dragEvent) => {
-            update(dragEvent.node);
-        };
+    const handleUpdate = (mouseEvent, dragEvent) => {
+        update(dragEvent.node);
+    };
 
-        return (
-            <>
-                <Draggable
-                    onDrag={handleUpdate}
-                    onStart={handleUpdate}
-                    onStop={handleUpdate}
-                >
-                    <div id="block1"></div>
-                </Draggable>
+    return (
+        <>
+            <Draggable
+                onDrag={handleUpdate}
+                onStart={handleUpdate}
+                onStop={handleUpdate}
+            >
+                <div id="block1"></div>
+            </Draggable>
 
-                <Draggable
-                    onDrag={handleUpdate}
-                    onStart={handleUpdate}
-                    onStop={handleUpdate}
-                >
-                    <div id="block2"></div>
-                </Draggable>
+            <Draggable
+                onDrag={handleUpdate}
+                onStart={handleUpdate}
+                onStop={handleUpdate}
+            >
+                <div id="block2"></div>
+            </Draggable>
 
-                <Arrow start="block1" end="block2"/>
-            </>
-        );
-    }
+            <Arrow start="block1" end="block2"/>
+        </>
+    );
+}
 
-    const App = () => {
-        return (
-            <LineContextProvider>
-                <Diagram />
-            </LineContextProvider>
-        )
-    }
-    ```
-
+const App = () => {
+    return (
+        <LineContextProvider>
+            <Diagram />
+        </LineContextProvider>
+    )
+}
+```
 </details>
