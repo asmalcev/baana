@@ -15,7 +15,9 @@
         "publish-prepatch": "npm version prepatch -m 'chore: new patch' && npm run build-and-publish",
         "lint": "eslint lib/**/**",
         "test": "vitest run",
-        "test:dev": "vitest"
+        "test:dev": "vitest",
+        "tsc": "tsc --noEmit && eslint",
+        "full-check": "npm run lint && npm run tsc && npm run test"
     },
     "license": "MIT",
     "type": "module",
