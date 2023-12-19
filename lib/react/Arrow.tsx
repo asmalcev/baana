@@ -21,7 +21,7 @@ type ArrowProps = {
     curviness?: LinePropsType['curviness'];
     strokeWidth?: LinePropsType['strokeWidth'];
 
-    onlyIntegers?: LinePropsType['onlyIntegers'];
+    onlyIntegerCoords?: LinePropsType['onlyIntegerCoords'];
     useRegister?: boolean;
 
     offsetStartX?: number;
@@ -69,7 +69,7 @@ export const Arrow: React.FC<ArrowProps> = ({
     className,
     strokeWidth,
 
-    onlyIntegers,
+    onlyIntegerCoords,
     useRegister,
 
     offsetStartX,
@@ -88,8 +88,13 @@ export const Arrow: React.FC<ArrowProps> = ({
     onHover,
     onClick,
 }) => {
-    const { getContainerRef, getSVG, getConfig, registerTarget, removeTarget } =
-        useLineContext();
+    const {
+        _getContainerRef,
+        _getSVG,
+        _getConfig,
+        _registerTarget,
+        _removeTarget,
+    } = useLineContext();
 
     const chached = useRef<{
         line?: Line;
@@ -97,9 +102,9 @@ export const Arrow: React.FC<ArrowProps> = ({
         label?: LabelInterface;
     }>({});
 
-    const container = getContainerRef();
-    const svg = getSVG();
-    const config = getConfig();
+    const container = _getContainerRef();
+    const svg = _getSVG();
+    const config = _getConfig();
 
     const offset = useMemo<LinePropsType['offset']>(
         () => ({
@@ -166,7 +171,8 @@ export const Arrow: React.FC<ArrowProps> = ({
                 className: className ?? config.arrowClassName,
                 strokeWidth: strokeWidth ?? config.strokeWidth,
 
-                onlyIntegers: onlyIntegers ?? config.onlyIntegers,
+                onlyIntegerCoords:
+                    onlyIntegerCoords ?? config.onlyIntegerCoords,
 
                 withMarker,
                 markerColor: headColor ?? config.headColor,
@@ -324,11 +330,11 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         if (chached.current.line) {
-            chached.current.line.configOnlyIntegers(
-                onlyIntegers ?? config.onlyIntegers
+            chached.current.line.configonlyIntegerCoords(
+                onlyIntegerCoords ?? config.onlyIntegerCoords
             );
         }
-    }, [onlyIntegers, config.onlyIntegers]);
+    }, [onlyIntegerCoords, config.onlyIntegerCoords]);
 
     const shouldRegister = useRegister ?? config.useRegister;
 
@@ -337,15 +343,22 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         if (shouldRegister) {
-            removeTarget(start, updateLine);
-            removeTarget(end, updateLine);
+            _removeTarget(start, updateLine);
+            _removeTarget(end, updateLine);
 
-            registerTarget(start, updateLine);
-            registerTarget(end, updateLine);
+            _registerTarget(start, updateLine);
+            _registerTarget(end, updateLine);
         }
 
         updateLine();
-    }, [updateLine, start, end, removeTarget, registerTarget, shouldRegister]);
+    }, [
+        updateLine,
+        start,
+        end,
+        _removeTarget,
+        _registerTarget,
+        shouldRegister,
+    ]);
 
     updateLine();
 

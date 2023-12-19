@@ -112,7 +112,7 @@ export const App = () => {
                         scale: String(scale),
                     }}
                     onWheel={onMouseWheel}
-                    onlyIntegers={true}
+                    // onlyIntegerCoords={true}
                 >
                     <Diagram scale={scale} />
                 </LineContextProvider>

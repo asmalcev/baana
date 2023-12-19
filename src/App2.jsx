@@ -24,10 +24,10 @@ const xdiff = width * 1.5;
 const ydiff = height * 1.5;
 
 const Diagram = ({ scale, reduceSVG }) => {
-    const { updateOnly } = useLineContext();
+    const { update } = useLineContext();
     const handleUpdate = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
-        updateOnly(dragEvent.node);
+        update(dragEvent.node);
         reduceSVG && reduceSVG();
     };
 
@@ -120,7 +120,7 @@ export const App = () => {
                     style={{
                         scale: String(scale),
                     }}
-                    onlyIntegers={true}
+                    onlyIntegerCoords={true}
                     useRegister={true}
                     onWheel={onMouseWheel}
                 >

@@ -25,7 +25,7 @@ export type LinePropsType = {
     onClick?: Line['onClick'];
     onHover?: Line['onHover'];
 
-    onlyIntegers?: Line['onlyIntegers'];
+    onlyIntegerCoords?: Line['onlyIntegerCoords'];
 };
 
 export class Line {
@@ -54,7 +54,7 @@ export class Line {
     onClick?: (e?: MouseEvent) => void;
     onHover?: (e?: MouseEvent) => void;
 
-    onlyIntegers?: boolean;
+    onlyIntegerCoords?: boolean;
 
     constructor({
         svg,
@@ -68,7 +68,7 @@ export class Line {
         strokeColor = 'black',
         strokeWidth = 1,
 
-        onlyIntegers = false,
+        onlyIntegerCoords = false,
 
         onHover,
         onClick,
@@ -79,7 +79,7 @@ export class Line {
         this.onHover = onHover;
         this.onClick = onClick;
 
-        this.onlyIntegers = onlyIntegers;
+        this.onlyIntegerCoords = onlyIntegerCoords;
 
         this.path = document.createElementNS(
             'http://www.w3.org/2000/svg',
@@ -136,7 +136,7 @@ export class Line {
         const svgProps = getSVGProps(start, end, this.curviness);
 
         let d = '';
-        if (this.onlyIntegers) {
+        if (this.onlyIntegerCoords) {
             d = svgProps.d
                 .map((e) => (typeof e === 'number' ? Math.floor(e) : e))
                 .join(' ');
@@ -195,7 +195,7 @@ export class Line {
                 (this.scale ?? 1),
         };
 
-        if (this.onlyIntegers) {
+        if (this.onlyIntegerCoords) {
             start.x = Math.floor(start.x);
             start.y = Math.floor(start.y);
             end.x = Math.floor(end.x);
@@ -355,7 +355,7 @@ export class Line {
     /**
      * OPTIMIZATIONS
      */
-    configOnlyIntegers(onlyIntegers: Line['onlyIntegers']) {
-        this.onlyIntegers = onlyIntegers;
+    configonlyIntegerCoords(onlyIntegerCoords: Line['onlyIntegerCoords']) {
+        this.onlyIntegerCoords = onlyIntegerCoords;
     }
 }

@@ -26,7 +26,7 @@ export type ConfigType = {
     arrowClassName?: LinePropsType['className'];
     strokeWidth?: LinePropsType['strokeWidth'];
 
-    onlyIntegers?: LinePropsType['onlyIntegers'];
+    onlyIntegerCoords?: LinePropsType['onlyIntegerCoords'];
     useRegister?: boolean;
 
     /**
@@ -43,25 +43,23 @@ export type ConfigType = {
 };
 
 export type LineContextType = {
-    update(): void;
-    updateOnly(target: HTMLElement): void;
+    update(target?: HTMLElement): void;
 
-    registerTarget(target: TargetPointer, handler: () => void): void;
-    removeTarget(target: TargetPointer, handler: () => void): void;
+    _registerTarget(target: TargetPointer, handler: () => void): void;
+    _removeTarget(target: TargetPointer, handler: () => void): void;
 
-    getContainerRef(): React.RefObject<HTMLElement> | null;
-    getSVG(): SVGContainer | null;
-    getConfig(): ConfigType;
+    _getContainerRef(): React.RefObject<HTMLElement> | null;
+    _getSVG(): SVGContainer | null;
+    _getConfig(): ConfigType;
 };
 
 const defaultValue = {
     update: () => {},
-    updateOnly: () => {},
-    registerTarget: () => {},
-    removeTarget: () => {},
-    getContainerRef: () => null,
-    getSVG: () => null,
-    getConfig: () => ({}),
+    _registerTarget: () => {},
+    _removeTarget: () => {},
+    _getContainerRef: () => null,
+    _getSVG: () => null,
+    _getConfig: () => ({}),
 };
 
 export const LineContext = createContext<LineContextType>(defaultValue);
@@ -86,7 +84,7 @@ export const LineContextProvider: React.FC<
     arrowClassName,
     strokeWidth,
 
-    onlyIntegers,
+    onlyIntegerCoords,
     useRegister,
 
     offsetStartX,
@@ -117,13 +115,9 @@ export const LineContextProvider: React.FC<
     const [, updateState] = useState<unknown>();
     const forceUpdate = useCallback(() => updateState({}), []);
 
-    const update: LineContextType['update'] = () => {
-        forceUpdate();
-    };
-
     const targetsWeakMap = useRef(new WeakMap<HTMLElement, Set<() => void>>());
 
-    const registerTarget: LineContextType['registerTarget'] = (
+    const _registerTarget: LineContextType['_registerTarget'] = (
         target,
         handler
     ) => {
@@ -140,7 +134,7 @@ export const LineContextProvider: React.FC<
         }
     };
 
-    const removeTarget: LineContextType['removeTarget'] = (target, handler) => {
+    const _removeTarget: LineContextType['_removeTarget'] = (target, handler) => {
         const targetElement =
             typeof target === 'string'
                 ? document.getElementById(target)
@@ -151,8 +145,12 @@ export const LineContextProvider: React.FC<
         }
     };
 
-    const updateOnly: LineContextType['updateOnly'] = (target) => {
-        targetsWeakMap.current.get(target)?.forEach((handler) => handler());
+    const update: LineContextType['update'] = (target) => {
+        if (target && targetsWeakMap.current.get(target)) {
+            targetsWeakMap.current.get(target)?.forEach((handler) => handler());
+        } else {
+            forceUpdate();
+        }
     };
 
     useEffect(() => {
@@ -175,7 +173,7 @@ export const LineContextProvider: React.FC<
             strokeWidth,
             arrowClassName,
             labelClassName,
-            onlyIntegers,
+            onlyIntegerCoords,
             useRegister,
         }),
         [
@@ -189,25 +187,24 @@ export const LineContextProvider: React.FC<
             strokeWidth,
             arrowClassName,
             labelClassName,
-            onlyIntegers,
+            onlyIntegerCoords,
             useRegister,
         ]
     );
 
-    const getContainerRef = () => containerRef;
-    const getSVG = () => svg;
-    const getConfig = () => config;
+    const _getContainerRef = () => containerRef;
+    const _getSVG = () => svg;
+    const _getConfig = () => config;
 
     return (
         <LineContext.Provider
             value={{
                 update,
-                updateOnly,
-                registerTarget,
-                removeTarget,
-                getContainerRef,
-                getConfig,
-                getSVG,
+                _registerTarget,
+                _removeTarget,
+                _getContainerRef,
+                _getConfig,
+                _getSVG,
             }}
         >
             <div ref={containerRef} {...others}>
