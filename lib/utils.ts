@@ -19,7 +19,7 @@ export const c_bezier = (
 ];
 
 export const comparePointObjects = (a: PointObj, b: PointObj) =>
-    JSON.stringify(a) === JSON.stringify(b);
+    a.x === b.x && a.y === b.y;
 
 export type SVGProps = {
     center: Point;
