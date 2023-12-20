@@ -28,11 +28,6 @@ export class Marker {
         this.fillColor = fillColor;
         this.svg = svg;
 
-        this.defs = document.createElementNS(
-            'http://www.w3.org/2000/svg',
-            'defs'
-        );
-
         this.marker = document.createElementNS(
             'http://www.w3.org/2000/svg',
             'marker'
@@ -51,6 +46,17 @@ export class Marker {
         });
 
         this.marker.appendChild(this.path);
+
+        const defsFromSvg = Array.from(this.svg.childNodes).find(el => el.nodeName === 'defs');
+        if (defsFromSvg) {
+            this.defs = defsFromSvg as SVGDefsElement;
+        } else {
+            this.defs = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'defs'
+            );
+        }
+
         this.defs.appendChild(this.marker);
         this.svg.appendChild(this.defs);
 
@@ -94,6 +100,10 @@ export class Marker {
     }
 
     remove() {
-        this.svg.removeChild(this.defs);
+        if (this.defs.childNodes.length === 1) {
+            this.svg.removeChild(this.defs);
+        } else {
+            this.defs.removeChild(this.marker);
+        }
     }
 }
