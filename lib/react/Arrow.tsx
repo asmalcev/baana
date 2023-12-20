@@ -86,6 +86,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         _getConfig,
         _registerTarget,
         _removeTarget,
+        _unstableState,
     } = useLineContext();
 
     const chached = useRef<{
@@ -352,7 +353,9 @@ export const Arrow: React.FC<ArrowProps> = ({
         shouldRegister,
     ]);
 
-    updateLine();
+    useEffect(() => {
+        updateLine();
+    }, [_unstableState, updateLine]);
 
     return container?.current && customLabelController?.render
         ? createPortal(customLabelController?.render(), container?.current)

@@ -46,6 +46,8 @@ export type LineContextType = {
     _getContainerRef(): React.RefObject<HTMLElement> | null;
     _getSVG(): SVGContainer | null;
     _getConfig(): ConfigType;
+
+    _unstableState?: unknown;
 };
 
 const defaultValue = {
@@ -103,41 +105,41 @@ export const LineContextProvider: React.FC<
         [offsetStartX, offsetStartY, offsetEndX, offsetEndY]
     );
 
-    const [, updateState] = useState<unknown>();
+    const [_unstableState, updateState] = useState<unknown>();
     const forceUpdate = useCallback(() => updateState({}), []);
 
     const targetsWeakMap = useRef(new WeakMap<HTMLElement, Set<() => void>>());
 
-    const _registerTarget: LineContextType['_registerTarget'] = (
-        target,
-        handler
-    ) => {
-        const targetElement =
-            typeof target === 'string'
-                ? document.getElementById(target)
-                : target.current;
+    const _registerTarget: LineContextType['_registerTarget'] = useCallback(
+        (target, handler) => {
+            const targetElement =
+                typeof target === 'string'
+                    ? document.getElementById(target)
+                    : target.current;
 
-        if (targetElement) {
-            if (!targetsWeakMap.current.has(targetElement)) {
-                targetsWeakMap.current.set(targetElement, new Set());
+            if (targetElement) {
+                if (!targetsWeakMap.current.has(targetElement)) {
+                    targetsWeakMap.current.set(targetElement, new Set());
+                }
+                targetsWeakMap.current.get(targetElement)?.add(handler);
             }
-            targetsWeakMap.current.get(targetElement)?.add(handler);
-        }
-    };
+        },
+        []
+    );
 
-    const _removeTarget: LineContextType['_removeTarget'] = (
-        target,
-        handler
-    ) => {
-        const targetElement =
-            typeof target === 'string'
-                ? document.getElementById(target)
-                : target.current;
+    const _removeTarget: LineContextType['_removeTarget'] = useCallback(
+        (target, handler) => {
+            const targetElement =
+                typeof target === 'string'
+                    ? document.getElementById(target)
+                    : target.current;
 
-        if (targetElement) {
-            targetsWeakMap.current.get(targetElement)?.delete(handler);
-        }
-    };
+            if (targetElement) {
+                targetsWeakMap.current.get(targetElement)?.delete(handler);
+            }
+        },
+        []
+    );
 
     const update: LineContextType['update'] = (target) => {
         if (target && targetsWeakMap.current.get(target)) {
@@ -199,6 +201,7 @@ export const LineContextProvider: React.FC<
                 _getContainerRef,
                 _getConfig,
                 _getSVG,
+                _unstableState,
             }}
         >
             <div ref={containerRef} {...others}>
