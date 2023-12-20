@@ -73,23 +73,28 @@ const Diagram = ({ scale }) => {
                 <div id="block2" className="block" />
             </Draggable>
 
-            <Arrow
-                start={blockId}
-                end="block2"
-                color={color}
-                strokeWidth={strokeWidth}
-                headSize={headSize}
-                withHead={withHead}
-                headColor={headColor}
-                curviness={curviness}
-                offsetStartY={offset}
-                offsetEndY={-offset}
-                className={className}
-                onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
-                onClick={onClick}
-            />
+            {toggle && (
+                <Arrow
+                    start={blockId}
+                    end="block2"
+                    color={color}
+                    strokeWidth={strokeWidth}
+                    headSize={headSize}
+                    withHead={withHead}
+                    headColor={headColor}
+                    curviness={curviness}
+                    offsetStartY={offset}
+                    offsetEndY={-offset}
+                    className={className}
+                    // onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
+                    onClick={onClick}
+                    label={<p>123</p>}
+                />
+            )}
 
-            <button onClick={clickHandler} className="toggle">toggle</button>
+            <button onClick={clickHandler} className="toggle">
+                toggle
+            </button>
         </>
     );
 };

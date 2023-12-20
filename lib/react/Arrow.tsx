@@ -89,7 +89,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         _unstableState,
     } = useLineContext();
 
-    const chached = useRef<{
+    const cached = useRef<{
         line?: Line;
         marker?: Marker;
         label?: LabelInterface;
@@ -130,22 +130,23 @@ export const Arrow: React.FC<ArrowProps> = ({
                 ? document.getElementById(end)
                 : end.current;
 
-        if (chached.current.line && startElement && endElement) {
-            chached.current.line.update(startElement, endElement);
+        if (cached.current.line && startElement && endElement) {
+            cached.current.line.update(startElement, endElement);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [start, end]);
 
     const clearHTMLNodes = () => {
-        chached.current.line?.remove();
-        chached.current.label?.remove?.();
-        chached.current.marker?.remove();
+        cached.current.line?.remove();
+        cached.current.label?.remove?.();
+        cached.current.marker?.remove();
     };
 
     /**
      * RECREATE IF CONTAINER CHANGES
      */
     useEffect(() => {
-        const arrow = chached.current.line;
+        const arrow = cached.current.line;
 
         if (container && svg && arrow?.svg !== svg.svg) {
             arrow?.remove();
@@ -185,7 +186,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                       }),
             });
 
-            chached.current = {
+            cached.current = {
                 line,
                 marker,
                 label: simpleLabel,
@@ -207,54 +208,54 @@ export const Arrow: React.FC<ArrowProps> = ({
      * LINE EFFECTS
      */
     useEffect(() => {
-        if (chached.current.line && offset) {
-            chached.current.line.configOffset(offset);
+        if (cached.current.line && offset) {
+            cached.current.line.configOffset(offset);
         }
     }, [offset]);
 
     useEffect(() => {
-        if (chached.current.line) {
-            chached.current.line.configScale(scale ?? config.scale);
+        if (cached.current.line) {
+            cached.current.line.configScale(scale ?? config.scale);
         }
     }, [config.scale, scale]);
 
     useEffect(() => {
         const _color = color ?? config.color;
-        if (chached.current.line && _color) {
-            chached.current.line.configStrokeColor(_color);
+        if (cached.current.line && _color) {
+            cached.current.line.configStrokeColor(_color);
         }
     }, [color, config.color]);
 
     useEffect(() => {
         const _strokeWidth = strokeWidth ?? config.strokeWidth;
-        if (chached.current.line && _strokeWidth) {
-            chached.current.line.configStrokeWidth(_strokeWidth);
+        if (cached.current.line && _strokeWidth) {
+            cached.current.line.configStrokeWidth(_strokeWidth);
         }
     }, [config.strokeWidth, strokeWidth]);
 
     useEffect(() => {
-        if (chached.current.line) {
-            chached.current.line.configCurviness(curviness ?? config.curviness);
+        if (cached.current.line) {
+            cached.current.line.configCurviness(curviness ?? config.curviness);
         }
     }, [config.curviness, curviness]);
 
     useEffect(() => {
-        if (chached.current.line) {
-            chached.current.line.configClassName(
+        if (cached.current.line) {
+            cached.current.line.configClassName(
                 className ?? config.arrowClassName
             );
         }
     }, [className, config.arrowClassName]);
 
     useEffect(() => {
-        if (chached.current.line) {
-            chached.current.line.configOnClick(onClick);
+        if (cached.current.line) {
+            cached.current.line.configOnClick(onClick);
         }
     }, [onClick]);
 
     useEffect(() => {
-        if (chached.current.line) {
-            chached.current.line.configOnHover(onHover);
+        if (cached.current.line) {
+            cached.current.line.configOnHover(onHover);
         }
     }, [onHover]);
 
@@ -263,10 +264,10 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         if (!withMarker) {
-            chached.current.marker?.remove();
-            chached.current.marker = undefined;
-        } else if (!chached.current.marker && svg?.svg) {
-            chached.current.marker = new Marker({
+            cached.current.marker?.remove();
+            cached.current.marker = undefined;
+        } else if (!cached.current.marker && svg?.svg) {
+            cached.current.marker = new Marker({
                 svg: svg?.svg,
                 id: uniqueMarkerId(),
                 size: headSize ?? config.headSize,
@@ -274,7 +275,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                     headColor ?? config.headColor ?? color ?? config.color,
             });
 
-            chached.current.line?.configMarker(chached.current.marker);
+            cached.current.line?.configMarker(cached.current.marker);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [withMarker]);
@@ -283,9 +284,9 @@ export const Arrow: React.FC<ArrowProps> = ({
      * CHANGE MARKER SIZE AND COLOR ON CHANGING
      */
     useEffect(() => {
-        if (chached.current.marker) {
-            chached.current.marker.setSize(headSize ?? config.headSize);
-            chached.current.marker.setFillColor(
+        if (cached.current.marker) {
+            cached.current.marker.setSize(headSize ?? config.headSize);
+            cached.current.marker.setFillColor(
                 headColor ?? config.headColor ?? color ?? config.color
             );
         }
@@ -302,8 +303,8 @@ export const Arrow: React.FC<ArrowProps> = ({
      * CHANGE LABEL CLASSNAME ON LABEL_CLASSNAME CHANGING
      */
     useEffect(() => {
-        if (chached.current.label) {
-            chached.current.label?.configClassName?.(
+        if (cached.current.label) {
+            cached.current.label?.configClassName?.(
                 labelClassName ?? config.labelClassName
             );
         }
@@ -313,8 +314,8 @@ export const Arrow: React.FC<ArrowProps> = ({
      * CHANGE LABEL TEXT ON LABEL_TEXT CHANGING
      */
     useEffect(() => {
-        if (chached.current.label && text) {
-            chached.current.label.setText?.(text);
+        if (cached.current.label && text) {
+            cached.current.label.setText?.(text);
         }
     }, [text]);
 
@@ -322,8 +323,8 @@ export const Arrow: React.FC<ArrowProps> = ({
      * OPTIMIZATION
      */
     useEffect(() => {
-        if (chached.current.line) {
-            chached.current.line.configOnlyIntegerCoords(
+        if (cached.current.line) {
+            cached.current.line.configOnlyIntegerCoords(
                 onlyIntegerCoords ?? config.onlyIntegerCoords
             );
         }
