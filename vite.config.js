@@ -21,6 +21,8 @@ export default defineConfig({
                 },
             },
         },
+        cssMinify: 'lightningcss',
+        minify: 'esbuild',
     },
     esbuild: {
         loader: 'tsx',

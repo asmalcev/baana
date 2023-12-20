@@ -43,6 +43,7 @@
         "@vitejs/plugin-react-swc": "^3.5.0",
         "eslint": "^8.53.0",
         "eslint-plugin-react-hooks": "^5.0.0-canary-9617d39ec-20231018",
+        "lightningcss": "^1.22.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-draggable": "^4.4.6",
