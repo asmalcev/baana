@@ -355,7 +355,7 @@ export class Line {
     /**
      * OPTIMIZATIONS
      */
-    configonlyIntegerCoords(onlyIntegerCoords: Line['onlyIntegerCoords']) {
+    configOnlyIntegerCoords(onlyIntegerCoords: Line['onlyIntegerCoords']) {
         this.onlyIntegerCoords = onlyIntegerCoords;
     }
 }

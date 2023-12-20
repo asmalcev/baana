@@ -10,36 +10,31 @@ import React, {
 } from 'react';
 import { SVGContainer } from '../SVG';
 import { LinePropsType } from '../Line';
-import { MarkerPropsType } from '../Marker';
 import { LabelPropsType } from '../Label';
 import { LineFactoryProps } from '../LineFactory';
 import { TargetPointer } from './Arrow';
 
 export type ConfigType = {
-    /**
-     * LINE PROPS
-     */
-    scale?: LinePropsType['scale'];
-    offset?: LinePropsType['offset'];
     color?: LinePropsType['strokeColor'];
-    curviness?: LinePropsType['curviness'];
     arrowClassName?: LinePropsType['className'];
-    strokeWidth?: LinePropsType['strokeWidth'];
 
-    onlyIntegerCoords?: LinePropsType['onlyIntegerCoords'];
     useRegister?: boolean;
 
-    /**
-     * MARKER PROPS
-     */
     withHead?: LineFactoryProps['withMarker'];
-    headColor?: MarkerPropsType['fillColor'];
-    headSize?: MarkerPropsType['size'];
+    headColor?: LineFactoryProps['markerColor'];
+    headSize?: LineFactoryProps['markerSize'];
 
-    /**
-     * LABEL PROPS
-     */
     labelClassName?: LabelPropsType['className'];
+} & Pick<
+    LinePropsType,
+    'scale' | 'offset' | 'curviness' | 'strokeWidth' | 'onlyIntegerCoords'
+>;
+
+export type OffsetXY = {
+    offsetStartX?: number;
+    offsetStartY?: number;
+    offsetEndX?: number;
+    offsetEndY?: number;
 };
 
 export type LineContextType = {
@@ -66,12 +61,8 @@ export const LineContext = createContext<LineContextType>(defaultValue);
 
 type LineContextProviderType = {
     children: ReactNode;
-
-    offsetStartX?: number;
-    offsetStartY?: number;
-    offsetEndX?: number;
-    offsetEndY?: number;
-} & Record<string, unknown>;
+} & OffsetXY &
+    Record<string, unknown>;
 
 export const LineContextProvider: React.FC<
     LineContextProviderType & Omit<ConfigType, 'offset'>
@@ -134,7 +125,10 @@ export const LineContextProvider: React.FC<
         }
     };
 
-    const _removeTarget: LineContextType['_removeTarget'] = (target, handler) => {
+    const _removeTarget: LineContextType['_removeTarget'] = (
+        target,
+        handler
+    ) => {
         const targetElement =
             typeof target === 'string'
                 ? document.getElementById(target)

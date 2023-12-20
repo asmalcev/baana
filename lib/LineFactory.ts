@@ -1,33 +1,15 @@
 import { SVGContainer } from '.';
 import { Label, LabelInterface } from './Label';
 import { Line, LinePropsType } from './Line';
-import { Marker } from './Marker';
+import { Marker, MarkerPropsType } from './Marker';
 import { uniqueMarkerId } from './utils';
 
 export type LineFactoryProps = {
     svg: SVGContainer;
 
-    scale?: LinePropsType['scale'];
-    offset?: LinePropsType['offset'];
-    curviness?: LinePropsType['curviness'];
-    className?: LinePropsType['className'];
-    strokeColor?: LinePropsType['strokeColor'];
-    strokeWidth?: LinePropsType['strokeWidth'];
-
-    onlyIntegerCoords?: LinePropsType['onlyIntegerCoords'];
-
-    /**
-     * EVENTS HANDLERS
-     */
-    onClick?: LinePropsType['onClick'];
-    onHover?: LinePropsType['onHover'];
-
-    /**
-     * MARKER PROPS
-     */
     withMarker?: boolean;
-    markerColor?: string;
-    markerSize?: number;
+    markerColor?: MarkerPropsType['fillColor'];
+    markerSize?: MarkerPropsType['size'];
 } & (
     | {
           /**
@@ -47,25 +29,27 @@ export type LineFactoryProps = {
           labelText?: never;
           labelClassName?: never;
       }
-);
+) &
+    Pick<
+        LinePropsType,
+        | 'scale'
+        | 'offset'
+        | 'curviness'
+        | 'className'
+        | 'strokeColor'
+        | 'strokeWidth'
+        | 'onlyIntegerCoords'
+        | 'onClick'
+        | 'onHover'
+    >;
 
 export const LineFactory = ({
     svg,
 
-    scale,
-    offset,
-    curviness,
-    className,
     strokeColor = 'black',
     strokeWidth = 1,
 
     onlyIntegerCoords = false,
-
-    /**
-     * EVENTS HANDLERS
-     */
-    onClick,
-    onHover,
 
     /**
      * LABEL PROPS
@@ -80,6 +64,8 @@ export const LineFactory = ({
     withMarker,
     markerColor,
     markerSize,
+
+    ...otherProps
 }: LineFactoryProps) => {
     const container = svg.container;
     const svgContainer = svg.svg;
@@ -110,16 +96,11 @@ export const LineFactory = ({
     const line = new Line({
         svg: svgContainer,
         label,
-        scale,
         marker,
-        offset,
-        curviness,
-        className,
         strokeColor,
         strokeWidth,
-        onClick,
-        onHover,
         onlyIntegerCoords,
+        ...otherProps,
     });
 
     return { line, label, marker };

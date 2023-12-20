@@ -4,7 +4,7 @@ import { PointObj, uniqueMarkerId } from '../utils';
 import { LabelInterface, LabelPropsType } from '../Label';
 import { LinePropsType } from '../Line';
 import { createPortal } from 'react-dom';
-import { MarkerPropsType } from '../Marker';
+import { ConfigType, OffsetXY } from './LineContext';
 import { LineFactoryProps } from '../LineFactory';
 
 export type Render = (start: PointObj, end: PointObj) => void;
@@ -15,29 +15,7 @@ type ArrowProps = {
     start: TargetPointer;
     end: TargetPointer;
 
-    scale?: LinePropsType['scale'];
-    color?: LinePropsType['strokeColor'];
-    className?: LinePropsType['className'];
-    curviness?: LinePropsType['curviness'];
-    strokeWidth?: LinePropsType['strokeWidth'];
-
-    onlyIntegerCoords?: LinePropsType['onlyIntegerCoords'];
-    useRegister?: boolean;
-
-    offsetStartX?: number;
-    offsetStartY?: number;
-    offsetEndX?: number;
-    offsetEndY?: number;
-
-    onHover?: LinePropsType['onHover'];
-    onClick?: LinePropsType['onClick'];
-
-    /**
-     * MARKER PROPS
-     */
-    withHead?: LineFactoryProps['withMarker'];
-    headSize?: MarkerPropsType['size'];
-    headColor?: MarkerPropsType['fillColor'];
+    className?: ConfigType['arrowClassName'];
 } & (
     | {
           /**
@@ -57,7 +35,21 @@ type ArrowProps = {
 
           label?: never;
       }
-);
+) &
+    Pick<
+        ConfigType,
+        | 'scale'
+        | 'color'
+        | 'curviness'
+        | 'strokeWidth'
+        | 'onlyIntegerCoords'
+        | 'useRegister'
+        | 'withHead'
+        | 'headSize'
+        | 'headColor'
+    > &
+    OffsetXY &
+    Pick<LineFactoryProps, 'onClick' | 'onHover'>;
 
 export const Arrow: React.FC<ArrowProps> = ({
     start,
@@ -330,7 +322,7 @@ export const Arrow: React.FC<ArrowProps> = ({
      */
     useEffect(() => {
         if (chached.current.line) {
-            chached.current.line.configonlyIntegerCoords(
+            chached.current.line.configOnlyIntegerCoords(
                 onlyIntegerCoords ?? config.onlyIntegerCoords
             );
         }
