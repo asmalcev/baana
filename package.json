@@ -13,6 +13,7 @@
         "build-and-publish": "npm run build && npm publish",
         "publish-patch": "npm version patch -m 'chore: new patch' && npm run build-and-publish",
         "publish-prepatch": "npm version prepatch -m 'chore: new patch' && npm run build-and-publish",
+        "publish-beta": "npm publish --tag beta",
         "lint": "eslint lib/**/**",
         "test": "vitest run",
         "test:dev": "vitest",
