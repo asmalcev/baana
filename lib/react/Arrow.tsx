@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Line, LineFactory, useLineContext, ReactLabel, Marker } from '..';
 import { PointObj, uniqueMarkerId } from '../utils';
 import { LabelInterface, LabelPropsType } from '../Label';
@@ -95,6 +95,8 @@ export const Arrow: React.FC<ArrowProps> = ({
         label?: LabelInterface;
     }>({});
 
+    const [shouldRenderLabel, setShouldRenderLabel] = useState(false);
+
     const container = _getContainerRef();
     const svg = _getSVG();
     const config = _getConfig();
@@ -131,6 +133,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                 : end.current;
 
         if (cached.current.line && startElement && endElement) {
+            if (!shouldRenderLabel) setShouldRenderLabel(true);
             cached.current.line.update(startElement, endElement);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -359,6 +362,6 @@ export const Arrow: React.FC<ArrowProps> = ({
     }, [_unstableState, updateLine]);
 
     return container?.current && customLabelController?.render
-        ? createPortal(customLabelController?.render(), container?.current)
+        ? createPortal(customLabelController?.render(shouldRenderLabel), container?.current)
         : null;
 };
