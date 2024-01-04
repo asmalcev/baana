@@ -39,7 +39,7 @@ const Diagram = ({ scale }) => {
         // setHeadSize(toggle ? 20 : 10); // ✅
         // setHeadColor(toggle ? 'purple' : 'pink'); // ✅
         // setCurviness(toggle ? 2 : 1); // ✅
-        // setOffset(toggle ? 20 : 0); // ❌
+        // setOffset(toggle ? 20 : 0); // ✅
         // setClassName(toggle ? 'custom-line' : ''); // ✅
         // setWithHead(!withHead); // ✅
         // setBlockId(toggle ? 'block2' : 'block1'); // ✅
@@ -86,8 +86,8 @@ const Diagram = ({ scale }) => {
                     offsetStartY={offset}
                     offsetEndY={-offset}
                     className={className}
-                    // onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
-                    onClick={onClick}
+                    onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
+                    // onClick={onClick}
                     label={<p>123</p>}
                 />
             {/* )} */}

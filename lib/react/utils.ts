@@ -1,4 +1,7 @@
-export const debounce = (mainFunction: (...args: unknown[]) => unknown, delay: number) => {
+export const debounce = (
+    mainFunction: (...args: unknown[]) => unknown,
+    delay: number
+) => {
     let timer: ReturnType<typeof setTimeout>;
 
     return function (...args: unknown[]) {

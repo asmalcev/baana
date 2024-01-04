@@ -9,6 +9,11 @@
 
 .baana__svg {
     pointer-events: none;
+    overflow: visible;
+    position: absolute;
+    top: 0;
+    left: 0;
+    outline: none;
 }
 
 .baana__svg * {

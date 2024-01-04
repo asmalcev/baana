@@ -205,3 +205,56 @@ export const reversePath = (d: SVGProps['d']) => {
 
     return result;
 };
+
+export const update = (
+    startRef: HTMLElement,
+    endRef: HTMLElement,
+    svg: SVGSVGElement,
+    offset: {
+        start: Point;
+        end: Point;
+    },
+    scale: number = 1,
+    onlyIntegerCoords: boolean = false
+) => {
+    const rect1 = startRef.getBoundingClientRect();
+    const rect2 = endRef.getBoundingClientRect();
+
+    const containerRect = (
+        svg.parentNode as HTMLElement
+    ).getBoundingClientRect();
+
+    const start = {
+        x:
+            (rect1.x +
+                rect1.width +
+                (offset?.start?.[0] ?? 0) -
+                containerRect.x) /
+            (scale ?? 1),
+        y:
+            (rect1.y +
+                rect1.height / 2 +
+                (offset?.start?.[1] ?? 0) -
+                containerRect.y) /
+            (scale ?? 1),
+    };
+
+    const end = {
+        x: (rect2.x + (offset?.end?.[0] ?? 0) - containerRect.x) / (scale ?? 1),
+        y:
+            (rect2.y +
+                rect2.height / 2 +
+                (offset?.end?.[1] ?? 0) -
+                containerRect.y) /
+            (scale ?? 1),
+    };
+
+    if (onlyIntegerCoords) {
+        start.x = Math.floor(start.x);
+        start.y = Math.floor(start.y);
+        end.x = Math.floor(end.x);
+        end.y = Math.floor(end.y);
+    }
+
+    return [start, end];
+};

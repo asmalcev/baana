@@ -1,11 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Line, LineFactory, useLineContext, ReactLabel, Marker } from '..';
-import { PointObj, uniqueMarkerId } from '../utils';
-import { LabelInterface, LabelPropsType } from '../Label';
-import { LinePropsType } from '../Line';
+import { MouseEventHandler, useMemo, useRef } from 'react';
+import { useLineContext } from '..';
+import {
+    PointObj,
+    computeHoverStrokeWidth,
+    getSVGProps,
+    reversePath,
+    uniqueMarkerId,
+    update,
+} from '../utils';
 import { createPortal } from 'react-dom';
 import { ConfigType, OffsetXY } from './LineContext';
-import { LineFactoryProps } from '../LineFactory';
+import { Marker } from './Marker';
+import React from 'react';
 
 export type Render = (start: PointObj, end: PointObj) => void;
 
@@ -16,40 +22,22 @@ type ArrowProps = {
     end: TargetPointer;
 
     className?: ConfigType['arrowClassName'];
-} & (
-    | {
-          /**
-           * CUSTON LABEL
-           */
-          label?: JSX.Element;
-
-          text?: never;
-          labelClassName?: never;
-      }
-    | {
-          /**
-           * DEFAULT LABEL
-           */
-          text?: LabelPropsType['text'];
-          labelClassName?: LabelPropsType['className'];
-
-          label?: never;
-      }
-) &
-    Pick<
-        ConfigType,
-        | 'scale'
-        | 'color'
-        | 'curviness'
-        | 'strokeWidth'
-        | 'onlyIntegerCoords'
-        | 'useRegister'
-        | 'withHead'
-        | 'headSize'
-        | 'headColor'
-    > &
-    OffsetXY &
-    Pick<LineFactoryProps, 'onClick' | 'onHover'>;
+    onClick: MouseEventHandler;
+    onHover: MouseEventHandler;
+    label?: JSX.Element;
+} & Pick<
+    ConfigType,
+    | 'scale'
+    | 'color'
+    | 'curviness'
+    | 'strokeWidth'
+    | 'onlyIntegerCoords'
+    | 'useRegister'
+    | 'withHead'
+    | 'headSize'
+    | 'headColor'
+> &
+    OffsetXY;
 
 export const Arrow: React.FC<ArrowProps> = ({
     start,
@@ -62,16 +50,13 @@ export const Arrow: React.FC<ArrowProps> = ({
     strokeWidth,
 
     onlyIntegerCoords,
-    useRegister,
 
     offsetStartX,
     offsetStartY,
     offsetEndX,
     offsetEndY,
 
-    text,
-    labelClassName,
-    label: customLabel,
+    label,
 
     withHead,
     headColor,
@@ -80,26 +65,30 @@ export const Arrow: React.FC<ArrowProps> = ({
     onHover,
     onClick,
 }) => {
-    const {
-        _getContainerRef,
-        _getSVG,
-        _getConfig,
-        _registerTarget,
-        _removeTarget,
-        _unstableState,
-    } = useLineContext();
+    const { _getSVG, _getDefs, _getConfig, _getContainerRef, _unstableState } =
+        useLineContext();
 
-    const cached = useRef<{
-        line?: Line;
-        marker?: Marker;
-        label?: LabelInterface;
-    }>({});
+    const markerId = useRef(uniqueMarkerId());
 
-    const container = _getContainerRef();
     const svg = _getSVG();
+    const defs = _getDefs();
     const config = _getConfig();
+    const container = _getContainerRef();
 
-    const offset = useMemo<LinePropsType['offset']>(
+    const withMarker =
+        withHead ??
+        config.withHead ??
+        Boolean(headColor || headSize || config.headColor || config.headSize);
+
+    const _color = color ?? config.color ?? 'black';
+    const _className = className ?? config.arrowClassName ?? '';
+    const _curviness = curviness ?? config.curviness ?? 1;
+    const _strokeWidth = strokeWidth ?? config.strokeWidth ?? 1;
+    const _scale = scale ?? config.scale ?? 1;
+    const _onlyIntegerCoords =
+        onlyIntegerCoords ?? config.onlyIntegerCoords ?? true;
+
+    const offset = useMemo<ConfigType['offset']>(
         () => ({
             start: [
                 offsetStartX ?? config.offset?.start?.[0] ?? 0,
@@ -111,16 +100,16 @@ export const Arrow: React.FC<ArrowProps> = ({
             ],
         }),
         [offsetStartX, offsetStartY, offsetEndX, offsetEndY, config.offset]
-    );
+    ) ?? { start: [0, 0], end: [0, 0] };
 
-    const customLabelController = customLabel && ReactLabel(customLabel);
+    const hoverStrokeWidth = _strokeWidth
+        ? computeHoverStrokeWidth(_strokeWidth, _scale)
+        : undefined;
 
-    const withMarker =
-        withHead ??
-        config.withHead ??
-        Boolean(headColor || headSize || config.headColor || config.headSize);
+    const shouldCreateHoverPath =
+        hoverStrokeWidth && hoverStrokeWidth > 0 && Boolean(onHover || onClick);
 
-    const updateLine = useCallback(() => {
+    const svgProps = useMemo(() => {
         const startElement =
             typeof start === 'string'
                 ? document.getElementById(start)
@@ -130,203 +119,107 @@ export const Arrow: React.FC<ArrowProps> = ({
                 ? document.getElementById(end)
                 : end.current;
 
-        if (cached.current.line && startElement && endElement) {
-            cached.current.line.update(startElement, endElement);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [start, end]);
-
-    const clearHTMLNodes = () => {
-        cached.current.line?.remove();
-        cached.current.label?.remove?.();
-        cached.current.marker?.remove();
-    };
-
-    /**
-     * RECREATE IF CONTAINER CHANGES
-     */
-    useEffect(() => {
-        const arrow = cached.current.line;
-
-        if (container && svg && arrow?.svg !== svg.svg) {
-            arrow?.remove();
-
-            const {
-                line,
-                label: simpleLabel,
-                marker,
-            } = LineFactory({
+        if (svg && startElement && endElement) {
+            const [startXY, endXY] = update(
+                startElement,
+                endElement,
                 svg,
-
-                scale: scale ?? config.scale,
                 offset,
-                strokeColor: color ?? config.color,
-                curviness: curviness ?? config.curviness,
-                className: className ?? config.arrowClassName,
-                strokeWidth: strokeWidth ?? config.strokeWidth,
+                _scale,
+                _onlyIntegerCoords
+            );
 
-                onlyIntegerCoords:
-                    onlyIntegerCoords ?? config.onlyIntegerCoords,
+            const svgProps = getSVGProps(startXY, endXY, _curviness);
 
-                withMarker,
-                markerColor: headColor ?? config.headColor,
-                markerSize: headSize ?? config.headSize,
+            if (_onlyIntegerCoords) {
+                svgProps.d = svgProps.d.map((e) =>
+                    typeof e === 'number' ? Math.floor(e) : e
+                );
+            }
 
-                onHover,
-                onClick,
+            const d = svgProps.d.join(' ');
 
-                ...(customLabelController?.controller
-                    ? {
-                          customLabel: customLabelController?.controller,
-                      }
-                    : {
-                          labelText: text,
-                          labelClassName:
-                              labelClassName ?? config.labelClassName,
-                      }),
-            });
-
-            cached.current = {
-                line,
-                marker,
-                label: simpleLabel,
+            return {
+                center: svgProps.center,
+                d,
+                reversed:
+                    shouldCreateHoverPath &&
+                    d + reversePath(svgProps.d).join(' '),
             };
-
-            updateLine();
         }
 
-        return clearHTMLNodes;
+        return null;
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [container?.current]);
-
-    /**
-     * LINE EFFECTS
-     */
-    useEffect(() => {
-        if (cached.current.line) {
-            cached.current.line.configClassName(
-                className ?? config.arrowClassName
-            );
-            cached.current.line.configCurviness(curviness ?? config.curviness);
-            cached.current.line.configStrokeWidth(
-                strokeWidth ?? config.strokeWidth
-            );
-            cached.current.line.configStrokeColor(color ?? config.color);
-            cached.current.line.configScale(scale ?? config.scale);
-            cached.current.line.configOffset(offset);
-            cached.current.line.configOnlyIntegerCoords(
-                onlyIntegerCoords ?? config.onlyIntegerCoords
-            );
-        }
     }, [
-        color,
-        scale,
-        className,
-        curviness,
-        strokeWidth,
-        onlyIntegerCoords,
-        offset,
-        config.color,
-        config.scale,
-        config.curviness,
-        config.strokeWidth,
-        config.arrowClassName,
-        config.onlyIntegerCoords,
-    ]);
-
-    useEffect(() => {
-        if (cached.current.line) {
-            cached.current.line.configOnClick(onClick);
-        }
-    }, [onClick]);
-
-    useEffect(() => {
-        if (cached.current.line) {
-            cached.current.line.configOnHover(onHover);
-        }
-    }, [onHover]);
-
-    /**
-     * RECREATE MARKER IF WITH_MARKER CHANGES
-     */
-    useEffect(() => {
-        if (!withMarker) {
-            cached.current.marker?.remove();
-            cached.current.marker = undefined;
-        } else if (!cached.current.marker && svg?.svg) {
-            cached.current.marker = new Marker({
-                svg: svg?.svg,
-                id: uniqueMarkerId(),
-                size: headSize ?? config.headSize,
-                fillColor:
-                    headColor ?? config.headColor ?? color ?? config.color,
-            });
-
-            cached.current.line?.configMarker(cached.current.marker);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [withMarker]);
-
-    /**
-     * CHANGE MARKER SIZE AND COLOR ON CHANGING
-     */
-    useEffect(() => {
-        if (cached.current.marker) {
-            cached.current.marker.setSize(headSize ?? config.headSize);
-            cached.current.marker.setFillColor(
-                headColor ?? config.headColor ?? color ?? config.color
-            );
-        }
-    }, [
-        color,
-        headSize,
-        headColor,
-        config.color,
-        config.headSize,
-        config.headColor,
-    ]);
-
-    /**
-     * CHANGE LABEL CLASSNAME AND TEXT
-     */
-    useEffect(() => {
-        if (cached.current.label) {
-            cached.current.label?.configClassName?.(
-                labelClassName ?? config.labelClassName
-            );
-            if (text) cached.current.label.setText?.(text);
-        }
-    }, [config.labelClassName, labelClassName, text]);
-
-    const shouldRegister = useRegister ?? config.useRegister;
-
-    /**
-     * RERENDER IF START/END CHANGES
-     */
-    useEffect(() => {
-        if (shouldRegister) {
-            _removeTarget(start, updateLine);
-            _removeTarget(end, updateLine);
-
-            _registerTarget(start, updateLine);
-            _registerTarget(end, updateLine);
-        }
-
-        updateLine();
-    }, [
-        updateLine,
         start,
         end,
-        _removeTarget,
-        _registerTarget,
-        shouldRegister,
+        svg,
+        offset,
+        _scale,
+        _onlyIntegerCoords,
+        _curviness,
+        shouldCreateHoverPath,
+        _unstableState,
     ]);
 
-    useEffect(() => {
-        updateLine();
-    }, [_unstableState, updateLine]);
-
-    return container?.current && customLabelController?.render
-        ? createPortal(customLabelController?.render(), container?.current)
-        : null;
+    return (
+        <>
+            {defs
+                ? createPortal(
+                      <>
+                          {withMarker && (
+                              <Marker
+                                  id={markerId.current}
+                                  fillColor={headColor ?? _color}
+                                  size={headSize}
+                              />
+                          )}
+                      </>,
+                      defs
+                  )
+                : null}
+            {svg
+                ? createPortal(
+                      <>
+                          <path
+                              d={svgProps?.d ?? ''}
+                              className={_className}
+                              stroke={_color}
+                              strokeWidth={_strokeWidth}
+                              fill="none"
+                              markerEnd={
+                                  withMarker ? `url(#${markerId.current}` : ''
+                              }
+                          />
+                          {shouldCreateHoverPath && (
+                              <path
+                                  d={svgProps?.d ?? ''}
+                                  stroke="none"
+                                  fill="none"
+                                  className="baana__interactive-path"
+                                  strokeWidth={hoverStrokeWidth}
+                                  onMouseOver={onHover}
+                                  onClick={onClick}
+                              />
+                          )}
+                      </>,
+                      svg
+                  )
+                : null}
+            {container
+                ? createPortal(
+                      <div
+                          className="baana__line-label"
+                          style={{
+                              top: svgProps?.center[1],
+                              left: svgProps?.center[0],
+                          }}
+                      >
+                          {label}
+                      </div>,
+                      container
+                  )
+                : null}
+        </>
+    );
 };

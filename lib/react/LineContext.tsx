@@ -8,27 +8,30 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { SVGContainer } from '../SVG';
-import { LinePropsType } from '../Line';
-import { LabelPropsType } from '../Label';
-import { LineFactoryProps } from '../LineFactory';
 import { TargetPointer } from './Arrow';
+import { Point } from '../utils';
 
 export type ConfigType = {
-    color?: LinePropsType['strokeColor'];
-    arrowClassName?: LinePropsType['className'];
+    color?: string;
+    arrowClassName?: string;
 
     useRegister?: boolean;
 
-    withHead?: LineFactoryProps['withMarker'];
-    headColor?: LineFactoryProps['markerColor'];
-    headSize?: LineFactoryProps['markerSize'];
+    withHead?: boolean;
+    headColor?: string;
+    headSize?: number;
 
-    labelClassName?: LabelPropsType['className'];
-} & Pick<
-    LinePropsType,
-    'scale' | 'offset' | 'curviness' | 'strokeWidth' | 'onlyIntegerCoords'
->;
+    labelClassName?: string;
+
+    scale?: number;
+    offset?: {
+        start: Point;
+        end: Point;
+    };
+    curviness?: number;
+    strokeWidth?: number;
+    onlyIntegerCoords?: boolean;
+};
 
 export type OffsetXY = {
     offsetStartX?: number;
@@ -43,8 +46,9 @@ export type LineContextType = {
     _registerTarget(target: TargetPointer, handler: () => void): void;
     _removeTarget(target: TargetPointer, handler: () => void): void;
 
-    _getContainerRef(): React.RefObject<HTMLElement> | null;
-    _getSVG(): SVGContainer | null;
+    _getContainerRef(): HTMLElement | null;
+    _getSVG(): SVGSVGElement | null;
+    _getDefs(): SVGDefsElement | null;
     _getConfig(): ConfigType;
 
     _unstableState?: unknown;
@@ -56,18 +60,16 @@ const defaultValue = {
     _removeTarget: () => {},
     _getContainerRef: () => null,
     _getSVG: () => null,
+    _getDefs: () => null,
     _getConfig: () => ({}),
 };
 
 export const LineContext = createContext<LineContextType>(defaultValue);
 
-type LineContextProviderType = {
-    children: ReactNode;
-} & OffsetXY &
-    Record<string, unknown>;
-
 export const LineContextProvider: React.FC<
-    LineContextProviderType & Omit<ConfigType, 'offset'>
+    { children: ReactNode } & Omit<ConfigType, 'offset'> &
+        OffsetXY &
+        Record<string, unknown>
 > = ({
     children,
 
@@ -94,10 +96,14 @@ export const LineContextProvider: React.FC<
     ...others
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const svgRef = useRef<SVGSVGElement>(null);
+    const defsRef = useRef<SVGDefsElement>(null);
 
-    const [svg, setSVG] = useState<SVGContainer | null>(null);
+    const [container, setContainer] = useState<HTMLDivElement | null>(containerRef.current);
+    const [svg, setSVG] = useState<SVGSVGElement | null>(svgRef.current);
+    const [defs, setDefs] = useState<SVGDefsElement | null>(defsRef.current);
 
-    const offset = useMemo<LinePropsType['offset']>(
+    const offset = useMemo<ConfigType['offset']>(
         () => ({
             start: [offsetStartX ?? 0, offsetStartY ?? 0],
             end: [offsetEndX ?? 0, offsetEndY ?? 0],
@@ -149,14 +155,6 @@ export const LineContextProvider: React.FC<
         }
     };
 
-    useEffect(() => {
-        if (containerRef.current && svg?.container !== containerRef.current) {
-            svg?.container.removeChild(svg?.svg);
-            setSVG(new SVGContainer({ container: containerRef.current }));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [containerRef.current]);
-
     const config = useMemo(
         () => ({
             color,
@@ -188,8 +186,15 @@ export const LineContextProvider: React.FC<
         ]
     );
 
-    const _getContainerRef = () => containerRef;
+    useEffect(() => {
+        setContainer(containerRef.current);
+        setSVG(svgRef.current);
+        setDefs(defsRef.current);
+    }, []);
+
+    const _getContainerRef = () => container;
     const _getSVG = () => svg;
+    const _getDefs = () => defs;
     const _getConfig = () => config;
 
     return (
@@ -201,10 +206,14 @@ export const LineContextProvider: React.FC<
                 _getContainerRef,
                 _getConfig,
                 _getSVG,
+                _getDefs,
                 _unstableState,
             }}
         >
             <div ref={containerRef} {...others}>
+                <svg ref={svgRef} className="baana__svg">
+                    <defs ref={defsRef}></defs>
+                </svg>
                 {children}
             </div>
         </LineContext.Provider>
