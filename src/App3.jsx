@@ -73,7 +73,7 @@ const Diagram = ({ scale }) => {
                 <div id="block2" className="block" />
             </Draggable>
 
-            {toggle && (
+            {/* {toggle && ( */}
                 <Arrow
                     start={blockId}
                     end="block2"
@@ -90,7 +90,7 @@ const Diagram = ({ scale }) => {
                     onClick={onClick}
                     label={<p>123</p>}
                 />
-            )}
+            {/* )} */}
 
             <button onClick={clickHandler} className="toggle">
                 toggle

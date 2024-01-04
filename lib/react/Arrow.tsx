@@ -194,58 +194,40 @@ export const Arrow: React.FC<ArrowProps> = ({
 
             updateLine();
         }
+
+        return clearHTMLNodes;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [container?.current]);
-
-    /**
-     * REMOVE HTML NODES ON UNMOUNT
-     */
-    useEffect(() => {
-        return clearHTMLNodes;
-    }, []);
 
     /**
      * LINE EFFECTS
      */
     useEffect(() => {
-        if (cached.current.line && offset) {
-            cached.current.line.configOffset(offset);
-        }
-    }, [offset]);
-
-    useEffect(() => {
-        if (cached.current.line) {
-            cached.current.line.configScale(scale ?? config.scale);
-        }
-    }, [config.scale, scale]);
-
-    useEffect(() => {
-        const _color = color ?? config.color;
-        if (cached.current.line && _color) {
-            cached.current.line.configStrokeColor(_color);
-        }
-    }, [color, config.color]);
-
-    useEffect(() => {
-        const _strokeWidth = strokeWidth ?? config.strokeWidth;
-        if (cached.current.line && _strokeWidth) {
-            cached.current.line.configStrokeWidth(_strokeWidth);
-        }
-    }, [config.strokeWidth, strokeWidth]);
-
-    useEffect(() => {
-        if (cached.current.line) {
-            cached.current.line.configCurviness(curviness ?? config.curviness);
-        }
-    }, [config.curviness, curviness]);
-
-    useEffect(() => {
         if (cached.current.line) {
             cached.current.line.configClassName(
                 className ?? config.arrowClassName
             );
+            cached.current.line.configCurviness(curviness ?? config.curviness);
+            cached.current.line.configStrokeWidth(
+                strokeWidth ?? config.strokeWidth
+            );
+            cached.current.line.configStrokeColor(color ?? config.color);
+            cached.current.line.configScale(scale ?? config.scale);
+            cached.current.line.configOffset(offset);
         }
-    }, [className, config.arrowClassName]);
+    }, [
+        color,
+        scale,
+        className,
+        curviness,
+        strokeWidth,
+        offset,
+        config.color,
+        config.scale,
+        config.curviness,
+        config.strokeWidth,
+        config.arrowClassName,
+    ]);
 
     useEffect(() => {
         if (cached.current.line) {
@@ -292,11 +274,11 @@ export const Arrow: React.FC<ArrowProps> = ({
         }
     }, [
         color,
-        config.color,
-        config.headColor,
-        config.headSize,
-        headColor,
         headSize,
+        headColor,
+        config.color,
+        config.headSize,
+        config.headColor,
     ]);
 
     /**

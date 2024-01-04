@@ -268,7 +268,8 @@ export class Line {
     /**
      * RENDER OPTIONS
      */
-    configOffset(offset: Line['offset']) {
+    configOffset(offset?: Line['offset']) {
+        if (offset === undefined) return;
         this.offset = {
             ...this.offset,
             ...offset,
@@ -300,12 +301,14 @@ export class Line {
     /**
      * PATH
      */
-    configStrokeColor(strokeColor: Line['strokeColor']) {
+    configStrokeColor(strokeColor?: Line['strokeColor']) {
+        if (strokeColor === undefined) return;
         this.strokeColor = strokeColor;
         this.config({ path: true });
     }
 
-    configStrokeWidth(strokeWidth: Line['strokeWidth']) {
+    configStrokeWidth(strokeWidth?: Line['strokeWidth']) {
+        if (strokeWidth === undefined) return;
         this.strokeWidth = strokeWidth;
         this.config({ path: true });
     }
