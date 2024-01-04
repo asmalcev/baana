@@ -214,6 +214,9 @@ export const Arrow: React.FC<ArrowProps> = ({
             cached.current.line.configStrokeColor(color ?? config.color);
             cached.current.line.configScale(scale ?? config.scale);
             cached.current.line.configOffset(offset);
+            cached.current.line.configOnlyIntegerCoords(
+                onlyIntegerCoords ?? config.onlyIntegerCoords
+            );
         }
     }, [
         color,
@@ -221,12 +224,14 @@ export const Arrow: React.FC<ArrowProps> = ({
         className,
         curviness,
         strokeWidth,
+        onlyIntegerCoords,
         offset,
         config.color,
         config.scale,
         config.curviness,
         config.strokeWidth,
         config.arrowClassName,
+        config.onlyIntegerCoords,
     ]);
 
     useEffect(() => {
@@ -282,35 +287,16 @@ export const Arrow: React.FC<ArrowProps> = ({
     ]);
 
     /**
-     * CHANGE LABEL CLASSNAME ON LABEL_CLASSNAME CHANGING
+     * CHANGE LABEL CLASSNAME AND TEXT
      */
     useEffect(() => {
         if (cached.current.label) {
             cached.current.label?.configClassName?.(
                 labelClassName ?? config.labelClassName
             );
+            if (text) cached.current.label.setText?.(text);
         }
-    }, [config.labelClassName, labelClassName]);
-
-    /**
-     * CHANGE LABEL TEXT ON LABEL_TEXT CHANGING
-     */
-    useEffect(() => {
-        if (cached.current.label && text) {
-            cached.current.label.setText?.(text);
-        }
-    }, [text]);
-
-    /**
-     * OPTIMIZATION
-     */
-    useEffect(() => {
-        if (cached.current.line) {
-            cached.current.line.configOnlyIntegerCoords(
-                onlyIntegerCoords ?? config.onlyIntegerCoords
-            );
-        }
-    }, [onlyIntegerCoords, config.onlyIntegerCoords]);
+    }, [config.labelClassName, labelClassName, text]);
 
     const shouldRegister = useRegister ?? config.useRegister;
 
