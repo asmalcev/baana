@@ -8,7 +8,7 @@ const Diagram = ({ scale }) => {
 
     const handleUpdate = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
-        update();
+        update(dragEvent.node);
     };
 
     const [showArrows, setShowArrows] = useState(true);
@@ -89,6 +89,7 @@ const Diagram = ({ scale }) => {
                     onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
                     // onClick={onClick}
                     label={<p>123</p>}
+                    useRegister={true}
                 />
             {/* )} */}
 

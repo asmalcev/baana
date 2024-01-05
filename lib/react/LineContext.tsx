@@ -8,8 +8,8 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { TargetPointer } from './Arrow';
 import { Point } from '../utils';
+import { TargetPointer } from './Arrow';
 
 export type ConfigType = {
     color?: string;
@@ -51,7 +51,7 @@ export type LineContextType = {
     _getDefs(): SVGDefsElement | null;
     _getConfig(): ConfigType;
 
-    _unstableState?: unknown;
+    _unstableState: unknown;
 };
 
 const defaultValue = {
@@ -62,6 +62,7 @@ const defaultValue = {
     _getSVG: () => null,
     _getDefs: () => null,
     _getConfig: () => ({}),
+    _unstableState: null,
 };
 
 export const LineContext = createContext<LineContextType>(defaultValue);
@@ -99,7 +100,9 @@ export const LineContextProvider: React.FC<
     const svgRef = useRef<SVGSVGElement>(null);
     const defsRef = useRef<SVGDefsElement>(null);
 
-    const [container, setContainer] = useState<HTMLDivElement | null>(containerRef.current);
+    const [container, setContainer] = useState<HTMLDivElement | null>(
+        containerRef.current
+    );
     const [svg, setSVG] = useState<SVGSVGElement | null>(svgRef.current);
     const [defs, setDefs] = useState<SVGDefsElement | null>(defsRef.current);
 

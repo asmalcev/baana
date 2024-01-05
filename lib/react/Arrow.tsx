@@ -1,7 +1,15 @@
-import { MouseEventHandler, useMemo, useRef } from 'react';
+import {
+    MouseEventHandler,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useLineContext } from '..';
 import {
     PointObj,
+    comparePointObjects,
     computeHoverStrokeWidth,
     getSVGProps,
     reversePath,
@@ -49,6 +57,7 @@ export const Arrow: React.FC<ArrowProps> = ({
     className,
     strokeWidth,
 
+    useRegister,
     onlyIntegerCoords,
 
     offsetStartX,
@@ -65,8 +74,15 @@ export const Arrow: React.FC<ArrowProps> = ({
     onHover,
     onClick,
 }) => {
-    const { _getSVG, _getDefs, _getConfig, _getContainerRef, _unstableState } =
-        useLineContext();
+    const {
+        _getSVG,
+        _getDefs,
+        _getConfig,
+        _getContainerRef,
+        _unstableState,
+        _registerTarget,
+        _removeTarget,
+    } = useLineContext();
 
     const markerId = useRef(uniqueMarkerId());
 
@@ -100,7 +116,7 @@ export const Arrow: React.FC<ArrowProps> = ({
             ],
         }),
         [offsetStartX, offsetStartY, offsetEndX, offsetEndY, config.offset]
-    ) ?? { start: [0, 0], end: [0, 0] };
+    );
 
     const hoverStrokeWidth = _strokeWidth
         ? computeHoverStrokeWidth(_strokeWidth, _scale)
@@ -109,7 +125,17 @@ export const Arrow: React.FC<ArrowProps> = ({
     const shouldCreateHoverPath =
         hoverStrokeWidth && hoverStrokeWidth > 0 && Boolean(onHover || onClick);
 
-    const svgProps = useMemo(() => {
+    const lastXY = useRef<[PointObj, PointObj]>(null);
+    const [svgProps, setSVGProps] = useState<{
+        center?: [number, number];
+        d?: string;
+        reversed?: string;
+    }>({});
+
+    const [unstableLocalState, updateState] = useState<unknown>();
+    const forceUpdate = useCallback(() => updateState({}), []);
+
+    useEffect(() => {
         const startElement =
             typeof start === 'string'
                 ? document.getElementById(start)
@@ -119,47 +145,74 @@ export const Arrow: React.FC<ArrowProps> = ({
                 ? document.getElementById(end)
                 : end.current;
 
-        if (svg && startElement && endElement) {
-            const [startXY, endXY] = update(
-                startElement,
-                endElement,
-                svg,
-                offset,
-                _scale,
-                _onlyIntegerCoords
-            );
+        if (!svg || !startElement || !endElement || !offset) return;
 
-            const svgProps = getSVGProps(startXY, endXY, _curviness);
+        const [startXY, endXY] = update(
+            startElement,
+            endElement,
+            svg,
+            offset,
+            _scale,
+            _onlyIntegerCoords
+        );
 
-            if (_onlyIntegerCoords) {
-                svgProps.d = svgProps.d.map((e) =>
-                    typeof e === 'number' ? Math.floor(e) : e
-                );
-            }
-
-            const d = svgProps.d.join(' ');
-
-            return {
-                center: svgProps.center,
-                d,
-                reversed:
-                    shouldCreateHoverPath &&
-                    d + reversePath(svgProps.d).join(' '),
-            };
+        if (
+            lastXY.current &&
+            comparePointObjects(startXY, lastXY.current[0]) &&
+            comparePointObjects(endXY, lastXY.current[1])
+        ) {
+            return;
         }
 
-        return null;
+        // @ts-ignore
+        lastXY.current = [startXY, endXY];
+
+        const svgProps = getSVGProps(startXY, endXY, _curviness);
+
+        if (_onlyIntegerCoords) {
+            svgProps.d = svgProps.d.map((e) =>
+                typeof e === 'number' ? Math.floor(e) : e
+            );
+        }
+
+        const d = svgProps.d.join(' ');
+
+        setSVGProps({
+            center: svgProps.center,
+            d,
+            reversed: shouldCreateHoverPath
+                ? d + reversePath(svgProps.d).join(' ')
+                : '',
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         start,
         end,
         svg,
         offset,
-        _scale,
-        _onlyIntegerCoords,
         _curviness,
         shouldCreateHoverPath,
         _unstableState,
+        unstableLocalState,
+    ]);
+
+    const shouldRegister = useRegister ?? config.useRegister;
+
+    useEffect(() => {
+        if (shouldRegister) {
+            _removeTarget(start, forceUpdate);
+            _removeTarget(end, forceUpdate);
+
+            _registerTarget(start, forceUpdate);
+            _registerTarget(end, forceUpdate);
+        }
+    }, [
+        start,
+        end,
+        _removeTarget,
+        _registerTarget,
+        shouldRegister,
+        forceUpdate,
     ]);
 
     return (
@@ -206,13 +259,13 @@ export const Arrow: React.FC<ArrowProps> = ({
                       svg
                   )
                 : null}
-            {container
+            {container && svgProps.d
                 ? createPortal(
                       <div
                           className="baana__line-label"
                           style={{
-                              top: svgProps?.center[1],
-                              left: svgProps?.center[0],
+                              top: svgProps?.center?.[1],
+                              left: svgProps?.center?.[0],
                           }}
                       >
                           {label}
