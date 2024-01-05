@@ -1,3 +1,5 @@
+import { ConfigType } from './react/LineContext';
+
 export type Point = [number, number];
 export type PointObj = { x: number; y: number };
 
@@ -209,20 +211,15 @@ export const reversePath = (d: SVGProps['d']) => {
 export const update = (
     startRef: HTMLElement,
     endRef: HTMLElement,
-    svg: SVGSVGElement,
-    offset: {
-        start: Point;
-        end: Point;
-    },
-    scale: number = 1,
-    onlyIntegerCoords: boolean = false
+    parent: HTMLElement,
+    offset: ConfigType['offset'],
+    scale: ConfigType['scale'] = 1,
+    onlyIntegerCoords: ConfigType['onlyIntegerCoords'] = false
 ) => {
     const rect1 = startRef.getBoundingClientRect();
     const rect2 = endRef.getBoundingClientRect();
 
-    const containerRect = (
-        svg.parentNode as HTMLElement
-    ).getBoundingClientRect();
+    const containerRect = parent.getBoundingClientRect();
 
     const start = {
         x:

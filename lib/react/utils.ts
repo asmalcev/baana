@@ -4,7 +4,7 @@ export const debounce = (
 ) => {
     let timer: ReturnType<typeof setTimeout>;
 
-    return function (...args: unknown[]) {
+    return (...args: unknown[]) => {
         clearTimeout(timer);
 
         timer = setTimeout(() => {

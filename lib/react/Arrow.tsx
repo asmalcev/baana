@@ -145,12 +145,12 @@ export const Arrow: React.FC<ArrowProps> = ({
                 ? document.getElementById(end)
                 : end.current;
 
-        if (!svg || !startElement || !endElement || !offset) return;
+        if (!container || !startElement || !endElement || !offset) return;
 
         const [startXY, endXY] = update(
             startElement,
             endElement,
-            svg,
+            container,
             offset,
             _scale,
             _onlyIntegerCoords
@@ -187,8 +187,8 @@ export const Arrow: React.FC<ArrowProps> = ({
     }, [
         start,
         end,
-        svg,
         offset,
+        container,
         _curviness,
         shouldCreateHoverPath,
         _unstableState,
