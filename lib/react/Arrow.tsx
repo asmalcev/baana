@@ -125,7 +125,7 @@ export const Arrow: React.FC<ArrowProps> = ({
     const shouldCreateHoverPath =
         hoverStrokeWidth && hoverStrokeWidth > 0 && Boolean(onHover || onClick);
 
-    const lastXY = useRef<[PointObj, PointObj]>(null);
+    const lastXY = useRef([] as PointObj[]);
     const [svgProps, setSVGProps] = useState<{
         center?: [number, number];
         d?: string;
@@ -164,7 +164,6 @@ export const Arrow: React.FC<ArrowProps> = ({
             return;
         }
 
-        // @ts-ignore
         lastXY.current = [startXY, endXY];
 
         const svgProps = getSVGProps(startXY, endXY, _curviness);
