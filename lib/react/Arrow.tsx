@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useLineContext } from '..';
 import {
+    Point,
     PointObj,
     comparePointObjects,
     computeHoverStrokeWidth,
@@ -20,8 +21,6 @@ import { createPortal } from 'react-dom';
 import { ConfigType, OffsetXY } from './LineContext';
 import { Marker } from './Marker';
 import React from 'react';
-
-export type Render = (start: PointObj, end: PointObj) => void;
 
 export type TargetPointer = React.RefObject<HTMLElement> | string;
 
@@ -127,7 +126,7 @@ export const Arrow: React.FC<ArrowProps> = ({
 
     const lastXY = useRef([] as PointObj[]);
     const [svgProps, setSVGProps] = useState<{
-        center?: [number, number];
+        center?: Point;
         d?: string;
         reversed?: string;
     }>({});
@@ -157,7 +156,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         );
 
         if (
-            lastXY.current &&
+            lastXY.current?.length &&
             comparePointObjects(startXY, lastXY.current[0]) &&
             comparePointObjects(endXY, lastXY.current[1])
         ) {

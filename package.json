@@ -2,6 +2,11 @@
     "name": "baana-react",
     "version": "0.0.15",
     "description": "React lib for rendering arrows and lines",
+    "keywords": [
+        "react",
+        "svg",
+        "arrow"
+    ],
     "author": {
         "name": "Malcev Alexander",
         "email": "aleksmalcevrmg@gmail.com",

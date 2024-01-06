@@ -31,7 +31,7 @@ export type SVGProps = {
 export const getSVGProps = (
     start: PointObj,
     end: PointObj,
-    curviness: number = 1
+    curviness: ConfigType['curviness'] = 1
 ) => {
     let diffX = end.x - start.x;
     const diffY = end.y - start.y;
@@ -157,7 +157,6 @@ const uniqueIdGeneratorFactory = (prefix: string) => {
 };
 
 export const uniqueMarkerId = uniqueIdGeneratorFactory('marker');
-export const uniqueLineId = uniqueIdGeneratorFactory('line');
 
 const DEFAULT_HOVER_SIZE = 20;
 
