@@ -29,8 +29,8 @@ type ArrowProps = {
     end: TargetPointer;
 
     className?: ConfigType['arrowClassName'];
-    onClick: MouseEventHandler;
-    onHover: MouseEventHandler;
+    onClick?: MouseEventHandler;
+    onHover?: MouseEventHandler;
     label?: JSX.Element;
 } & Pick<
     ConfigType,
