@@ -88,7 +88,7 @@ const Diagram = ({ scale }) => {
                     className={className}
                     onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
                     // onClick={onClick}
-                    label={<p>123</p>}
+                    label={<p className='label'>baana-react</p>}
                     useRegister={true}
                 />
             {/* )} */}

@@ -16,6 +16,7 @@
         "dev": "vite",
         "build": "tsc --p ./tsconfig-build.json && vite build --config vite.config.js",
         "build-and-publish": "npm run build && npm publish",
+        "publish-minor": "npm version minor -m 'chore: new minor' && npm run build-and-publish",
         "publish-patch": "npm version patch -m 'chore: new patch' && npm run build-and-publish",
         "publish-prepatch": "npm version prepatch -m 'chore: new patch' && npm run build-and-publish",
         "publish-beta": "npm publish --tag beta",

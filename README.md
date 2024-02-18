@@ -1,5 +1,10 @@
 # baana-react
 
+![baana-react demonstration picture](./baana-react-pic.png "SVG-arrows lib for React")
+
+- Zero-dependencies
+- 12K bundle size
+
 ## Usage
 
 ```jsx
@@ -26,7 +31,7 @@ const App = () => {
 
 ### Config all arrows at context at once
 
-The following properties can be set via context: `scale`, `offset`, `color`, `curviness`, `arrowClassName`, `strokeWidth`, `onlyIntegerCoords`, `useRegister`, `withHead`, `headColor`, `headSize`, `labelClassName`.
+The following properties can be set via `LineContextProvider`: `scale`, `offset`, `color`, `curviness`, `arrowClassName`, `strokeWidth`, `onlyIntegerCoords`, `useRegister`, `withHead`, `headColor`, `headSize`, `labelClassName`.
 
 ## Optimization
 
