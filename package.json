@@ -1,6 +1,6 @@
 {
     "name": "baana-react",
-    "version": "0.0.16",
+    "version": "0.1.0",
     "description": "React lib for rendering arrows and lines",
     "keywords": [
         "react",
