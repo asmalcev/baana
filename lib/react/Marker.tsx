@@ -3,22 +3,22 @@ import React from 'react';
 export type MarkerPropsType = {
     id?: string;
     size?: number;
-    fillColor?: string;
+    color?: string;
 };
 
 const _defaultSize: number = 12;
 
-export const Marker = ({
+export const DefaultMarker: React.FC<MarkerPropsType> = ({
     id = 'arrow-head',
     size = _defaultSize,
-    fillColor,
-}: MarkerPropsType) => {
+    color,
+}) => {
     const scale = size / _defaultSize;
     return (
         <marker
             id={id}
             orient="auto"
-            fill={fillColor}
+            fill={color}
             markerWidth={12 * scale}
             markerHeight={10 * scale}
             refX={11 * scale}

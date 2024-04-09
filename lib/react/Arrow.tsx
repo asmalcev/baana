@@ -19,7 +19,7 @@ import {
 } from '../utils';
 import { createPortal } from 'react-dom';
 import { ConfigType, OffsetXY } from './LineContext';
-import { Marker } from './Marker';
+import { DefaultMarker, MarkerPropsType } from './Marker';
 import React from 'react';
 
 export type TargetPointer = React.RefObject<HTMLElement> | string;
@@ -32,6 +32,8 @@ type ArrowProps = {
     onClick?: MouseEventHandler;
     onHover?: MouseEventHandler;
     label?: JSX.Element;
+
+    Marker?: React.FC<MarkerPropsType>;
 } & Pick<
     ConfigType,
     | 'scale'
@@ -65,6 +67,7 @@ export const Arrow: React.FC<ArrowProps> = ({
     offsetEndY,
 
     label,
+    Marker = DefaultMarker,
 
     withHead,
     headColor,
@@ -221,7 +224,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                           {withMarker && (
                               <Marker
                                   id={markerId.current}
-                                  fillColor={headColor ?? _color}
+                                  color={headColor ?? _color}
                                   size={headSize}
                               />
                           )}

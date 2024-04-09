@@ -3,6 +3,29 @@ import Draggable from 'react-draggable';
 
 import { LineContextProvider, useLineContext, Arrow } from '../lib';
 
+const CustomMarker = ({
+    id,
+    size = 12,
+    color,
+}) => {
+    const scale = size / 12;
+    return (
+        <marker
+            id={id}
+            orient="auto"
+            stroke={color}
+            strokeWidth="3"
+            fill="transparent"
+            markerWidth={20 * scale}
+            markerHeight={20 * scale}
+            refX={16 * scale}
+            refY={11 * scale}
+        >
+            <circle cx={10 * scale} cy={10 * scale} r={6 * scale}/>
+        </marker>
+    );
+};
+
 const Diagram = ({ scale }) => {
     const { update } = useLineContext();
 
@@ -90,6 +113,7 @@ const Diagram = ({ scale }) => {
                     // onClick={onClick}
                     label={<p className='label'>baana-react</p>}
                     useRegister={true}
+                    Marker={CustomMarker}
                 />
             {/* )} */}
 
