@@ -27,11 +27,40 @@ const App = () => {
 }
 ```
 
-## Features
+## API
 
-### Config all arrows at context at once
+| Arrow Property      | Type                                     | Property in `LineContextProvider` |
+| ------------------- | ---------------------------------------- | --------------------------------- |
+| `start`             | `React.RefObject<HTMLElement> \| string` | -                                 |
+| `end`               | `React.RefObject<HTMLElement> \| string` | -                                 |
+| `color`             | `string`                                 | `color`                           |
+| `scale`             | `number`                                 | `scale`                           |
+| `curviness`         | `number`                                 | `curviness`                       |
+| `strokeWidth`       | `number`                                 | `strokeWidth`                     |
+| `onlyIntegerCoords` | `boolean`                                | `onlyIntegerCoords`               |
+| `useRegister`       | `boolean`                                | `useRegister`                     |
+| `withHead`          | `boolean`                                | `withHead`                        |
+| `headSize`          | `number`                                 | `headSize`                        |
+| `headColor`         | `string`                                 | `headColor`                       |
+| `className`         | `string`                                 | `arrowClassName`                  |
+| `onClick`           | `MouseEventHandler`                      | -                                 |
+| `onHover`           | `MouseEventHandler`                      | -                                 |
+| `label`             | `JSX.Element`                            | -                                 |
+| `Marker`            | `MarkerPropsType`                        | -                                 |
+| `offsetStartX`      | `number`                                 | `offsetStartX`                    |
+| `offsetStartY`      | `number`                                 | `offsetStartY`                    |
+| `offsetEndX`        | `number`                                 | `offsetEndX`                      |
+| `offsetEndY`        | `number`                                 | `offsetEndY`                      |
 
-The following properties can be set via `LineContextProvider`: `scale`, `offset`, `color`, `curviness`, `arrowClassName`, `strokeWidth`, `onlyIntegerCoords`, `useRegister`, `withHead`, `headColor`, `headSize`, `labelClassName`.
+```ts
+type MarkerPropsType = {
+    id: string;
+    size?: number;
+    color?: string;
+};
+```
+
+`LineContextProvider` allows to set some properties for all arrows in it at once.
 
 ## Optimization
 
