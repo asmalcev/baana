@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type MarkerPropsType = {
-    id?: string;
+    id: string;
     size?: number;
     color?: string;
 };
@@ -9,7 +9,7 @@ export type MarkerPropsType = {
 const _defaultSize: number = 12;
 
 export const DefaultMarker: React.FC<MarkerPropsType> = ({
-    id = 'arrow-head',
+    id,
     size = _defaultSize,
     color,
 }) => {
