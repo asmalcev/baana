@@ -68,11 +68,12 @@ const defaultValue = {
 export const LineContext = createContext<LineContextType>(defaultValue);
 
 export const LineContextProvider: React.FC<
-    { children: ReactNode } & Omit<ConfigType, 'offset'> &
+    { children: ReactNode; className: string } & Omit<ConfigType, 'offset'> &
         OffsetXY &
         Record<string, unknown>
 > = ({
     children,
+    className,
 
     color,
     scale,
@@ -150,13 +151,18 @@ export const LineContextProvider: React.FC<
         []
     );
 
-    const update: LineContextType['update'] = (target) => {
-        if (target && targetsWeakMap.current.get(target)) {
-            targetsWeakMap.current.get(target)?.forEach((handler) => handler());
-        } else {
-            forceUpdate();
-        }
-    };
+    const update: LineContextType['update'] = useCallback(
+        (target) => {
+            if (target && targetsWeakMap.current.get(target)) {
+                targetsWeakMap.current
+                    .get(target)
+                    ?.forEach((handler) => handler());
+            } else {
+                forceUpdate();
+            }
+        },
+        [forceUpdate]
+    );
 
     const config = useMemo(
         () => ({
@@ -213,7 +219,11 @@ export const LineContextProvider: React.FC<
                 _unstableState,
             }}
         >
-            <div ref={containerRef} {...others}>
+            <div
+                ref={containerRef}
+                className={`${className} baana__container`}
+                {...others}
+            >
                 <svg ref={svgRef} className="baana__svg">
                     <defs ref={defsRef}></defs>
                 </svg>

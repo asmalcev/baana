@@ -23,3 +23,7 @@
 .baana__reduced-svg {
     shape-rendering: optimizeSpeed;
 }
+
+.baana__container {
+    position: relative;
+}
