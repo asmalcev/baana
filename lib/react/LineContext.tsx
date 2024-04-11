@@ -21,8 +21,6 @@ export type ConfigType = {
     headColor?: string;
     headSize?: number;
 
-    labelClassName?: string;
-
     scale?: number;
     offset?: {
         start: Point;
@@ -92,8 +90,6 @@ export const LineContextProvider: React.FC<
     withHead,
     headColor,
     headSize,
-
-    labelClassName,
 
     ...others
 }) => {
@@ -175,7 +171,6 @@ export const LineContextProvider: React.FC<
             curviness,
             strokeWidth,
             arrowClassName,
-            labelClassName,
             onlyIntegerCoords,
             useRegister,
         }),
@@ -189,7 +184,6 @@ export const LineContextProvider: React.FC<
             curviness,
             strokeWidth,
             arrowClassName,
-            labelClassName,
             onlyIntegerCoords,
             useRegister,
         ]
