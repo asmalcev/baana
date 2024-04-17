@@ -3,7 +3,7 @@
 ![baana-react demonstration picture](./baana-react-pic.png "SVG-arrows lib for React")
 
 - Zero-dependencies
-- 12K bundle size
+- 12 kB bundle size
 
 ## Usage
 
@@ -29,28 +29,28 @@ const App = () => {
 
 ## API
 
-| Arrow Property      | Type                                     | Property in `LineContextProvider` |
-| ------------------- | ---------------------------------------- | --------------------------------- |
-| `start`             | `React.RefObject<HTMLElement> \| string` | -                                 |
-| `end`               | `React.RefObject<HTMLElement> \| string` | -                                 |
-| `color`             | `string`                                 | `color`                           |
-| `scale`             | `number`                                 | `scale`                           |
-| `curviness`         | `number`                                 | `curviness`                       |
-| `strokeWidth`       | `number`                                 | `strokeWidth`                     |
-| `onlyIntegerCoords` | `boolean`                                | `onlyIntegerCoords`               |
-| `useRegister`       | `boolean`                                | `useRegister`                     |
-| `withHead`          | `boolean`                                | `withHead`                        |
-| `headSize`          | `number`                                 | `headSize`                        |
-| `headColor`         | `string`                                 | `headColor`                       |
-| `className`         | `string`                                 | `arrowClassName`                  |
-| `onClick`           | `MouseEventHandler`                      | -                                 |
-| `onHover`           | `MouseEventHandler`                      | -                                 |
-| `label`             | `JSX.Element`                            | -                                 |
-| `Marker`            | `MarkerPropsType`                        | -                                 |
-| `offsetStartX`      | `number`                                 | `offsetStartX`                    |
-| `offsetStartY`      | `number`                                 | `offsetStartY`                    |
-| `offsetEndX`        | `number`                                 | `offsetEndX`                      |
-| `offsetEndY`        | `number`                                 | `offsetEndY`                      |
+| Arrow Property      | Type                                                | Property in `LineContextProvider` |
+| ------------------- | --------------------------------------------------- | --------------------------------- |
+| `start`             | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
+| `end`               | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
+| `color`             | `string`                                            | `color`                           |
+| `scale`             | `number`                                            | `scale`                           |
+| `curviness`         | `number`                                            | `curviness`                       |
+| `strokeWidth`       | `number`                                            | `strokeWidth`                     |
+| `onlyIntegerCoords` | `boolean`                                           | `onlyIntegerCoords`               |
+| `useRegister`       | `boolean`                                           | `useRegister`                     |
+| `withHead`          | `boolean`                                           | `withHead`                        |
+| `headSize`          | `number`                                            | `headSize`                        |
+| `headColor`         | `string`                                            | `headColor`                       |
+| `className`         | `string`                                            | `arrowClassName`                  |
+| `onClick`           | `MouseEventHandler`                                 | -                                 |
+| `onHover`           | `MouseEventHandler`                                 | -                                 |
+| `label`             | `JSX.Element`                                       | -                                 |
+| `Marker`            | `MarkerPropsType`                                   | -                                 |
+| `offsetStartX`      | `number`                                            | `offsetStartX`                    |
+| `offsetStartY`      | `number`                                            | `offsetStartY`                    |
+| `offsetEndX`        | `number`                                            | `offsetEndX`                      |
+| `offsetEndY`        | `number`                                            | `offsetEndY`                      |
 
 ```ts
 type MarkerPropsType = {
