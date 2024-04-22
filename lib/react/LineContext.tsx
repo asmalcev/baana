@@ -66,7 +66,7 @@ const defaultValue = {
 export const LineContext = createContext<LineContextType>(defaultValue);
 
 export const LineContextProvider: React.FC<
-    { children: ReactNode; className: string } & Omit<ConfigType, 'offset'> &
+    { children: ReactNode; className?: string } & Omit<ConfigType, 'offset'> &
         OffsetXY &
         Record<string, unknown>
 > = ({
