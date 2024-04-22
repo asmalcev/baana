@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import Draggable from 'react-draggable';
 
 import {
@@ -25,6 +25,7 @@ const ydiff = height * 1.5;
 
 const Diagram = ({ scale, reduceSVG }) => {
     const { update } = useLineContext();
+
     const handleUpdate = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
         update(dragEvent.node);
@@ -62,7 +63,7 @@ const Diagram = ({ scale, reduceSVG }) => {
         }
 
         const ars = [];
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 2000; i++) {
             const start = `block${getRandomInt(0, c)}`;
             const end = `block${getRandomInt(0, c)}`;
 
@@ -71,6 +72,7 @@ const Diagram = ({ scale, reduceSVG }) => {
                     key={start + end + Math.random()}
                     start={start}
                     end={end}
+                    // label={<p>label</p>}
                 />
             );
         }
@@ -110,22 +112,23 @@ export const App = () => {
                 onStop={handleDrag}
                 scale={scale}
             >
-                <LineContextProvider
-                    className="dragContainer"
-                    color="black"
-                    labelClassName="label"
-                    arrowClassName={reducedClassName}
-                    headSize={12}
-                    scale={scale}
+                <div
                     style={{
                         scale: String(scale),
                     }}
-                    onlyIntegerCoords={true}
-                    useRegister={true}
                     onWheel={onMouseWheel}
                 >
-                    <Diagram scale={scale} reduceSVG={reduceSVG} />
-                </LineContextProvider>
+                    <LineContextProvider
+                        className="dragContainer"
+                        color="black"
+                        arrowClassName={reducedClassName}
+                        headSize={12}
+                        scale={scale}
+                        useRegister={true}
+                    >
+                        <Diagram scale={scale} reduceSVG={reduceSVG} />
+                    </LineContextProvider>
+                </div>
             </Draggable>
         </>
     );

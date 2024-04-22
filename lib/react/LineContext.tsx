@@ -44,10 +44,10 @@ export type LineContextType = {
     _registerTarget(target: TargetPointer, handler: () => void): void;
     _removeTarget(target: TargetPointer, handler: () => void): void;
 
-    _getContainerRef(): HTMLElement | null;
-    _getSVG(): SVGSVGElement | null;
-    _getDefs(): SVGDefsElement | null;
-    _getConfig(): ConfigType;
+    _container: HTMLElement | null;
+    _svg: SVGSVGElement | null;
+    _defs: SVGDefsElement | null;
+    _config: ConfigType;
 
     _unstableState: unknown;
 };
@@ -56,10 +56,10 @@ const defaultValue = {
     update: () => {},
     _registerTarget: () => {},
     _removeTarget: () => {},
-    _getContainerRef: () => null,
-    _getSVG: () => null,
-    _getDefs: () => null,
-    _getConfig: () => ({}),
+    _container: null,
+    _svg: null,
+    _defs: null,
+    _config: {},
     _unstableState: null,
 };
 
@@ -160,59 +160,59 @@ export const LineContextProvider: React.FC<
         [forceUpdate]
     );
 
-    const config = useMemo(
-        () => ({
-            color,
-            scale,
-            offset,
-            withHead,
-            headSize,
-            headColor,
-            curviness,
-            strokeWidth,
-            arrowClassName,
-            onlyIntegerCoords,
-            useRegister,
-        }),
-        [
-            color,
-            scale,
-            offset,
-            withHead,
-            headSize,
-            headColor,
-            curviness,
-            strokeWidth,
-            arrowClassName,
-            onlyIntegerCoords,
-            useRegister,
-        ]
-    );
-
     useEffect(() => {
         setContainer(containerRef.current);
         setSVG(svgRef.current);
         setDefs(defsRef.current);
     }, []);
 
-    const _getContainerRef = () => container;
-    const _getSVG = () => svg;
-    const _getDefs = () => defs;
-    const _getConfig = () => config;
+    const contextValue = useMemo(
+        () => ({
+            _container: container,
+            _svg: svg,
+            _defs: defs,
+            _config: {
+                color,
+                scale,
+                offset,
+                withHead,
+                headSize,
+                headColor,
+                curviness,
+                strokeWidth,
+                arrowClassName,
+                onlyIntegerCoords,
+                useRegister,
+            },
+            update,
+            _registerTarget,
+            _removeTarget,
+            _unstableState,
+        }),
+        [
+            _registerTarget,
+            _removeTarget,
+            _unstableState,
+            arrowClassName,
+            color,
+            container,
+            curviness,
+            defs,
+            headColor,
+            headSize,
+            offset,
+            onlyIntegerCoords,
+            scale,
+            strokeWidth,
+            svg,
+            update,
+            useRegister,
+            withHead,
+        ]
+    );
 
     return (
-        <LineContext.Provider
-            value={{
-                update,
-                _registerTarget,
-                _removeTarget,
-                _getContainerRef,
-                _getConfig,
-                _getSVG,
-                _getDefs,
-                _unstableState,
-            }}
-        >
+        <LineContext.Provider value={contextValue}>
             <div
                 ref={containerRef}
                 className={`${className} baana__container`}

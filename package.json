@@ -30,9 +30,9 @@
     "type": "module",
     "repository": {
         "type": "git",
-        "url": "https://github.com/qzerrty/baana.git"
+        "url": "https://github.com/asmalcev/baana.git"
     },
-    "bugs": "https://github.com/qzerrty/baana/issues",
+    "bugs": "https://github.com/asmalcev/baana/issues",
     "files": [
         "dist"
     ],

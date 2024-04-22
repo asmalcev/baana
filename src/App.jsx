@@ -17,7 +17,6 @@ const Diagram = ({ scale }) => {
 
     const [color, setColor] = useState('green');
     const [text, setText] = useState('label1');
-    const [labelClassName, setLabelClassName] = useState('');
     const [cLabel, setCLabel] = useState(<p>clabel1</p>);
     const [curviness, setCurviness] = useState(1);
     const [offset, setOffset] = useState(0);
@@ -57,7 +56,6 @@ const Diagram = ({ scale }) => {
         // setCurviness(toggle ? 2 : 1); // ✅
         // setOffset(toggle ? 20 : 0); // ✅
         // setClassName(toggle ? 'custom-line' : ''); // ✅
-        // setLabelClassName(toggle ? 'red-label' : ''); // ✅
         // setWithHead(!withHead); // ✅
         setBlockId(toggle ? 'block2' : 'block7'); // ✅
     };
@@ -156,7 +154,6 @@ const Diagram = ({ scale }) => {
                         end={block3}
                         color="#333"
                         text={text}
-                        labelClassName={labelClassName}
                         headColor="pink"
                     />
                     <Arrow
@@ -204,7 +201,6 @@ export const App = () => {
     const [toggle, setToggle] = useState(true);
 
     const [color, setColor] = useState('green');
-    const [labelClassName, setLabelClassName] = useState('');
     const [curviness, setCurviness] = useState(1);
     const [offset, setOffset] = useState(0);
     const [className, setClassName] = useState('');
@@ -220,7 +216,6 @@ export const App = () => {
         // setShow(!show);
 
         // setColor(toggle ? 'red' : 'green'); // ✅
-        // setLabelClassName(toggle ? 'label' : ''); // ✅
         // setClassName(toggle ? 'custom-line-2' : ''); // ✅
         // setOffset(toggle ? 10 : 0); // ✅
         setHeadSize(toggle ? 16 : 30); // ✅
@@ -241,7 +236,6 @@ export const App = () => {
                 <LineContextProvider
                     className="dragContainer"
                     color={color}
-                    labelClassName={labelClassName}
                     offsetStartX={offset}
                     offsetEndX={-offset}
                     curviness={curviness}

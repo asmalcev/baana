@@ -77,10 +77,10 @@ export const Arrow: React.FC<ArrowProps> = ({
     onClick,
 }) => {
     const {
-        _getSVG,
-        _getDefs,
-        _getConfig,
-        _getContainerRef,
+        _svg,
+        _defs,
+        _config,
+        _container,
         _unstableState,
         _registerTarget,
         _removeTarget,
@@ -88,36 +88,31 @@ export const Arrow: React.FC<ArrowProps> = ({
 
     const markerId = useRef(uniqueMarkerId());
 
-    const svg = _getSVG();
-    const defs = _getDefs();
-    const config = _getConfig();
-    const container = _getContainerRef();
-
     const withMarker =
         withHead ??
-        config.withHead ??
-        Boolean(headColor || headSize || config.headColor || config.headSize);
+        _config.withHead ??
+        Boolean(headColor || headSize || _config.headColor || _config.headSize);
 
-    const _color = color ?? config.color ?? 'black';
-    const _className = className ?? config.arrowClassName ?? '';
-    const _curviness = curviness ?? config.curviness ?? 1;
-    const _strokeWidth = strokeWidth ?? config.strokeWidth ?? 1;
-    const _scale = scale ?? config.scale ?? 1;
+    const _color = color ?? _config.color ?? 'black';
+    const _className = className ?? _config.arrowClassName ?? '';
+    const _curviness = curviness ?? _config.curviness ?? 1;
+    const _strokeWidth = strokeWidth ?? _config.strokeWidth ?? 1;
+    const _scale = scale ?? _config.scale ?? 1;
     const _onlyIntegerCoords =
-        onlyIntegerCoords ?? config.onlyIntegerCoords ?? true;
+        onlyIntegerCoords ?? _config.onlyIntegerCoords ?? true;
 
     const offset = useMemo<ConfigType['offset']>(
         () => ({
             start: [
-                offsetStartX ?? config.offset?.start?.[0] ?? 0,
-                offsetStartY ?? config.offset?.start?.[1] ?? 0,
+                offsetStartX ?? _config.offset?.start?.[0] ?? 0,
+                offsetStartY ?? _config.offset?.start?.[1] ?? 0,
             ],
             end: [
-                offsetEndX ?? config.offset?.end?.[0] ?? 0,
-                offsetEndY ?? config.offset?.end?.[1] ?? 0,
+                offsetEndX ?? _config.offset?.end?.[0] ?? 0,
+                offsetEndY ?? _config.offset?.end?.[1] ?? 0,
             ],
         }),
-        [offsetStartX, offsetStartY, offsetEndX, offsetEndY, config.offset]
+        [offsetStartX, offsetStartY, offsetEndX, offsetEndY, _config.offset]
     );
 
     const hoverStrokeWidth = _strokeWidth
@@ -147,12 +142,12 @@ export const Arrow: React.FC<ArrowProps> = ({
                 ? document.getElementById(end)
                 : end.current;
 
-        if (!container || !startElement || !endElement || !offset) return;
+        if (!_container || !startElement || !endElement || !offset) return;
 
         const [startXY, endXY] = update(
             startElement,
             endElement,
-            container,
+            _container,
             offset,
             _scale,
             _onlyIntegerCoords
@@ -190,14 +185,14 @@ export const Arrow: React.FC<ArrowProps> = ({
         start,
         end,
         offset,
-        container,
+        _container,
         _curviness,
         shouldCreateHoverPath,
         _unstableState,
         unstableLocalState,
     ]);
 
-    const shouldRegister = useRegister ?? config.useRegister;
+    const shouldRegister = useRegister ?? _config.useRegister;
 
     useEffect(() => {
         if (shouldRegister) {
@@ -206,6 +201,10 @@ export const Arrow: React.FC<ArrowProps> = ({
 
             _registerTarget(start, forceUpdate);
             _registerTarget(end, forceUpdate);
+        }
+        return () => {
+            _removeTarget(start, forceUpdate);
+            _removeTarget(end, forceUpdate);
         }
     }, [
         start,
@@ -218,7 +217,7 @@ export const Arrow: React.FC<ArrowProps> = ({
 
     return (
         <>
-            {defs
+            {_defs
                 ? createPortal(
                       <>
                           {withMarker && (
@@ -229,10 +228,10 @@ export const Arrow: React.FC<ArrowProps> = ({
                               />
                           )}
                       </>,
-                      defs
+                      _defs
                   )
                 : null}
-            {svg
+            {_svg
                 ? createPortal(
                       <>
                           <path
@@ -257,10 +256,10 @@ export const Arrow: React.FC<ArrowProps> = ({
                               />
                           )}
                       </>,
-                      svg
+                      _svg
                   )
                 : null}
-            {container && svgProps.d
+            {_container && svgProps.d
                 ? createPortal(
                       <div
                           className="baana__line-label"
@@ -271,7 +270,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                       >
                           {label}
                       </div>,
-                      container
+                      _container
                   )
                 : null}
         </>
