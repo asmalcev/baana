@@ -2,11 +2,9 @@ import {
     MouseEventHandler,
     useCallback,
     useEffect,
-    useMemo,
     useRef,
     useState,
 } from 'react';
-import { useLineContext } from '..';
 import {
     Point,
     PointObj,
@@ -18,13 +16,13 @@ import {
     update,
 } from '../utils';
 import { createPortal } from 'react-dom';
-import { ConfigType, OffsetXY } from './LineContext';
+import { ConfigType, LineContextType, OffsetXY } from './LineContext';
 import { DefaultMarker, MarkerPropsType } from './Marker';
 import React from 'react';
 
 export type TargetPointer = React.RefObject<HTMLElement> | string;
 
-type ArrowProps = {
+export type ArrowProps = {
     start: TargetPointer;
     end: TargetPointer;
 
@@ -48,231 +46,220 @@ type ArrowProps = {
 > &
     OffsetXY;
 
-export const Arrow: React.FC<ArrowProps> = ({
-    start,
-    end,
+export const Arrow: React.FC<
+    Omit<
+        ArrowProps,
+        'offsetStartX' | 'offsetEndX' | 'offsetStartY' | 'offsetStartY'
+    > &
+        Omit<LineContextType, 'update' | '_config'> &
+        Pick<ConfigType, 'offset'>
+> = React.memo(
+    ({
+        start,
+        end,
 
-    color,
-    scale,
-    curviness,
-    className,
-    strokeWidth,
+        color,
+        scale,
+        curviness,
+        className,
+        strokeWidth,
 
-    useRegister,
-    onlyIntegerCoords,
+        useRegister,
+        onlyIntegerCoords,
 
-    offsetStartX,
-    offsetStartY,
-    offsetEndX,
-    offsetEndY,
+        offset,
 
-    label,
-    Marker = DefaultMarker,
+        label,
+        Marker = DefaultMarker,
 
-    withHead,
-    headColor,
-    headSize,
+        withHead,
+        headColor,
+        headSize,
 
-    onHover,
-    onClick,
-}) => {
-    const {
+        onHover,
+        onClick,
+
         _svg,
         _defs,
-        _config,
         _container,
         _unstableState,
         _registerTarget,
         _removeTarget,
-    } = useLineContext();
+    }) => {
+        console.info('%c TODO', 'color: red', 'rerender');
+        const markerId = useRef(uniqueMarkerId());
 
-    const markerId = useRef(uniqueMarkerId());
+        const hoverStrokeWidth = strokeWidth
+            ? computeHoverStrokeWidth(strokeWidth, scale)
+            : undefined;
 
-    const withMarker =
-        withHead ??
-        _config.withHead ??
-        Boolean(headColor || headSize || _config.headColor || _config.headSize);
+        const shouldCreateHoverPath =
+            hoverStrokeWidth &&
+            hoverStrokeWidth > 0 &&
+            Boolean(onHover || onClick);
 
-    const _color = color ?? _config.color ?? 'black';
-    const _className = className ?? _config.arrowClassName ?? '';
-    const _curviness = curviness ?? _config.curviness ?? 1;
-    const _strokeWidth = strokeWidth ?? _config.strokeWidth ?? 1;
-    const _scale = scale ?? _config.scale ?? 1;
-    const _onlyIntegerCoords =
-        onlyIntegerCoords ?? _config.onlyIntegerCoords ?? true;
+        const lastXY = useRef([] as PointObj[]);
+        const [svgProps, setSVGProps] = useState<{
+            center?: Point;
+            d?: string;
+            reversed?: string;
+        }>({});
 
-    const offset = useMemo<ConfigType['offset']>(
-        () => ({
-            start: [
-                offsetStartX ?? _config.offset?.start?.[0] ?? 0,
-                offsetStartY ?? _config.offset?.start?.[1] ?? 0,
-            ],
-            end: [
-                offsetEndX ?? _config.offset?.end?.[0] ?? 0,
-                offsetEndY ?? _config.offset?.end?.[1] ?? 0,
-            ],
-        }),
-        [offsetStartX, offsetStartY, offsetEndX, offsetEndY, _config.offset]
-    );
+        const [unstableLocalState, updateState] = useState<unknown>();
+        const forceUpdate = useCallback(() => updateState({}), []);
 
-    const hoverStrokeWidth = _strokeWidth
-        ? computeHoverStrokeWidth(_strokeWidth, _scale)
-        : undefined;
+        useEffect(() => {
+            const startElement =
+                typeof start === 'string'
+                    ? document.getElementById(start)
+                    : start.current;
+            const endElement =
+                typeof end === 'string'
+                    ? document.getElementById(end)
+                    : end.current;
 
-    const shouldCreateHoverPath =
-        hoverStrokeWidth && hoverStrokeWidth > 0 && Boolean(onHover || onClick);
+            if (!_container || !startElement || !endElement || !offset) return;
 
-    const lastXY = useRef([] as PointObj[]);
-    const [svgProps, setSVGProps] = useState<{
-        center?: Point;
-        d?: string;
-        reversed?: string;
-    }>({});
-
-    const [unstableLocalState, updateState] = useState<unknown>();
-    const forceUpdate = useCallback(() => updateState({}), []);
-
-    useEffect(() => {
-        const startElement =
-            typeof start === 'string'
-                ? document.getElementById(start)
-                : start.current;
-        const endElement =
-            typeof end === 'string'
-                ? document.getElementById(end)
-                : end.current;
-
-        if (!_container || !startElement || !endElement || !offset) return;
-
-        const [startXY, endXY] = update(
-            startElement,
-            endElement,
-            _container,
-            offset,
-            _scale,
-            _onlyIntegerCoords
-        );
-
-        if (
-            lastXY.current?.length &&
-            comparePointObjects(startXY, lastXY.current[0]) &&
-            comparePointObjects(endXY, lastXY.current[1])
-        ) {
-            return;
-        }
-
-        lastXY.current = [startXY, endXY];
-
-        const svgProps = getSVGProps(startXY, endXY, _curviness);
-
-        if (_onlyIntegerCoords) {
-            svgProps.d = svgProps.d.map((e) =>
-                typeof e === 'number' ? Math.floor(e) : e
+            const [startXY, endXY] = update(
+                startElement,
+                endElement,
+                _container,
+                offset,
+                scale,
+                onlyIntegerCoords
             );
-        }
 
-        const d = svgProps.d.join(' ');
+            if (
+                lastXY.current?.length &&
+                comparePointObjects(startXY, lastXY.current[0]) &&
+                comparePointObjects(endXY, lastXY.current[1])
+            ) {
+                return;
+            }
 
-        setSVGProps({
-            center: svgProps.center,
-            d,
-            reversed: shouldCreateHoverPath
-                ? d + reversePath(svgProps.d).join(' ')
-                : '',
-        });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        start,
-        end,
-        offset,
-        _container,
-        _curviness,
-        shouldCreateHoverPath,
-        _unstableState,
-        unstableLocalState,
-    ]);
+            lastXY.current = [startXY, endXY];
 
-    const shouldRegister = useRegister ?? _config.useRegister;
+            const svgProps = getSVGProps(startXY, endXY, curviness);
 
-    useEffect(() => {
-        if (shouldRegister) {
-            _removeTarget(start, forceUpdate);
-            _removeTarget(end, forceUpdate);
+            if (onlyIntegerCoords) {
+                svgProps.d = svgProps.d.map((e) =>
+                    typeof e === 'number' ? Math.floor(e) : e
+                );
+            }
 
-            _registerTarget(start, forceUpdate);
-            _registerTarget(end, forceUpdate);
-        }
-        return () => {
-            _removeTarget(start, forceUpdate);
-            _removeTarget(end, forceUpdate);
-        }
-    }, [
-        start,
-        end,
-        _removeTarget,
-        _registerTarget,
-        shouldRegister,
-        forceUpdate,
-    ]);
+            const d = svgProps.d.join(' ');
 
-    return (
-        <>
-            {_defs
-                ? createPortal(
-                      <>
-                          {withMarker && (
-                              <Marker
-                                  id={markerId.current}
-                                  color={headColor ?? _color}
-                                  size={headSize}
-                              />
-                          )}
-                      </>,
-                      _defs
-                  )
-                : null}
-            {_svg
-                ? createPortal(
-                      <>
-                          <path
-                              d={svgProps?.d ?? ''}
-                              className={_className}
-                              stroke={_color}
-                              strokeWidth={_strokeWidth}
-                              fill="none"
-                              markerEnd={
-                                  withMarker ? `url(#${markerId.current}` : ''
-                              }
-                          />
-                          {shouldCreateHoverPath && (
+            setSVGProps({
+                center: svgProps.center,
+                d,
+                reversed: shouldCreateHoverPath
+                    ? d + reversePath(svgProps.d).join(' ')
+                    : '',
+            });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [
+            start,
+            end,
+            offset,
+            _container,
+            curviness,
+            shouldCreateHoverPath,
+            _unstableState,
+            unstableLocalState,
+        ]);
+
+        useEffect(() => {
+            if (useRegister) {
+                _removeTarget(start, forceUpdate);
+                _removeTarget(end, forceUpdate);
+
+                _registerTarget(start, forceUpdate);
+                _registerTarget(end, forceUpdate);
+            }
+            return () => {
+                _removeTarget(start, forceUpdate);
+                _removeTarget(end, forceUpdate);
+            };
+        }, [
+            start,
+            end,
+            _removeTarget,
+            _registerTarget,
+            useRegister,
+            forceUpdate,
+        ]);
+
+        return (
+            <>
+                {_defs
+                    ? createPortal(
+                          <>
+                              {withHead && (
+                                  <Marker
+                                      id={markerId.current}
+                                      color={headColor ?? color}
+                                      size={headSize}
+                                  />
+                              )}
+                          </>,
+                          _defs
+                      )
+                    : null}
+                {_svg
+                    ? createPortal(
+                          <>
                               <path
                                   d={svgProps?.d ?? ''}
-                                  stroke="none"
+                                  className={className}
+                                  stroke={color}
+                                  strokeWidth={strokeWidth}
                                   fill="none"
-                                  className="baana__interactive-path"
-                                  strokeWidth={hoverStrokeWidth}
-                                  onMouseOver={onHover}
-                                  onClick={onClick}
+                                  markerEnd={
+                                      withHead ? `url(#${markerId.current}` : ''
+                                  }
                               />
-                          )}
-                      </>,
-                      _svg
-                  )
-                : null}
-            {_container && svgProps.d
-                ? createPortal(
-                      <div
-                          className="baana__line-label"
-                          style={{
-                              top: svgProps?.center?.[1],
-                              left: svgProps?.center?.[0],
-                          }}
-                      >
-                          {label}
-                      </div>,
-                      _container
-                  )
-                : null}
-        </>
-    );
-};
+                              {shouldCreateHoverPath && (
+                                  <path
+                                      d={svgProps?.d ?? ''}
+                                      stroke="none"
+                                      fill="none"
+                                      className="baana__interactive-path"
+                                      strokeWidth={hoverStrokeWidth}
+                                      onMouseOver={onHover}
+                                      onClick={onClick}
+                                  />
+                              )}
+                          </>,
+                          _svg
+                      )
+                    : null}
+                {_container && svgProps.d
+                    ? createPortal(
+                          <div
+                              className="baana__line-label"
+                              style={{
+                                  top: svgProps?.center?.[1],
+                                  left: svgProps?.center?.[0],
+                              }}
+                          >
+                              {label}
+                          </div>,
+                          _container
+                      )
+                    : null}
+            </>
+        );
+    },
+    (prevProps, nextProps) => {
+        const changes = Object.entries(nextProps)
+            .filter(([key]) => !['children'].includes(key))
+            .map(([key, value]) => [key, value === prevProps[key]]);
+        const changedKeys = new Set(
+            changes.filter((row) => !row[1]).map((row) => row[0])
+        );
+        if (changedKeys.size === 1 && changedKeys.has('scale')) {
+            return true;
+        }
+        return false;
+    }
+);
