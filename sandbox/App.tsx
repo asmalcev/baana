@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 
 import { LineContextProvider, useLineContext, Arrow } from '../lib';
@@ -153,7 +153,6 @@ const Diagram = ({ scale }) => {
                         start={block1}
                         end={block3}
                         color="#333"
-                        text={text}
                         headColor="pink"
                     />
                     <Arrow
@@ -183,7 +182,6 @@ const Diagram = ({ scale }) => {
                         start={block6}
                         end={eRef}
                         color={color}
-                        text={text}
                     />
                     <Arrow start={blockId} end="block8" className='redStroke greenFill'/>
                     <Arrow start="block8" end="block8"/>

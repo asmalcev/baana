@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import Draggable from 'react-draggable';
 
 import {
@@ -7,6 +7,12 @@ import {
     Arrow,
     useReducedGraphics,
 } from '../lib';
+
+declare global {
+    interface Math {
+        seedrandom(seed: number): void;
+    }
+}
 
 const seed = 745627567231241;
 Math.seedrandom(seed);
@@ -36,7 +42,7 @@ const Diagram = ({ scale, reduceSVG }) => {
     const [arrows, setArrows] = useState([]);
 
     useEffect(() => {
-        const bls = [];
+        const bls: any = [];
         let c = 0;
 
         for (let i = 0; i < rows; i++) {
@@ -62,7 +68,7 @@ const Diagram = ({ scale, reduceSVG }) => {
             }
         }
 
-        const ars = [];
+        const ars: any = [];
         for (let i = 0; i < 2000; i++) {
             const start = `block${getRandomInt(0, c)}`;
             const end = `block${getRandomInt(0, c)}`;

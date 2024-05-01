@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Draggable from 'react-draggable';
 
 import { LineContextProvider, useLineContext, Arrow } from '../lib';
@@ -6,7 +6,7 @@ import { LineContextProvider, useLineContext, Arrow } from '../lib';
 const CustomMarker = ({
     id,
     size = 12,
-    color,
+    color = '#000',
 }) => {
     const scale = size / 12;
     return (
