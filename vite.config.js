@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import react from "@vitejs/plugin-react-swc";
+import react from '@vitejs/plugin-react-swc';
 import dts from 'vite-plugin-dts';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 
@@ -29,7 +29,7 @@ export default defineConfig({
     },
     plugins: [
         react(),
-        dts({ include: ['lib'], exclude: ['src'] }),
+        dts({ include: ['lib'], exclude: ['sandbox'] }),
         libInjectCss(),
     ],
 });
