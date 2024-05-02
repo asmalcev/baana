@@ -94,7 +94,7 @@ body {
     background-color: #0001;
 }
 
-.baana__reduced-svg {
+.baana__reduced-svg path {
     stroke: red;
 }
 

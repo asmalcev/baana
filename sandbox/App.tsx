@@ -232,12 +232,11 @@ export const App = () => {
         <>
             <Draggable scale={scale}>
                 <LineContextProvider
-                    className="dragContainer"
+                    className={`dragContainer ${className}`}
                     color={color}
                     offsetStartX={offset}
                     offsetEndX={-offset}
                     curviness={curviness}
-                    arrowClassName={className}
                     withHead={withHead}
                     headColor={headColor}
                     headSize={headSize}

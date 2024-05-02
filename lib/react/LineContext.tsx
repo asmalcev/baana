@@ -13,7 +13,6 @@ import { TargetPointer } from './Arrow';
 
 export type ConfigType = {
     color?: string;
-    arrowClassName?: string;
 
     useRegister?: boolean;
 
@@ -75,7 +74,6 @@ export const LineContextProvider: React.FC<
     color,
     scale,
     curviness,
-    arrowClassName,
     strokeWidth,
 
     useRegister,
@@ -178,7 +176,6 @@ export const LineContextProvider: React.FC<
                 headColor,
                 curviness,
                 strokeWidth,
-                arrowClassName,
                 useRegister,
             },
             update,
@@ -190,7 +187,6 @@ export const LineContextProvider: React.FC<
             _registerTarget,
             _removeTarget,
             _unstableState,
-            arrowClassName,
             color,
             container,
             curviness,

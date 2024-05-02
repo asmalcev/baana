@@ -125,9 +125,8 @@ export const App = () => {
                     onWheel={onMouseWheel}
                 >
                     <LineContextProvider
-                        className="dragContainer"
+                        className={`dragContainer ${reducedClassName}`}
                         color="black"
-                        arrowClassName={reducedClassName}
                         headSize={12}
                         scale={scale}
                         useRegister={true}

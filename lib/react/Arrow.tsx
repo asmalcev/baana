@@ -28,7 +28,7 @@ type ArrowProps = {
     start: TargetPointer;
     end: TargetPointer;
 
-    className?: ConfigType['arrowClassName'];
+    className?: string;
     onClick?: MouseEventHandler;
     onHover?: MouseEventHandler;
     label?: JSX.Element;
@@ -92,7 +92,6 @@ export const Arrow: React.FC<ArrowProps> = ({
         Boolean(headColor || headSize || _config.headColor || _config.headSize);
 
     const _color = color ?? _config.color ?? 'black';
-    const _className = className ?? _config.arrowClassName ?? '';
     const _curviness = curviness ?? _config.curviness ?? 1;
     const _strokeWidth = strokeWidth ?? _config.strokeWidth ?? 1;
     const _scale = scale ?? _config.scale ?? 1;
@@ -225,7 +224,7 @@ export const Arrow: React.FC<ArrowProps> = ({
                       <>
                           <path
                               d={svgProps?.d ?? ''}
-                              className={_className}
+                              className={className}
                               stroke={_color}
                               strokeWidth={_strokeWidth}
                               fill="none"

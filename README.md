@@ -29,27 +29,27 @@ const App = () => {
 
 ## API
 
-| Arrow Property      | Type                                                | Property in `LineContextProvider` |
-| ------------------- | --------------------------------------------------- | --------------------------------- |
-| `start`             | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
-| `end`               | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
-| `color`             | `string`                                            | `color`                           |
-| `scale`             | `number`                                            | `scale`                           |
-| `curviness`         | `number`                                            | `curviness`                       |
-| `strokeWidth`       | `number`                                            | `strokeWidth`                     |
-| `useRegister`       | `boolean`                                           | `useRegister`                     |
-| `withHead`          | `boolean`                                           | `withHead`                        |
-| `headSize`          | `number`                                            | `headSize`                        |
-| `headColor`         | `string`                                            | `headColor`                       |
-| `className`         | `string`                                            | `arrowClassName`                  |
-| `onClick`           | `MouseEventHandler`                                 | -                                 |
-| `onHover`           | `MouseEventHandler`                                 | -                                 |
-| `label`             | `JSX.Element`                                       | -                                 |
-| `Marker`            | `MarkerPropsType`                                   | -                                 |
-| `offsetStartX`      | `number`                                            | `offsetStartX`                    |
-| `offsetStartY`      | `number`                                            | `offsetStartY`                    |
-| `offsetEndX`        | `number`                                            | `offsetEndX`                      |
-| `offsetEndY`        | `number`                                            | `offsetEndY`                      |
+| Arrow Property | Type                                                | Property in `LineContextProvider` |
+| -------------- | --------------------------------------------------- | --------------------------------- |
+| `start`        | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
+| `end`          | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
+| `color`        | `string`                                            | `color`                           |
+| `scale`        | `number`                                            | `scale`                           |
+| `curviness`    | `number`                                            | `curviness`                       |
+| `strokeWidth`  | `number`                                            | `strokeWidth`                     |
+| `useRegister`  | `boolean`                                           | `useRegister`                     |
+| `withHead`     | `boolean`                                           | `withHead`                        |
+| `headSize`     | `number`                                            | `headSize`                        |
+| `headColor`    | `string`                                            | `headColor`                       |
+| `className`    | `string`                                            | -                                 |
+| `onClick`      | `MouseEventHandler`                                 | -                                 |
+| `onHover`      | `MouseEventHandler`                                 | -                                 |
+| `label`        | `JSX.Element`                                       | -                                 |
+| `Marker`       | `MarkerPropsType`                                   | -                                 |
+| `offsetStartX` | `number`                                            | `offsetStartX`                    |
+| `offsetStartY` | `number`                                            | `offsetStartY`                    |
+| `offsetEndX`   | `number`                                            | `offsetEndX`                      |
+| `offsetEndY`   | `number`                                            | `offsetEndY`                      |
 
 ```ts
 type MarkerPropsType = {
@@ -78,7 +78,7 @@ const someAction = () => {
 }
 
 return (
-    <LineContextProvider arrowClassName={reducedClassName}>
+    <LineContextProvider className={reducedClassName}>
         ... // arrows and other content
     </LineContextProvider>
 );

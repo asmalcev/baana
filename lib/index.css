@@ -20,7 +20,7 @@
     pointer-events: all;
 }
 
-.baana__reduced-svg {
+.baana__reduced-svg path {
     shape-rendering: optimizeSpeed;
 }
 
