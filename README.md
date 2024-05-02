@@ -37,7 +37,6 @@ const App = () => {
 | `scale`             | `number`                                            | `scale`                           |
 | `curviness`         | `number`                                            | `curviness`                       |
 | `strokeWidth`       | `number`                                            | `strokeWidth`                     |
-| `onlyIntegerCoords` | `boolean`                                           | `onlyIntegerCoords`               |
 | `useRegister`       | `boolean`                                           | `useRegister`                     |
 | `withHead`          | `boolean`                                           | `withHead`                        |
 | `headSize`          | `number`                                            | `headSize`                        |
@@ -84,10 +83,6 @@ return (
     </LineContextProvider>
 );
 ```
-
-### Only integer coords
-
-Some operations like scaling or moving whole space can cause a small recalculation of the coordinates of the arrows with an accuracy of up to one thousandth. And `onlyIntegerCoords` can reduce the load. *But at high magnification, this can cause unpleasant twitching of the lines.*
 
 ### Update only changed arrows
 

@@ -213,7 +213,6 @@ export const update = (
     parent: HTMLElement,
     offset: ConfigType['offset'],
     scale: ConfigType['scale'] = 1,
-    onlyIntegerCoords: ConfigType['onlyIntegerCoords'] = false
 ) => {
     const rect1 = startRef.getBoundingClientRect();
     const rect2 = endRef.getBoundingClientRect();
@@ -244,13 +243,6 @@ export const update = (
                 containerRect.y) /
             (scale ?? 1),
     };
-
-    if (onlyIntegerCoords) {
-        start.x = Math.floor(start.x);
-        start.y = Math.floor(start.y);
-        end.x = Math.floor(end.x);
-        end.y = Math.floor(end.y);
-    }
 
     return [start, end];
 };

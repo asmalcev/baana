@@ -40,7 +40,6 @@ type ArrowProps = {
     | 'color'
     | 'curviness'
     | 'strokeWidth'
-    | 'onlyIntegerCoords'
     | 'useRegister'
     | 'withHead'
     | 'headSize'
@@ -59,7 +58,6 @@ export const Arrow: React.FC<ArrowProps> = ({
     strokeWidth,
 
     useRegister,
-    onlyIntegerCoords,
 
     offsetStartX,
     offsetStartY,
@@ -98,8 +96,6 @@ export const Arrow: React.FC<ArrowProps> = ({
     const _curviness = curviness ?? _config.curviness ?? 1;
     const _strokeWidth = strokeWidth ?? _config.strokeWidth ?? 1;
     const _scale = scale ?? _config.scale ?? 1;
-    const _onlyIntegerCoords =
-        onlyIntegerCoords ?? _config.onlyIntegerCoords ?? true;
 
     const offset = useMemo<ConfigType['offset']>(
         () => ({
@@ -150,7 +146,6 @@ export const Arrow: React.FC<ArrowProps> = ({
             _container,
             offset,
             _scale,
-            _onlyIntegerCoords
         );
 
         if (
@@ -164,12 +159,6 @@ export const Arrow: React.FC<ArrowProps> = ({
         lastXY.current = [startXY, endXY];
 
         const svgProps = getSVGProps(startXY, endXY, _curviness);
-
-        if (_onlyIntegerCoords) {
-            svgProps.d = svgProps.d.map((e) =>
-                typeof e === 'number' ? Math.floor(e) : e
-            );
-        }
 
         const d = svgProps.d.join(' ');
 

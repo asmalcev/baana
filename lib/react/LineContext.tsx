@@ -28,7 +28,6 @@ export type ConfigType = {
     };
     curviness?: number;
     strokeWidth?: number;
-    onlyIntegerCoords?: boolean;
 };
 
 export type OffsetXY = {
@@ -79,7 +78,6 @@ export const LineContextProvider: React.FC<
     arrowClassName,
     strokeWidth,
 
-    onlyIntegerCoords,
     useRegister,
 
     offsetStartX,
@@ -181,7 +179,6 @@ export const LineContextProvider: React.FC<
                 curviness,
                 strokeWidth,
                 arrowClassName,
-                onlyIntegerCoords,
                 useRegister,
             },
             update,
@@ -201,7 +198,6 @@ export const LineContextProvider: React.FC<
             headColor,
             headSize,
             offset,
-            onlyIntegerCoords,
             scale,
             strokeWidth,
             svg,
