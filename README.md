@@ -7,7 +7,7 @@
 
 ## Usage
 
-```jsx
+```tsx
 const Diagram = () => {
     return (
         <>
@@ -18,38 +18,38 @@ const Diagram = () => {
     );
 }
 
-const App = () => {
-    return (
-        <LineContextProvider>
+const App = () => (
+    <ArrowsContextProvider>
+        <ArrowsContainer>
             <Diagram />
-        </LineContextProvider>
-    )
-}
+        </ArrowsContainer>
+    </ArrowsContextProvider>
+);
 ```
 
 ## API
 
-| Arrow Property | Type                                                | Property in `LineContextProvider` |
-| -------------- | --------------------------------------------------- | --------------------------------- |
-| `start`        | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
-| `end`          | `React.RefObject<HTMLElement> \| string` (block id) | -                                 |
-| `color`        | `string`                                            | `color`                           |
-| `scale`        | `number`                                            | `scale`                           |
-| `curviness`    | `number`                                            | `curviness`                       |
-| `strokeWidth`  | `number`                                            | `strokeWidth`                     |
-| `useRegister`  | `boolean`                                           | `useRegister`                     |
-| `withHead`     | `boolean`                                           | `withHead`                        |
-| `headSize`     | `number`                                            | `headSize`                        |
-| `headColor`    | `string`                                            | `headColor`                       |
-| `className`    | `string`                                            | -                                 |
-| `onClick`      | `MouseEventHandler`                                 | -                                 |
-| `onHover`      | `MouseEventHandler`                                 | -                                 |
-| `label`        | `JSX.Element`                                       | -                                 |
-| `Marker`       | `MarkerPropsType`                                   | -                                 |
-| `offsetStartX` | `number`                                            | `offsetStartX`                    |
-| `offsetStartY` | `number`                                            | `offsetStartY`                    |
-| `offsetEndX`   | `number`                                            | `offsetEndX`                      |
-| `offsetEndY`   | `number`                                            | `offsetEndY`                      |
+| Arrow Property | Type                                                | Property in `ArrowsContextProvider` |
+| -------------- | --------------------------------------------------- | ----------------------------------- |
+| `start`        | `React.RefObject<HTMLElement> \| string` (block id) | -                                   |
+| `end`          | `React.RefObject<HTMLElement> \| string` (block id) | -                                   |
+| `color`        | `string`                                            | `color`                             |
+| `scale`        | `number`                                            | `scale`                             |
+| `curviness`    | `number`                                            | `curviness`                         |
+| `strokeWidth`  | `number`                                            | `strokeWidth`                       |
+| `useRegister`  | `boolean`                                           | `useRegister`                       |
+| `withHead`     | `boolean`                                           | `withHead`                          |
+| `headSize`     | `number`                                            | `headSize`                          |
+| `headColor`    | `string`                                            | `headColor`                         |
+| `className`    | `string`                                            | -                                   |
+| `onClick`      | `MouseEventHandler`                                 | -                                   |
+| `onHover`      | `MouseEventHandler`                                 | -                                   |
+| `label`        | `JSX.Element`                                       | -                                   |
+| `Marker`       | `MarkerPropsType`                                   | -                                   |
+| `offsetStartX` | `number`                                            | `offsetStartX`                      |
+| `offsetStartY` | `number`                                            | `offsetStartY`                      |
+| `offsetEndX`   | `number`                                            | `offsetEndX`                        |
+| `offsetEndY`   | `number`                                            | `offsetEndY`                        |
 
 ```ts
 type MarkerPropsType = {
@@ -59,7 +59,7 @@ type MarkerPropsType = {
 };
 ```
 
-`LineContextProvider` allows to set some properties for all arrows in it at once.
+`ArrowsContextProvider` allows to set some properties for all arrows in it at once.
 
 ## Optimization
 
@@ -69,7 +69,7 @@ type MarkerPropsType = {
 - Default delay: `400 ms`
 - Based on `shape-rendering: optimizeSpeed` [[MDN]](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/shape-rendering)
 
-```jsx
+```tsx
 const { reducedClassName, reduceSVG } = useReducedGraphics();
 
 const someAction = () => {
@@ -78,9 +78,11 @@ const someAction = () => {
 }
 
 return (
-    <LineContextProvider className={reducedClassName}>
-        ... // arrows and other content
-    </LineContextProvider>
+    <ArrowsContextProvider>
+        <ArrowsContainer className={reducedClassName}>
+            ... // arrows and other content
+        </ArrowsContainer>
+    </ArrowsContextProvider>
 );
 ```
 
@@ -95,7 +97,7 @@ After enabling, you can pass the HTML element corresponding to the `start` or `e
 
 Made with `react-draggable`.
 
-```jsx
+```tsx
 const Diagram = () => {
     const { update } = useLineContext();
 
@@ -128,10 +130,13 @@ const Diagram = () => {
 
 const App = () => {
     return (
-        <LineContextProvider>
-            <Diagram />
-        </LineContextProvider>
+        <ArrowsContextProvider>
+            <ArrowsContainer>
+                <Diagram />
+            </ArrowsContainer>
+        </ArrowsContextProvider>
     )
 }
 ```
+
 </details>
