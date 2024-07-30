@@ -1,4 +1,4 @@
-import { ConfigType } from './react/LineContext';
+import { ConfigType } from "./react/ArrowsContext";
 
 export type Point = [number, number];
 export type PointObj = { x: number; y: number };
@@ -163,7 +163,7 @@ const DEFAULT_HOVER_SIZE = 20;
 export const computeHoverStrokeWidth = (
     strokeWidth: number,
     scale: number = 1,
-    hoverSize: number = DEFAULT_HOVER_SIZE
+    hoverSize = DEFAULT_HOVER_SIZE
 ) => {
     if (strokeWidth === 0) return 0;
     if (scale < 1) return hoverSize;

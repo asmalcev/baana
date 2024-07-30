@@ -36,7 +36,7 @@ export type OffsetXY = {
     offsetEndY?: number;
 };
 
-export type LineContextType = {
+export type ArrowsContextType = {
     update(target?: HTMLElement): void;
 
     _registerTarget(target: TargetPointer, handler: () => void): void;
@@ -48,6 +48,10 @@ export type LineContextType = {
     _config: ConfigType;
 
     _unstableState: unknown;
+
+    _containerRef: React.RefObject<HTMLDivElement>;
+    _svgRef: React.RefObject<SVGSVGElement>;
+    _defsRef: React.RefObject<SVGDefsElement>;
 };
 
 const defaultValue = {
@@ -59,17 +63,17 @@ const defaultValue = {
     _defs: null,
     _config: {},
     _unstableState: null,
+    _containerRef: { current: null },
+    _svgRef: { current: null },
+    _defsRef: { current: null },
 };
 
-export const LineContext = createContext<LineContextType>(defaultValue);
+export const ArrowsContext = createContext<ArrowsContextType>(defaultValue);
 
-export const LineContextProvider: React.FC<
-    { children: ReactNode; className?: string } & Omit<ConfigType, 'offset'> &
-        OffsetXY &
-        Record<string, unknown>
+export const ArrowsContextProvider: React.FC<
+    { children: ReactNode } & Omit<ConfigType, 'offset'> & OffsetXY
 > = ({
     children,
-    className,
 
     color,
     scale,
@@ -86,18 +90,16 @@ export const LineContextProvider: React.FC<
     withHead,
     headColor,
     headSize,
-
-    ...others
 }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const svgRef = useRef<SVGSVGElement>(null);
-    const defsRef = useRef<SVGDefsElement>(null);
+    const _containerRef = useRef<HTMLDivElement>(null);
+    const _svgRef = useRef<SVGSVGElement>(null);
+    const _defsRef = useRef<SVGDefsElement>(null);
 
-    const [container, setContainer] = useState<HTMLDivElement | null>(
-        containerRef.current
+    const [_container, setContainer] = useState<HTMLDivElement | null>(
+        _containerRef.current
     );
-    const [svg, setSVG] = useState<SVGSVGElement | null>(svgRef.current);
-    const [defs, setDefs] = useState<SVGDefsElement | null>(defsRef.current);
+    const [_svg, setSVG] = useState<SVGSVGElement | null>(_svgRef.current);
+    const [_defs, setDefs] = useState<SVGDefsElement | null>(_defsRef.current);
 
     const offset = useMemo<ConfigType['offset']>(
         () => ({
@@ -112,7 +114,7 @@ export const LineContextProvider: React.FC<
 
     const targetsWeakMap = useRef(new WeakMap<HTMLElement, Set<() => void>>());
 
-    const _registerTarget: LineContextType['_registerTarget'] = useCallback(
+    const _registerTarget: ArrowsContextType['_registerTarget'] = useCallback(
         (target, handler) => {
             const targetElement =
                 typeof target === 'string'
@@ -129,7 +131,7 @@ export const LineContextProvider: React.FC<
         []
     );
 
-    const _removeTarget: LineContextType['_removeTarget'] = useCallback(
+    const _removeTarget: ArrowsContextType['_removeTarget'] = useCallback(
         (target, handler) => {
             const targetElement =
                 typeof target === 'string'
@@ -143,7 +145,7 @@ export const LineContextProvider: React.FC<
         []
     );
 
-    const update: LineContextType['update'] = useCallback(
+    const update: ArrowsContextType['update'] = useCallback(
         (target) => {
             if (target && targetsWeakMap.current.get(target)) {
                 targetsWeakMap.current
@@ -157,16 +159,19 @@ export const LineContextProvider: React.FC<
     );
 
     useEffect(() => {
-        setContainer(containerRef.current);
-        setSVG(svgRef.current);
-        setDefs(defsRef.current);
+        setContainer(_containerRef.current);
+        setSVG(_svgRef.current);
+        setDefs(_defsRef.current);
     }, []);
 
     const contextValue = useMemo(
         () => ({
-            _container: container,
-            _svg: svg,
-            _defs: defs,
+            _container,
+            _svg,
+            _defs,
+            _containerRef,
+            _svgRef,
+            _defsRef,
             _config: {
                 color,
                 scale,
@@ -184,39 +189,30 @@ export const LineContextProvider: React.FC<
             _unstableState,
         }),
         [
+            _container,
+            _svg,
+            _defs,
+            color,
+            scale,
+            offset,
+            withHead,
+            headSize,
+            headColor,
+            curviness,
+            strokeWidth,
+            useRegister,
+            update,
             _registerTarget,
             _removeTarget,
             _unstableState,
-            color,
-            container,
-            curviness,
-            defs,
-            headColor,
-            headSize,
-            offset,
-            scale,
-            strokeWidth,
-            svg,
-            update,
-            useRegister,
-            withHead,
         ]
     );
 
     return (
-        <LineContext.Provider value={contextValue}>
-            <div
-                ref={containerRef}
-                className={`${className} baana__container`}
-                {...others}
-            >
-                <svg ref={svgRef} className="baana__svg">
-                    <defs ref={defsRef}></defs>
-                </svg>
-                {children}
-            </div>
-        </LineContext.Provider>
+        <ArrowsContext.Provider value={contextValue}>
+            {children}
+        </ArrowsContext.Provider>
     );
 };
 
-export const useLineContext = () => useContext(LineContext);
+export const useArrowsContext = () => useContext(ArrowsContext);

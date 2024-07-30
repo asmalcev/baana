@@ -7,7 +7,7 @@
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn"
     },
-    "ignorePatterns": ["sandbox", "vite.config.js"],
+    "ignorePatterns": ["vite.config.js"],
 
     "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
     "env": {

@@ -1,12 +1,22 @@
-import React, { useRef, useState } from 'react';
-import Draggable from 'react-draggable';
+import React, {
+    MouseEventHandler,
+    useRef,
+    useState,
+    WheelEventHandler,
+} from 'react';
+import Draggable, { DraggableEventHandler } from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow } from '../lib';
+import {
+    Arrow,
+    ArrowsContainer,
+    ArrowsContextProvider,
+    useArrowsContext,
+} from '../lib';
 
-const Diagram = ({ scale }) => {
-    const { update } = useLineContext();
+const Diagram: React.FC<{ scale: number }> = ({ scale }) => {
+    const { update } = useArrowsContext();
 
-    const handleUpdate = (mouseEvent, dragEvent) => {
+    const handleUpdate: DraggableEventHandler = (mouseEvent) => {
         mouseEvent.stopPropagation();
         update();
     };
@@ -16,7 +26,6 @@ const Diagram = ({ scale }) => {
     const [toggle, setToggle] = useState(true);
 
     const [color, setColor] = useState('green');
-    const [text, setText] = useState('label1');
     const [cLabel, setCLabel] = useState(<p>clabel1</p>);
     const [curviness, setCurviness] = useState(1);
     const [offset, setOffset] = useState(0);
@@ -27,10 +36,10 @@ const Diagram = ({ scale }) => {
     const [blockId, setBlockId] = useState('block7');
 
     const hoverHandlers = {
-        1: (e) => {
+        1: (e: unknown) => {
             console.log('hover event', e);
         },
-        2: (e) => {
+        2: (e: unknown) => {
             console.log('another hover event', e);
         },
     };
@@ -47,16 +56,15 @@ const Diagram = ({ scale }) => {
     const clickHandler = () => {
         setToggle(!toggle);
 
-        // setColor(toggle ? 'black' : 'green'); // ✅
+        setColor(toggle ? 'black' : 'green'); // ✅
         setERef(toggle ? block1 : block2); // ✅
-        // setText(toggle ? 'label2' : 'label1'); // ✅
-        // setCLabel(toggle ? <b>clabel1 :/</b> : <p>clabel1</p>); // ✅
-        // setHeadSize(toggle ? 20 : 10); // ✅
-        // setHeadColor(toggle ? 'purple' : 'pink'); // ✅
-        // setCurviness(toggle ? 2 : 1); // ✅
-        // setOffset(toggle ? 20 : 0); // ✅
-        // setClassName(toggle ? 'custom-line' : ''); // ✅
-        // setWithHead(!withHead); // ✅
+        setCLabel(toggle ? <b>clabel1 :/</b> : <p>clabel1</p>); // ✅
+        setHeadSize(toggle ? 20 : 10); // ✅
+        setHeadColor(toggle ? 'purple' : 'pink'); // ✅
+        setCurviness(toggle ? 2 : 1); // ✅
+        setOffset(toggle ? 20 : 0); // ✅
+        setClassName(toggle ? 'custom-line' : ''); // ✅
+        setWithHead(!withHead); // ✅
         setBlockId(toggle ? 'block2' : 'block7'); // ✅
     };
 
@@ -64,7 +72,7 @@ const Diagram = ({ scale }) => {
         setShowArrows(!showArrows);
     };
 
-    const onClick = (e) => {
+    const onClick: MouseEventHandler = (e) => {
         console.log('click event', e);
     };
 
@@ -178,13 +186,13 @@ const Diagram = ({ scale }) => {
                             </div>
                         }
                     />
+                    <Arrow start={block6} end={eRef} color={color} />
                     <Arrow
-                        start={block6}
-                        end={eRef}
-                        color={color}
+                        start={blockId}
+                        end="block8"
+                        className="redStroke greenFill"
                     />
-                    <Arrow start={blockId} end="block8" className='redStroke greenFill'/>
-                    <Arrow start="block8" end="block8"/>
+                    <Arrow start="block8" end="block8" />
                 </>
             )}
 
@@ -194,61 +202,26 @@ const Diagram = ({ scale }) => {
 };
 
 export const App = () => {
-    const [show, setShow] = useState(true);
-
-    const [toggle, setToggle] = useState(true);
-
-    const [color, setColor] = useState('green');
-    const [curviness, setCurviness] = useState(1);
-    const [offset, setOffset] = useState(0);
-    const [className, setClassName] = useState('');
-    const [withHead, setWithHead] = useState(true);
-    const [headSize, setHeadSize] = useState(30);
-    const [headColor, setHeadColor] = useState('dodgerblue');
-
     const [scale, setScale] = useState(1);
 
-    const clickHandler = () => {
-        setToggle(!toggle);
-
-        // setShow(!show);
-
-        // setColor(toggle ? 'red' : 'green'); // ✅
-        // setClassName(toggle ? 'custom-line-2' : ''); // ✅
-        // setOffset(toggle ? 10 : 0); // ✅
-        setHeadSize(toggle ? 16 : 30); // ✅
-        // setHeadColor(toggle ? 'deeppink' : 'dodgerblue'); // ✅
-        // setWithHead(!withHead); // ✅
-
-        // setCurviness(toggle ? 2 : 1); // ❌
-    };
-
-    const onMouseWheel = (e) => {
-        let scrollDelta = -e.deltaY;
-        setScale(scale + scrollDelta / 500);
+    const onMouseWheel: WheelEventHandler = (e) => {
+        setScale(scale - e.deltaY / 500);
     };
 
     return (
         <>
-            <Draggable scale={scale}>
-                <LineContextProvider
-                    className={`dragContainer ${className}`}
-                    color={color}
-                    offsetStartX={offset}
-                    offsetEndX={-offset}
-                    curviness={curviness}
-                    withHead={withHead}
-                    headColor={headColor}
-                    headSize={headSize}
-                    scale={scale}
-                    style={{
-                        scale: String(scale),
-                    }}
-                    onWheel={onMouseWheel}
-                >
-                    <Diagram scale={scale} />
-                </LineContextProvider>
-            </Draggable>
+            <ArrowsContextProvider scale={scale}>
+                <Draggable scale={scale}>
+                    <ArrowsContainer
+                        style={{
+                            scale: String(scale),
+                        }}
+                        onWheel={onMouseWheel}
+                    >
+                        <Diagram scale={scale} />
+                    </ArrowsContainer>
+                </Draggable>
+            </ArrowsContextProvider>
         </>
     );
 };

@@ -1,9 +1,19 @@
-import React, { useCallback, useState } from 'react';
-import Draggable from 'react-draggable';
+import React, {
+    MouseEventHandler,
+    useCallback,
+    useState,
+    WheelEventHandler,
+} from 'react';
+import Draggable, { DraggableEventHandler } from 'react-draggable';
 
-import { LineContextProvider, useLineContext, Arrow } from '../lib';
+import {
+    Arrow,
+    ArrowsContextProvider,
+    ArrowsContainer,
+    useArrowsContext,
+} from '../lib';
 
-const CustomMarker = ({
+const CustomMarker: React.FC<{ id: string; size?: number; color?: string }> = ({
     id,
     size = 12,
     color = '#000',
@@ -21,20 +31,18 @@ const CustomMarker = ({
             refX={16 * scale}
             refY={11 * scale}
         >
-            <circle cx={10 * scale} cy={10 * scale} r={6 * scale}/>
+            <circle cx={10 * scale} cy={10 * scale} r={6 * scale} />
         </marker>
     );
 };
 
-const Diagram = ({ scale }) => {
-    const { update } = useLineContext();
+const Diagram: React.FC<{ scale: number }> = ({ scale }) => {
+    const { update } = useArrowsContext();
 
-    const handleUpdate = (mouseEvent, dragEvent) => {
+    const handleUpdate: DraggableEventHandler = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
         update(dragEvent.node);
     };
-
-    const [showArrows, setShowArrows] = useState(true);
 
     const [toggle, setToggle] = useState(true);
 
@@ -49,7 +57,7 @@ const Diagram = ({ scale }) => {
     const [blockId, setBlockId] = useState('block1');
 
     const hoverHandlers = {
-        1: useCallback((e) => {
+        1: useCallback((e: unknown) => {
             console.log('hover event', e);
         }, []),
         2: undefined,
@@ -58,20 +66,20 @@ const Diagram = ({ scale }) => {
     const clickHandler = () => {
         setToggle(!toggle);
 
-        // setColor(toggle ? 'black' : 'green'); // ✅
-        // setHeadSize(toggle ? 20 : 10); // ✅
-        // setHeadColor(toggle ? 'purple' : 'pink'); // ✅
-        // setCurviness(toggle ? 2 : 1); // ✅
-        // setOffset(toggle ? 20 : 0); // ✅
-        // setClassName(toggle ? 'custom-line' : ''); // ✅
-        // setWithHead(!withHead); // ✅
-        // setBlockId(toggle ? 'block2' : 'block1'); // ✅
-        // setStrokeWidth(toggle ? 5 : 1); // ✅
+        setColor(toggle ? 'black' : 'green'); // ✅
+        setHeadSize(toggle ? 20 : 10); // ✅
+        setHeadColor(toggle ? 'purple' : 'pink'); // ✅
+        setCurviness(toggle ? 2 : 1); // ✅
+        setOffset(toggle ? 20 : 0); // ✅
+        setClassName(toggle ? 'custom-line' : ''); // ✅
+        setWithHead(!withHead); // ✅
+        setBlockId(toggle ? 'block2' : 'block1'); // ✅
+        setStrokeWidth(toggle ? 5 : 1); // ✅
 
         // need to check hover path
     };
 
-    const onClick = (e) => {
+    const onClick: MouseEventHandler = (e) => {
         console.log('click event', e);
     };
 
@@ -96,7 +104,7 @@ const Diagram = ({ scale }) => {
                 <div id="block2" className="block" />
             </Draggable>
 
-            {/* {toggle && ( */}
+            {toggle && (
                 <Arrow
                     start={blockId}
                     end="block2"
@@ -109,13 +117,13 @@ const Diagram = ({ scale }) => {
                     offsetStartY={offset}
                     offsetEndY={-offset}
                     className={className}
-                    onHover={toggle ? hoverHandlers[2] : hoverHandlers[1]}
-                    // onClick={onClick}
-                    label={<p className='label'>baana-react</p>}
+                    onHover={toggle ? hoverHandlers[1] : hoverHandlers[2]}
+                    onClick={onClick}
+                    label={<p className="label">baana-react</p>}
                     useRegister={true}
                     Marker={CustomMarker}
                 />
-            {/* )} */}
+            )}
 
             <button onClick={clickHandler} className="toggle">
                 toggle
@@ -127,25 +135,23 @@ const Diagram = ({ scale }) => {
 export const App = () => {
     const [scale, setScale] = useState(1);
 
-    const onMouseWheel = (e) => {
-        let scrollDelta = -e.deltaY;
-        setScale(scale + scrollDelta / 500);
+    const onMouseWheel: WheelEventHandler = (e) => {
+        setScale(scale - e.deltaY / 500);
     };
 
     return (
-        <>
+        <ArrowsContextProvider scale={scale}>
             <Draggable scale={scale}>
-                <LineContextProvider
+                <ArrowsContainer
                     className="dragContainer"
-                    scale={scale}
                     style={{
                         scale: String(scale),
                     }}
                     onWheel={onMouseWheel}
                 >
                     <Diagram scale={scale} />
-                </LineContextProvider>
+                </ArrowsContainer>
             </Draggable>
-        </>
+        </ArrowsContextProvider>
     );
 };

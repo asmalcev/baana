@@ -6,9 +6,7 @@ import {
     useRef,
     useState,
 } from 'react';
-import { useLineContext } from '..';
 import {
-    Point,
     PointObj,
     comparePointObjects,
     computeHoverStrokeWidth,
@@ -18,7 +16,7 @@ import {
     update,
 } from '../utils';
 import { createPortal } from 'react-dom';
-import { ConfigType, OffsetXY } from './LineContext';
+import { useArrowsContext, ConfigType, OffsetXY } from './ArrowsContext';
 import { DefaultMarker, MarkerPropsType } from './Marker';
 import React from 'react';
 
@@ -82,7 +80,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         _unstableState,
         _registerTarget,
         _removeTarget,
-    } = useLineContext();
+    } = useArrowsContext();
 
     const markerId = useRef(uniqueMarkerId());
 
@@ -118,11 +116,9 @@ export const Arrow: React.FC<ArrowProps> = ({
         hoverStrokeWidth && hoverStrokeWidth > 0 && Boolean(onHover || onClick);
 
     const lastXY = useRef([] as PointObj[]);
-    const [svgProps, setSVGProps] = useState<{
-        center?: Point;
-        d?: string;
-        reversed?: string;
-    }>({});
+    const arrowRef = useRef<SVGPathElement>(null);
+    const hoverPathRef = useRef<SVGPathElement>(null);
+    const labelRef = useRef<HTMLDivElement>(null);
 
     const [unstableLocalState, updateState] = useState<unknown>();
     const forceUpdate = useCallback(() => updateState({}), []);
@@ -144,7 +140,7 @@ export const Arrow: React.FC<ArrowProps> = ({
             endElement,
             _container,
             offset,
-            _scale,
+            _scale
         );
 
         if (
@@ -158,16 +154,19 @@ export const Arrow: React.FC<ArrowProps> = ({
         lastXY.current = [startXY, endXY];
 
         const svgProps = getSVGProps(startXY, endXY, _curviness);
-
         const d = svgProps.d.join(' ');
+        const hoverD = svgProps.d.concat(reversePath(svgProps.d)).join(' ');
 
-        setSVGProps({
-            center: svgProps.center,
-            d,
-            reversed: shouldCreateHoverPath
-                ? d + reversePath(svgProps.d).join(' ')
-                : '',
-        });
+        if (arrowRef.current) {
+            arrowRef.current.setAttribute('d', d);
+        }
+        if (hoverPathRef.current) {
+            hoverPathRef.current.setAttribute('d', hoverD);
+        }
+        if (labelRef.current) {
+            labelRef.current.style.left = `${svgProps.center[0]}px`;
+            labelRef.current.style.top = `${svgProps.center[1]}px`;
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         start,
@@ -193,7 +192,7 @@ export const Arrow: React.FC<ArrowProps> = ({
         return () => {
             _removeTarget(start, forceUpdate);
             _removeTarget(end, forceUpdate);
-        }
+        };
     }, [
         start,
         end,
@@ -223,7 +222,6 @@ export const Arrow: React.FC<ArrowProps> = ({
                 ? createPortal(
                       <>
                           <path
-                              d={svgProps?.d ?? ''}
                               className={className}
                               stroke={_color}
                               strokeWidth={_strokeWidth}
@@ -231,31 +229,26 @@ export const Arrow: React.FC<ArrowProps> = ({
                               markerEnd={
                                   withMarker ? `url(#${markerId.current}` : ''
                               }
+                              ref={arrowRef}
                           />
                           {shouldCreateHoverPath && (
                               <path
-                                  d={svgProps?.d ?? ''}
                                   stroke="none"
                                   fill="none"
                                   className="baana__interactive-path"
                                   strokeWidth={hoverStrokeWidth}
                                   onMouseOver={onHover}
                                   onClick={onClick}
+                                  ref={hoverPathRef}
                               />
                           )}
                       </>,
                       _svg
                   )
                 : null}
-            {_container && svgProps.d
+            {_container && label
                 ? createPortal(
-                      <div
-                          className="baana__line-label"
-                          style={{
-                              top: svgProps?.center?.[1],
-                              left: svgProps?.center?.[0],
-                          }}
-                      >
+                      <div className="baana__line-label" ref={labelRef}>
                           {label}
                       </div>,
                       _container

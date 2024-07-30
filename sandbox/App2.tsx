@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import Draggable from 'react-draggable';
+import React, {
+    ReactNode,
+    useEffect,
+    useState,
+    WheelEventHandler,
+} from 'react';
+import Draggable, { DraggableEventHandler } from 'react-draggable';
 
 import {
-    LineContextProvider,
-    useLineContext,
     Arrow,
+    ArrowsContainer,
+    ArrowsContextProvider,
+    useArrowsContext,
     useReducedGraphics,
 } from '../lib';
 
@@ -17,7 +23,7 @@ declare global {
 const seed = 745627567231241;
 Math.seedrandom(seed);
 
-const getRandomInt = (min, max) =>
+const getRandomInt = (min: number, max: number) =>
     Math.floor(Math.random() * (max - min) + min);
 
 const columns = 8;
@@ -29,20 +35,23 @@ const height = 50;
 const xdiff = width * 1.5;
 const ydiff = height * 1.5;
 
-const Diagram = ({ scale, reduceSVG }) => {
-    const { update } = useLineContext();
+const Diagram: React.FC<{ scale: number; reduceSVG: () => void }> = ({
+    scale,
+    reduceSVG,
+}) => {
+    const { update } = useArrowsContext();
 
-    const handleUpdate = (mouseEvent, dragEvent) => {
+    const handleUpdate: DraggableEventHandler = (mouseEvent, dragEvent) => {
         mouseEvent.stopPropagation();
         update(dragEvent.node);
         reduceSVG && reduceSVG();
     };
 
-    const [blocks, setBlocks] = useState([]);
-    const [arrows, setArrows] = useState([]);
+    const [blocks, setBlocks] = useState<ReactNode[]>([]);
+    const [arrows, setArrows] = useState<ReactNode[]>([]);
 
     useEffect(() => {
-        const bls: any = [];
+        const bls: ReactNode[] = [];
         let c = 0;
 
         for (let i = 0; i < rows; i++) {
@@ -68,7 +77,7 @@ const Diagram = ({ scale, reduceSVG }) => {
             }
         }
 
-        const ars: any = [];
+        const ars: ReactNode[] = [];
         for (let i = 0; i < 2000; i++) {
             const start = `block${getRandomInt(0, c)}`;
             const end = `block${getRandomInt(0, c)}`;
@@ -85,6 +94,7 @@ const Diagram = ({ scale, reduceSVG }) => {
 
         setBlocks(bls);
         setArrows(ars);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -100,9 +110,8 @@ export const App = () => {
 
     const { reducedClassName, reduceSVG } = useReducedGraphics();
 
-    const onMouseWheel = (e) => {
-        let scrollDelta = -e.deltaY;
-        setScale(scale + scrollDelta / 500);
+    const onMouseWheel: WheelEventHandler = (e) => {
+        setScale(scale - e.deltaY / 500);
         reduceSVG();
     };
 
@@ -112,29 +121,32 @@ export const App = () => {
 
     return (
         <>
-            <Draggable
-                onDrag={handleDrag}
-                onStart={handleDrag}
-                onStop={handleDrag}
+            <ArrowsContextProvider
+                color="black"
+                headSize={12}
                 scale={scale}
+                useRegister={true}
             >
-                <div
-                    style={{
-                        scale: String(scale),
-                    }}
-                    onWheel={onMouseWheel}
+                <Draggable
+                    onDrag={handleDrag}
+                    onStart={handleDrag}
+                    onStop={handleDrag}
+                    scale={scale}
                 >
-                    <LineContextProvider
-                        className={`dragContainer ${reducedClassName}`}
-                        color="black"
-                        headSize={12}
-                        scale={scale}
-                        useRegister={true}
+                    <div
+                        style={{
+                            scale: String(scale),
+                        }}
+                        onWheel={onMouseWheel}
                     >
-                        <Diagram scale={scale} reduceSVG={reduceSVG} />
-                    </LineContextProvider>
-                </div>
-            </Draggable>
+                        <ArrowsContainer
+                            className={`dragContainer ${reducedClassName}`}
+                        >
+                            <Diagram scale={scale} reduceSVG={reduceSVG} />
+                        </ArrowsContainer>
+                    </div>
+                </Draggable>
+            </ArrowsContextProvider>
         </>
     );
 };
