@@ -92,7 +92,8 @@ export const Arrow: React.FC<ArrowProps> = ({
     const _color = color ?? _config.color ?? 'black';
     const _curviness = curviness ?? _config.curviness ?? 1;
     const _strokeWidth = strokeWidth ?? _config.strokeWidth ?? 1;
-    const _scale = scale ?? _config.scale ?? 1;
+    const _scale = ((typeof scale === 'object' ? scale?.current : scale) ??
+                    (typeof _config.scale === 'object' ? _config.scale?.current : _config.scale)) ?? 1;
 
     const offset = useMemo<ConfigType['offset']>(
         () => ({

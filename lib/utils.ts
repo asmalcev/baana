@@ -212,7 +212,7 @@ export const update = (
     endRef: HTMLElement,
     parent: HTMLElement,
     offset: ConfigType['offset'],
-    scale: ConfigType['scale'] = 1,
+    scale: number = 1,
 ) => {
     const rect1 = startRef.getBoundingClientRect();
     const rect2 = endRef.getBoundingClientRect();

@@ -20,7 +20,7 @@ export type ConfigType = {
     headColor?: string;
     headSize?: number;
 
-    scale?: number;
+    scale?: number | React.RefObject<number>;
     offset?: {
         start: Point;
         end: Point;
